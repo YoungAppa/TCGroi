@@ -1,0 +1,45 @@
+{
+  "_comment": "Hand-maintained sealed product definitions. Catalog APIs index singles only, so products are data we own, like pull rates. packsContained and msrpCents are physical/published facts. Market prices for these come from a sealed-capable price source (PriceCharting) once configured; until then ROI falls back to MSRP and is labelled as such.",
+  "products": [
+    {
+      "setCode": "sv8",
+      "name": "Booster Box (36 packs)",
+      "slug": "booster-box",
+      "type": "booster_box",
+      "packsContained": 36,
+      "msrpCents": 16344
+    },
+    {
+      "setCode": "sv8",
+      "name": "Booster Pack",
+      "slug": "booster-pack",
+      "type": "booster_pack",
+      "packsContained": 1,
+      "msrpCents": 454
+    },
+    {
+      "setCode": "sv8",
+      "name": "Elite Trainer Box (9 packs)",
+      "slug": "elite-trainer-box",
+      "type": "etb",
+      "packsContained": 9,
+      "msrpCents": 4999
+    },
+    {
+      "setCode": "sv1",
+      "name": "Booster Box (36 packs)",
+      "slug": "booster-box",
+      "type": "booster_box",
+      "packsContained": 36,
+      "msrpCents": 14400
+    },
+    {
+      "setCode": "sv1",
+      "name": "Booster Pack",
+      "slug": "booster-pack",
+      "type": "booster_pack",
+      "packsContained": 1,
+      "msrpCents": 400
+    }
+  ]
+}

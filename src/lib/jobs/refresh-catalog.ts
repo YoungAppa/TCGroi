@@ -1,9 +1,13 @@
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
+
 import { and, eq, ne, sql } from "drizzle-orm";
+import { z } from "zod";
 
 import { OptcgApiAdapter } from "@/lib/catalog/providers/optcgapi";
 import { PokemonTcgIoAdapter } from "@/lib/catalog/providers/pokemontcgio";
 import type { CatalogAdapter, CatalogSet } from "@/lib/catalog/types";
-import { cards, games, getDb, pullRateTables, sets } from "@/lib/db";
+import { cards, games, getDb, pullRateTables, sealedProducts, sets } from "@/lib/db";
 import { loadAllPullRates } from "@/lib/pullrates/load";
 
 import { runJob } from "./run";
@@ -106,6 +110,8 @@ export async function refreshCatalog() {
           confidence: file.confidence,
           slots: file.slots,
           guaranteedSlots: file.guaranteedSlots,
+          boxGuarantees: file.boxGuarantees,
+          alternateEstimates: file.alternateEstimates,
           showWhenPlaceholder: file.showWhenPlaceholder,
           isActive: true,
         })
@@ -118,6 +124,8 @@ export async function refreshCatalog() {
             confidence: file.confidence,
             slots: file.slots,
             guaranteedSlots: file.guaranteedSlots,
+            boxGuarantees: file.boxGuarantees,
+            alternateEstimates: file.alternateEstimates,
             showWhenPlaceholder: file.showWhenPlaceholder,
             isActive: true,
           },
@@ -133,8 +141,78 @@ export async function refreshCatalog() {
       tablesLoaded++;
     }
 
-    return { setsUpserted, cardsUpserted, tablesLoaded };
+    const productsLoaded = await loadSealedProducts(gameIdBySlug);
+
+    return { setsUpserted, cardsUpserted, tablesLoaded, productsLoaded };
   });
+}
+
+const productFileSchema = z.object({
+  products: z.array(
+    z.object({
+      setCode: z.string().min(1),
+      name: z.string().min(1),
+      slug: z.string().min(1),
+      type: z.enum(["booster_pack", "booster_box", "etb", "bundle", "display", "case"]),
+      packsContained: z.number().int().positive(),
+      msrpCents: z.number().int().positive().nullable(),
+    }),
+  ),
+});
+
+/**
+ * Sealed products from data/products/{game}.json. Hand-maintained: catalog
+ * APIs index singles only, so products are our data, like pull rates.
+ */
+async function loadSealedProducts(gameIdBySlug: Map<string, string>): Promise<number> {
+  const db = getDb();
+  let loaded = 0;
+
+  for (const [slug, gameId] of gameIdBySlug) {
+    let raw: string;
+    try {
+      raw = await readFile(join(process.cwd(), "data", "products", `${slug}.json`), "utf8");
+    } catch {
+      continue; // No product file for this game yet — fine.
+    }
+
+    const file = productFileSchema.parse(JSON.parse(raw));
+    for (const p of file.products) {
+      const [setRow] = await db
+        .select({ id: sets.id })
+        .from(sets)
+        .where(and(eq(sets.gameId, gameId), eq(sets.code, p.setCode)));
+      if (!setRow) {
+        throw new Error(
+          `data/products/${slug}.json: set ${p.setCode} is not ingested — run catalog ingest first or fix the code.`,
+        );
+      }
+
+      await db
+        .insert(sealedProducts)
+        .values({
+          setId: setRow.id,
+          type: p.type,
+          name: p.name,
+          slug: p.slug,
+          packsContained: p.packsContained,
+          msrpCents: p.msrpCents,
+        })
+        .onConflictDoUpdate({
+          target: [sealedProducts.setId, sealedProducts.slug],
+          set: {
+            type: p.type,
+            name: p.name,
+            packsContained: p.packsContained,
+            msrpCents: p.msrpCents,
+            updatedAt: new Date(),
+          },
+        });
+      loaded++;
+    }
+  }
+
+  return loaded;
 }
 
 async function upsertSet(gameId: string, cs: CatalogSet): Promise<string> {

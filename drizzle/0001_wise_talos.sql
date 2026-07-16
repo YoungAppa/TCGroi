@@ -1,0 +1,2 @@
+ALTER TABLE "pull_rate_tables" ADD COLUMN "box_guarantees" jsonb DEFAULT '[]'::jsonb NOT NULL;--> statement-breakpoint
+ALTER TABLE "pull_rate_tables" ADD COLUMN "alternate_estimates" jsonb DEFAULT '[]'::jsonb NOT NULL;

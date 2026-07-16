@@ -192,8 +192,21 @@ export const pullRateTables = pgTable(
     slots: jsonb("slots")
       .$type<{ rarity: string; perPackProbability: number }[]>()
       .notNull(),
-    /** Reverse-holo slots, god-pack rules, One Piece per-box SR guarantees. */
+    /** Reverse-holo slots, god-pack rules — deterministic per-pack extras. */
     guaranteedSlots: jsonb("guaranteed_slots")
+      .$type<Record<string, unknown>[]>()
+      .notNull()
+      .default(sql`'[]'::jsonb`),
+    /** One Piece "SR or better per box" etc. — see BoxGuarantee in lib/ev. */
+    boxGuarantees: jsonb("box_guarantees")
+      .$type<Record<string, unknown>[]>()
+      .notNull()
+      .default(sql`'[]'::jsonb`),
+    /**
+     * Rival published estimates, for the sources-disagree panel. Display
+     * data only — never enters the EV math.
+     */
+    alternateEstimates: jsonb("alternate_estimates")
       .$type<Record<string, unknown>[]>()
       .notNull()
       .default(sql`'[]'::jsonb`),

@@ -1,31 +1,45 @@
 "use client";
 
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useMemo } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 
 import {
+  DEFAULT_FILTER_STATE,
   parseFilterState,
   serializeFilterState,
   type FilterState,
 } from "@/lib/ev/url-state";
 
 /**
- * The source-filter state, read from and written to the URL. URL-only by spec:
- * every view is a shareable link, and the filter survives navigation because
- * every internal link is built with `withFilter`.
+ * The source-filter state. The URL is the single source of truth for CHANGES
+ * (?src=&blend=&mode=) so every view stays a shareable link — but the state is
+ * deliberately NOT read via useSearchParams.
+ *
+ * Why: useSearchParams suspends during static prerender, which would strip
+ * the entire EV table out of the built HTML and serve crawlers an empty
+ * shell (observed: the SSG product page contained no rankings, no badges, no
+ * chase table). Instead the server renders the DEFAULT state — the exact
+ * state the SEO title is computed from — and the client adopts the URL's
+ * state after hydration. A shared link shows defaults for one frame, then
+ * applies; a crawler sees the full default view.
  */
 export function useFilterState() {
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
+  const [state, setStateInternal] = useState<FilterState>(DEFAULT_FILTER_STATE);
 
-  const state = useMemo(
-    () => parseFilterState(new URLSearchParams(searchParams.toString())),
-    [searchParams],
-  );
+  // Adopt the URL's state after hydration, and track back/forward.
+  useEffect(() => {
+    const read = () =>
+      setStateInternal(parseFilterState(new URLSearchParams(window.location.search)));
+    read();
+    window.addEventListener("popstate", read);
+    return () => window.removeEventListener("popstate", read);
+  }, []);
 
   const setState = useCallback(
     (next: FilterState) => {
+      setStateInternal(next);
       // replace, not push: toggling a source is a view change, and stacking
       // ten history entries makes Back useless.
       router.replace(`${pathname}${serializeFilterState(next)}`, { scroll: false });

@@ -8,6 +8,13 @@
       "when": 1784179584076,
       "tag": "0000_lumpy_gwen_stacy",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1784236196043,
+      "tag": "0001_wise_talos",
+      "breakpoints": true
     }
   ]
 }

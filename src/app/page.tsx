@@ -1,9 +1,9 @@
-import { Suspense } from "react";
-
 import { RankingsTable } from "@/components/RankingsTable";
 import { getRankings } from "@/lib/data";
 
-export const dynamic = "force-static";
+// ISR: rebuilt hourly from the DB the cron jobs write into. Never fetches
+// externally at request time.
+export const revalidate = 3600;
 
 export default async function HomePage() {
   const { products, availableSources } = await getRankings();
@@ -22,11 +22,7 @@ export default async function HomePage() {
         </p>
       </div>
 
-      {/* useSearchParams in the table requires a Suspense boundary to
-          static-render the shell. */}
-      <Suspense>
-        <RankingsTable products={products} availableSources={availableSources} />
-      </Suspense>
+      <RankingsTable products={products} availableSources={availableSources} />
     </div>
   );
 }

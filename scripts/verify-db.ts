@@ -55,11 +55,15 @@ async function main() {
       confidence: pullRateTables.confidence,
       n: pullRateTables.sampleSizePacks,
       active: pullRateTables.isActive,
+      alternates: pullRateTables.alternateEstimates,
+      boxGuarantees: pullRateTables.boxGuarantees,
     })
     .from(pullRateTables)
     .innerJoin(sets, eq(pullRateTables.setId, sets.id));
   for (const t of tables) {
-    console.log(`  ${t.code.padEnd(8)} v${t.version} ${String(t.confidence).padEnd(12)} n=${t.n} active=${t.active}`);
+    console.log(
+      `  ${t.code.padEnd(8)} v${t.version} ${String(t.confidence).padEnd(12)} n=${t.n} active=${t.active} alternates=${t.alternates.length} boxGuarantees=${t.boxGuarantees.length}`,
+    );
   }
 
   console.log("\n=== prices: most valuable cards in latest_prices ===");

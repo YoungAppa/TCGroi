@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Suspense } from "react";
 
 import { ProductDetail } from "@/components/ProductDetail";
 import { getProduct, getRankings } from "@/lib/data";
@@ -8,7 +7,8 @@ import { computeForPayload } from "@/lib/data/compute";
 import { formatCents, formatRoi } from "@/lib/ev/format";
 import { DEFAULT_FILTER_STATE } from "@/lib/ev/url-state";
 
-export const dynamic = "force-static";
+// ISR alongside the rankings page.
+export const revalidate = 3600;
 
 type Params = { game: string; setCode: string; productSlug: string };
 
@@ -68,9 +68,7 @@ export default async function ProductPage({ params }: { params: Promise<Params> 
         </h1>
       </div>
 
-      <Suspense>
-        <ProductDetail payload={payload} availableSources={availableSources} />
-      </Suspense>
+      <ProductDetail payload={payload} availableSources={availableSources} />
     </div>
   );
 }
