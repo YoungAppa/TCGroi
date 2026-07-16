@@ -14,10 +14,17 @@ const serverEnvSchema = z.object({
   // TCGplayer's own API is closed to new developers and their ToS forbids
   // scraping, so market prices are sourced via a third-party mirror. The
   // concrete provider is swappable behind the single tcgplayer_market adapter.
+  //
+  // Defaults to pokemontcg_io: it serves TCGplayer market prices free, with no
+  // key, and its data was observed fresh (same-day). Its limitation is real
+  // though — Pokémon only. justtcg/tcgapi/scrydex remain available for wider
+  // coverage and are wired to the same adapter interface.
   TCGPLAYER_MIRROR_PROVIDER: z
-    .enum(["justtcg", "tcgapi", "scrydex"])
-    .optional(),
+    .enum(["pokemontcg_io", "justtcg", "tcgapi", "scrydex"])
+    .default("pokemontcg_io"),
   TCGPLAYER_MIRROR_API_KEY: z.string().min(1).optional(),
+  /** Optional. Raises pokemontcg.io's rate limit; never required. */
+  POKEMONTCG_IO_KEY: z.string().min(1).optional(),
 
   // --- Optional: pricecharting_ebay ----------------------------------------
   // Paid subscription token. Absent => adapter disabled, graded mode hidden.
