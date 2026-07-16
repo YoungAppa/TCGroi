@@ -25,16 +25,36 @@ export interface ProductPayload {
   productSlug: string;
   productType: "booster_pack" | "booster_box" | "etb" | "bundle" | "display" | "case";
   packsContained: number;
-  msrpCents: number | null;
+  /** Set logo, used as the product's visual identity. */
+  imageUrl: string | null;
+
   /**
-   * Per-source sealed prices. May be empty — the EV engine's fallback chain
-   * (pricecharting -> tcgplayer_market -> MSRP) handles that and labels what
-   * it used.
+   * The two denominators, kept separate on purpose (the csroi-style split):
+   *
+   *  - retail: MSRP. What the product costs if you can find it at retail.
+   *  - market: what it actually costs today. Live sealed source prices when a
+   *    sealed-capable source is configured; otherwise the hand-tracked figure
+   *    with its provenance. isManual tells the UI which it got.
+   *
+   * ROI is computed against each, because "−35% at MSRP" and "−65% at what
+   * scalpers charge" are both true and answer different questions.
    */
+  msrpCents: number | null;
+  market: {
+    priceCents: number | null;
+    /** True when this is the hand-tracked figure, not a live source price. */
+    isManual: boolean;
+    asOf: string | null;
+    source: string | null;
+  };
+  /** Per-source sealed prices (live). Feeds market when non-empty. */
   sealed: PriceBySource;
-  /** True while sealed prices are hand-entered demo values, not live data. */
-  sealedIsPlaceholder: boolean;
+
   guaranteedCardIds: string[];
+  /** Guaranteed extras resolved for display: the promo sidecar. */
+  promos: { cardId: string; name: string; number: string; imageUrl: string | null }[];
+  /** Unmodelled contents (metal cards, playmats) the buyer should know about. */
+  contentsNote: string | null;
   boxGuarantees: {
     label: string;
     rarity: string;

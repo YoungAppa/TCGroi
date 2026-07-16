@@ -18,6 +18,32 @@ import type { ProductPayload } from "./types";
  * Runs client-side on every source toggle — that this is cheap is guaranteed
  * by the EV engine's purity, not by memoisation heroics.
  */
+export interface ProductComputation {
+  ev: EvResult;
+  /** EV vs MSRP — "if you can find it at retail". Null when MSRP unknown. */
+  roiRetail: number | null;
+  /** EV vs today's market price — "what it actually costs". */
+  roiMarket: number | null;
+}
+
+/** The full product computation: EV plus both ROIs the UI shows. */
+export function computeProduct(
+  payload: ProductPayload,
+  filter: FilterState,
+  availableSourceIds: string[],
+): ProductComputation {
+  const ev = computeForPayload(payload, filter, availableSourceIds);
+
+  const roiOf = (price: number | null) =>
+    price !== null && price > 0 ? ev.evProductCents / price - 1 : null;
+
+  return {
+    ev,
+    roiRetail: roiOf(payload.msrpCents),
+    roiMarket: roiOf(payload.market.priceCents),
+  };
+}
+
 export function computeForPayload(
   payload: ProductPayload,
   filter: FilterState,

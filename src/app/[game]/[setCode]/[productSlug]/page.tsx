@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 
 import { ProductDetail } from "@/components/ProductDetail";
 import { getProduct, getRankings } from "@/lib/data";
-import { computeForPayload } from "@/lib/data/compute";
+import { computeProduct } from "@/lib/data/compute";
 import { formatCents, formatRoi } from "@/lib/ev/format";
 import { DEFAULT_FILTER_STATE } from "@/lib/ev/url-state";
 
@@ -31,18 +31,23 @@ export async function generateMetadata({
   const payload = await getProduct(game, setCode, productSlug);
   if (!payload) return {};
 
-  // SEO title carries the default-state numbers, e.g.
-  // "Surging Sparks Booster Box — EV $81.77, ROI −37.1%"
+  // SEO title carries the default-state numbers. Market ROI headlines when a
+  // market price exists (it is the number people actually face); retail
+  // otherwise.
   const { availableSources } = await getRankings();
-  const ev = computeForPayload(
+  const { ev, roiRetail, roiMarket } = computeProduct(
     payload,
     DEFAULT_FILTER_STATE,
     availableSources.map((s) => s.id),
   );
 
-  const title = `${payload.setName} ${payload.productName} — EV ${formatCents(ev.evProductCents)}${
-    ev.roi !== null ? `, ROI ${formatRoi(ev.roi)}` : ""
-  }`;
+  const roiPart =
+    roiMarket !== null
+      ? `, ROI ${formatRoi(roiMarket)} at market`
+      : roiRetail !== null
+        ? `, ROI ${formatRoi(roiRetail)} at MSRP`
+        : "";
+  const title = `${payload.setName} ${payload.productName} — EV ${formatCents(ev.evProductCents)}${roiPart}`;
 
   return {
     title,

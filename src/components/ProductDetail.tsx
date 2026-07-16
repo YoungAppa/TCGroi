@@ -1,18 +1,21 @@
 "use client";
 
+/* eslint-disable @next/next/no-img-element -- external card/set art domains
+   are not configured for next/image yet; plain img is deliberate here. */
+
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
 import { rarityLabel } from "@/lib/catalog/rarities";
-import { computeForPayload } from "@/lib/data/compute";
+import { computeProduct } from "@/lib/data/compute";
 import type { ProductPayload } from "@/lib/data/types";
-import { packsForProbability } from "@/lib/ev";
+import { blendPrices, packsForProbability } from "@/lib/ev";
 import {
   formatCents,
   formatOneIn,
   formatProbability,
-  formatRoi,
 } from "@/lib/ev/format";
+import { effectiveSources } from "@/lib/ev/url-state";
 import { computeDisagreements } from "@/lib/pullrates/disagreement";
 import { pullRateFileSchema } from "@/lib/pullrates/schema";
 
@@ -42,13 +45,14 @@ export function ProductDetail({
   const { state, setState, withFilter } = useFilterState();
   const availableIds = useMemo(() => availableSources.map((s) => s.id), [availableSources]);
 
-  const ev = useMemo(
-    () => computeForPayload(payload, state, availableIds),
+  const { ev, roiRetail, roiMarket } = useMemo(
+    () => computeProduct(payload, state, availableIds),
     [payload, state, availableIds],
   );
 
+  const selectedSources = effectiveSources(state, availableIds);
+
   const disagreements = useMemo(() => {
-    // Rebuild a PullRateFile shape for the disagreement helper.
     const parsed = pullRateFileSchema.safeParse({
       game: payload.gameSlug,
       setCode: payload.setCode,
@@ -66,6 +70,13 @@ export function ProductDetail({
 
   const totalEv = ev.tiers.reduce((s, t) => s + t.evContributionCents, 0);
 
+  // Promo sidecar: guaranteed extras with their live prices.
+  const promoRows = payload.promos.map((promo) => {
+    const card = payload.cards.find((c) => c.cardId === promo.cardId);
+    const price = card ? blendPrices(card.raw, selectedSources, state.blend) : null;
+    return { ...promo, priceCents: price };
+  });
+
   return (
     <div className="space-y-6">
       <SourceFilter
@@ -75,25 +86,92 @@ export function ProductDetail({
         gradedAvailable={false}
       />
 
-      {/* ---- headline numbers ---- */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <Stat label="EV (product)" value={formatCents(ev.evProductCents)} />
-        <Stat label="EV per pack" value={formatCents(ev.evPackCents)} />
-        <Stat
-          label={`Price${payload.sealedIsPlaceholder ? " (placeholder)" : ""}`}
-          value={ev.sealedPriceCents !== null ? formatCents(ev.sealedPriceCents) : "—"}
-          sub={describeOrigin(ev.sealedPriceOrigin)}
-        />
-        <div className="rounded-lg border border-border bg-surface p-3">
-          <div className="text-xs uppercase tracking-wide text-muted">ROI</div>
-          <div className="tabular mt-1 text-xl">
-            <RoiCell roi={ev.roi} />
+      {/* ---- the split: EV once, two denominators ---- */}
+      <div className="grid gap-3 lg:grid-cols-[1fr_1fr_1fr]">
+        <div className="rounded-lg border border-border bg-surface p-4">
+          <div className="text-xs uppercase tracking-wide text-muted">Expected value</div>
+          <div className="tabular mt-1 text-2xl font-semibold">
+            {formatCents(ev.evProductCents)}
           </div>
-          <div className="text-xs text-muted">
-            {ev.roi !== null && ev.roi < 0 && "you lose this fraction on average"}
+          <div className="mt-1 text-xs text-muted">
+            {formatCents(ev.evPackCents)} per pack × {payload.packsContained}
+            {ev.productExtrasValueCents > 0 &&
+              ` + ${formatCents(ev.productExtrasValueCents)} guaranteed extras`}
+          </div>
+        </div>
+
+        <div className="rounded-lg border border-border bg-surface p-4">
+          <div className="text-xs uppercase tracking-wide text-muted">Retail (MSRP)</div>
+          <div className="tabular mt-1 flex items-baseline gap-3">
+            <span className="text-2xl font-semibold">
+              {payload.msrpCents !== null ? formatCents(payload.msrpCents) : "—"}
+            </span>
+            <span className="text-xl">
+              <RoiCell roi={roiRetail} />
+            </span>
+          </div>
+          <div className="mt-1 text-xs text-muted">
+            if you can find it at retail price
+          </div>
+        </div>
+
+        <div className="rounded-lg border border-amber-500/30 bg-surface p-4">
+          <div className="text-xs uppercase tracking-wide text-muted">Current market</div>
+          <div className="tabular mt-1 flex items-baseline gap-3">
+            <span className="text-2xl font-semibold">
+              {payload.market.priceCents !== null
+                ? formatCents(payload.market.priceCents)
+                : "—"}
+            </span>
+            <span className="text-xl">
+              <RoiCell roi={roiMarket} />
+            </span>
+          </div>
+          <div className="mt-1 text-xs text-muted">
+            {payload.market.priceCents === null
+              ? "no tracked market price yet"
+              : payload.market.isManual
+                ? `hand-tracked ${payload.market.asOf ?? ""} — ${payload.market.source ?? ""}`
+                : "live market price"}
           </div>
         </div>
       </div>
+
+      {/* ---- guaranteed promos sidecar ---- */}
+      {promoRows.length > 0 && (
+        <section className="rounded-lg border border-border bg-surface p-4">
+          <h2 className="text-lg font-semibold">Guaranteed promo cards</h2>
+          <p className="text-xs text-muted">
+            Included in every copy of this product and counted in its EV as fixed
+            value, at today&apos;s market price for the promo itself.
+          </p>
+          <div className="mt-3 flex flex-wrap gap-4">
+            {promoRows.map((p) => (
+              <div key={p.cardId} className="flex items-center gap-3">
+                {p.imageUrl && (
+                  <img
+                    src={p.imageUrl}
+                    alt={p.name}
+                    loading="lazy"
+                    className="h-24 w-auto rounded border border-border object-contain"
+                  />
+                )}
+                <div>
+                  <div className="text-sm font-medium">
+                    {p.name} <span className="text-muted">#{p.number}</span>
+                  </div>
+                  <div className="tabular text-lg">
+                    {p.priceCents !== null ? formatCents(p.priceCents) : "unpriced"}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          {payload.contentsNote && (
+            <p className="mt-3 text-xs text-amber-400/90">! {payload.contentsNote}</p>
+          )}
+        </section>
+      )}
 
       {/* ---- EV breakdown ---- */}
       <section className="space-y-2">
@@ -161,7 +239,53 @@ export function ProductDetail({
       {/* ---- chase table ---- */}
       <section className="space-y-2">
         <h2 className="text-lg font-semibold">Chase cards</h2>
-        <ChaseTable ev={ev} payload={payload} />
+        {ev.chase.length === 0 ? (
+          <p className="text-sm text-muted">No priced chase cards.</p>
+        ) : (
+          <div className="overflow-x-auto rounded-lg border border-border">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-border bg-surface text-left text-xs uppercase tracking-wide text-muted">
+                  <th className="px-3 py-2">Card</th>
+                  <th className="px-3 py-2">Tier</th>
+                  <th className="px-3 py-2">Value</th>
+                  <th className="px-3 py-2">Odds</th>
+                  <th className="px-3 py-2">P(≥1) / {shortType(payload.productType)}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {ev.chase.map((c) => {
+                  const img = payload.cards.find((x) => x.cardId === c.cardId)?.imageUrl;
+                  return (
+                    <tr key={c.cardId} className="border-b border-border/40 last:border-0">
+                      <td className="px-3 py-1.5">
+                        <span className="flex items-center gap-2">
+                          {img && (
+                            <img
+                              src={img}
+                              alt=""
+                              loading="lazy"
+                              className="h-12 w-auto rounded-sm border border-border object-contain"
+                            />
+                          )}
+                          <span>
+                            {c.name} <span className="text-muted">#{c.number}</span>
+                          </span>
+                        </span>
+                      </td>
+                      <td className="px-3 py-1.5 text-muted">{rarityLabel(c.rarity)}</td>
+                      <td className="tabular px-3 py-1.5">{formatCents(c.valueCents)}</td>
+                      <td className="tabular px-3 py-1.5">{formatOneIn(c.oneInPacks)}</td>
+                      <td className="tabular px-3 py-1.5">
+                        {formatProbability(c.probPerProduct)}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
         <p className="text-xs text-muted">
           Per-card odds assume every card in a tier is equally likely — no public
           data quantifies short prints. See{" "}
@@ -173,7 +297,7 @@ export function ProductDetail({
       </section>
 
       {/* ---- packs-needed calculator ---- */}
-      <PacksCalculator ev={ev} />
+      <PacksCalculator ev={ev} roiMarket={roiMarket} />
 
       {/* ---- data provenance ---- */}
       <section className="space-y-2 rounded-lg border border-border bg-surface p-4">
@@ -233,57 +357,13 @@ export function ProductDetail({
   );
 }
 
-function Stat({ label, value, sub }: { label: string; value: string; sub?: string }) {
-  return (
-    <div className="rounded-lg border border-border bg-surface p-3">
-      <div className="text-xs uppercase tracking-wide text-muted">{label}</div>
-      <div className="tabular mt-1 text-xl font-semibold">{value}</div>
-      {sub && <div className="text-xs text-muted">{sub}</div>}
-    </div>
-  );
-}
-
-function ChaseTable({
+function PacksCalculator({
   ev,
-  payload,
+  roiMarket,
 }: {
-  ev: ReturnType<typeof computeForPayload>;
-  payload: ProductPayload;
+  ev: ReturnType<typeof computeProduct>["ev"];
+  roiMarket: number | null;
 }) {
-  if (ev.chase.length === 0) {
-    return <p className="text-sm text-muted">No priced chase cards.</p>;
-  }
-  return (
-    <div className="overflow-x-auto rounded-lg border border-border">
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="border-b border-border bg-surface text-left text-xs uppercase tracking-wide text-muted">
-            <th className="px-3 py-2">Card</th>
-            <th className="px-3 py-2">Tier</th>
-            <th className="px-3 py-2">Value</th>
-            <th className="px-3 py-2">Odds</th>
-            <th className="px-3 py-2">P(≥1) / {shortType(payload.productType)}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {ev.chase.map((c) => (
-            <tr key={c.cardId} className="border-b border-border/40 last:border-0">
-              <td className="px-3 py-1.5">
-                {c.name} <span className="text-muted">#{c.number}</span>
-              </td>
-              <td className="px-3 py-1.5 text-muted">{rarityLabel(c.rarity)}</td>
-              <td className="tabular px-3 py-1.5">{formatCents(c.valueCents)}</td>
-              <td className="tabular px-3 py-1.5">{formatOneIn(c.oneInPacks)}</td>
-              <td className="tabular px-3 py-1.5">{formatProbability(c.probPerProduct)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-}
-
-function PacksCalculator({ ev }: { ev: ReturnType<typeof computeForPayload> }) {
   const [cardId, setCardId] = useState(ev.chase[0]?.cardId ?? "");
   const card = ev.chase.find((c) => c.cardId === cardId) ?? ev.chase[0];
   if (!card) return null;
@@ -320,24 +400,12 @@ function PacksCalculator({ ev }: { ev: ReturnType<typeof computeForPayload> }) {
         </div>
       </div>
       <p className="text-xs text-muted">
-        No number of packs guarantees it — that is what {formatRoi(ev.roi ?? 0)} ROI
-        pays for.
+        No number of packs guarantees it{roiMarket !== null && roiMarket < 0
+          ? ` — that is what a ${(roiMarket * 100).toFixed(1)}% market ROI pays for`
+          : ""}.
       </p>
     </section>
   );
-}
-
-function describeOrigin(o: { kind: string; sourceIds?: string[]; sourceId?: string }): string {
-  switch (o.kind) {
-    case "selected":
-      return `from ${o.sourceIds?.join(" + ")}`;
-    case "fallback":
-      return `fallback: ${o.sourceId}`;
-    case "msrp":
-      return "MSRP — no market price available";
-    default:
-      return "no price available";
-  }
 }
 
 function shortType(t: string): string {

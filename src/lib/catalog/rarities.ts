@@ -15,6 +15,14 @@
  */
 
 export const POKEMON_RARITIES = [
+  /**
+   * Promo cards (svp Black Star Promos etc.). Deliberately its own tier and
+   * deliberately never listed in any pull-rate table's slots: promos enter EV
+   * only as a product's guaranteed extras, and bucketing them into "rare"
+   * would corrupt that tier's average when promo cards are appended to a
+   * product's card list.
+   */
+  "promo",
   "common",
   "uncommon",
   "rare",
@@ -75,6 +83,7 @@ export const RARITY_VOCAB: Record<KnownGameSlug, readonly string[]> = {
 
 /** Human-facing labels. Anything absent falls back to a title-cased slug. */
 export const RARITY_LABELS: Record<string, string> = {
+  promo: "Promo",
   common: "Common",
   uncommon: "Uncommon",
   rare: "Rare",

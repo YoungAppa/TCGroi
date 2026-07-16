@@ -24,6 +24,7 @@ const setSchema = z.object({
   releaseDate: z.string().nullish(),
   total: z.number().nullish(),
   printedTotal: z.number().nullish(),
+  images: z.object({ logo: z.string().nullish(), symbol: z.string().nullish() }).nullish(),
 });
 
 const setsResponse = z.object({ data: z.array(setSchema) });
@@ -75,6 +76,7 @@ export class PokemonTcgIoAdapter implements CatalogAdapter {
       releaseDate: s.releaseDate ? s.releaseDate.replace(/\//g, "-") : null,
       language: "EN" as const,
       expectedCardCount: s.total ?? null,
+      logoUrl: s.images?.logo ?? null,
       externalIds: { pokemontcg_io: s.id },
     }));
   }

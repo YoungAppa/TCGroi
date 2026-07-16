@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 
 import { rarityLabel } from "@/lib/catalog/rarities";
-import { computeForPayload } from "@/lib/data/compute";
+import { computeProduct } from "@/lib/data/compute";
 import type { ProductPayload } from "@/lib/data/types";
 import { blendPrices } from "@/lib/ev";
 import { formatCents } from "@/lib/ev/format";
@@ -29,8 +29,7 @@ export function SetDetail({
   const first = products[0];
 
   const rows = useMemo(
-    () =>
-      products.map((p) => ({ payload: p, ev: computeForPayload(p, state, availableIds) })),
+    () => products.map((p) => ({ payload: p, c: computeProduct(p, state, availableIds) })),
     [products, state, availableIds],
   );
 
@@ -76,14 +75,15 @@ export function SetDetail({
             <thead>
               <tr className="border-b border-border bg-surface text-left text-xs uppercase tracking-wide text-muted">
                 <th className="px-3 py-2">Product</th>
-                <th className="px-3 py-2">ROI</th>
                 <th className="px-3 py-2">EV</th>
-                <th className="px-3 py-2">Price</th>
-                <th className="px-3 py-2">EV / pack</th>
+                <th className="px-3 py-2">MSRP</th>
+                <th className="px-3 py-2">Retail ROI</th>
+                <th className="px-3 py-2">Market</th>
+                <th className="px-3 py-2">Market ROI</th>
               </tr>
             </thead>
             <tbody>
-              {rows.map(({ payload, ev }) => (
+              {rows.map(({ payload, c }) => (
                 <tr key={payload.productId} className="border-b border-border/40 last:border-0 hover:bg-surface">
                   <td className="px-3 py-2">
                     <Link
@@ -93,19 +93,26 @@ export function SetDetail({
                       {payload.productName}
                     </Link>
                   </td>
-                  <td className="tabular px-3 py-2">
-                    <RoiCell roi={ev.roi} />
+                  <td className="tabular px-3 py-2">{formatCents(c.ev.evProductCents)}</td>
+                  <td className="tabular px-3 py-2 text-muted">
+                    {payload.msrpCents !== null ? formatCents(payload.msrpCents) : "—"}
                   </td>
-                  <td className="tabular px-3 py-2">{formatCents(ev.evProductCents)}</td>
                   <td className="tabular px-3 py-2">
-                    {ev.sealedPriceCents !== null ? formatCents(ev.sealedPriceCents) : "—"}
-                    {payload.sealedIsPlaceholder && (
-                      <span className="ml-1 text-amber-400" title="No live sealed price — fallback shown">
+                    <RoiCell roi={c.roiRetail} />
+                  </td>
+                  <td className="tabular px-3 py-2">
+                    {payload.market.priceCents !== null
+                      ? formatCents(payload.market.priceCents)
+                      : "—"}
+                    {payload.market.isManual && (
+                      <span className="ml-1 text-amber-400" title="Hand-tracked market price">
                         *
                       </span>
                     )}
                   </td>
-                  <td className="tabular px-3 py-2">{formatCents(ev.evPackCents)}</td>
+                  <td className="tabular px-3 py-2">
+                    <RoiCell roi={c.roiMarket} />
+                  </td>
                 </tr>
               ))}
             </tbody>

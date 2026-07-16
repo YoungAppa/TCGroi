@@ -1,4 +1,4 @@
-import { and, eq, inArray } from "drizzle-orm";
+import { and, eq, inArray, or } from "drizzle-orm";
 
 import {
   cards,
@@ -16,12 +16,10 @@ import type { AlternateEstimate } from "@/lib/pullrates/schema";
 import type { ProductPayload, RankingsPayload } from "./types";
 
 /**
- * The DB-backed data layer: Neon -> RankingsPayload, the exact shape the
- * fixture served, so no page changed when this landed.
+ * The DB-backed data layer: Neon -> RankingsPayload.
  *
- * Four queries total (products, cards, card prices, sealed prices), assembled
- * in JS — not a query per product. Pages are ISR'd, so this runs at build and
- * revalidation, never per request, and never calls an external API.
+ * A handful of queries assembled in JS — never a query per product, never an
+ * external API call. Pages are ISR'd, so this runs at build/revalidate only.
  */
 export async function loadRankingsFromDb(): Promise<RankingsPayload> {
   const db = getDb();
@@ -35,11 +33,16 @@ export async function loadRankingsFromDb(): Promise<RankingsPayload> {
       productType: sealedProducts.type,
       packsContained: sealedProducts.packsContained,
       msrpCents: sealedProducts.msrpCents,
+      manualMarketCents: sealedProducts.manualMarketCents,
+      manualMarketAsOf: sealedProducts.manualMarketAsOf,
+      manualMarketSource: sealedProducts.manualMarketSource,
+      contentsNote: sealedProducts.contentsNote,
       guaranteedCardIds: sealedProducts.guaranteedCardIds,
       setId: sets.id,
       setCode: sets.code,
       setName: sets.name,
       releaseDate: sets.releaseDate,
+      logoUrl: sets.logoUrl,
       gameSlug: games.slug,
       gameName: games.displayName,
       prVersion: pullRateTables.version,
@@ -65,6 +68,9 @@ export async function loadRankingsFromDb(): Promise<RankingsPayload> {
   }
 
   const setIds = [...new Set(productRows.map((p) => p.setId))];
+  // Guaranteed promo cards can live outside the ranked sets (svp) — they must
+  // be fetched too, or the engine warns and drops their value.
+  const promoCardIds = [...new Set(productRows.flatMap((p) => p.guaranteedCardIds))];
 
   // --- cards + their prices --------------------------------------------------
   const cardRows = await db
@@ -74,9 +80,14 @@ export async function loadRankingsFromDb(): Promise<RankingsPayload> {
       name: cards.name,
       number: cards.number,
       rarity: cards.rarity,
+      imageUrl: cards.imageUrl,
     })
     .from(cards)
-    .where(inArray(cards.setId, setIds));
+    .where(
+      promoCardIds.length > 0
+        ? or(inArray(cards.setId, setIds), inArray(cards.id, promoCardIds))
+        : inArray(cards.setId, setIds),
+    );
 
   const cardIds = cardRows.map((c) => c.id);
   const cardPriceRows = cardIds.length
@@ -91,7 +102,6 @@ export async function loadRankingsFromDb(): Promise<RankingsPayload> {
         .where(inArray(latestPrices.cardId, cardIds))
     : [];
 
-  // kind -> per-card PriceBySource
   const rawByCard = new Map<string, PriceBySource>();
   const psa9ByCard = new Map<string, PriceBySource>();
   const psa10ByCard = new Map<string, PriceBySource>();
@@ -101,14 +111,20 @@ export async function loadRankingsFromDb(): Promise<RankingsPayload> {
     if (!p.cardId) continue;
     sourcesWithData.add(p.sourceId);
     const bucket =
-      p.kind === "raw" ? rawByCard : p.kind === "psa9" ? psa9ByCard : p.kind === "psa10" ? psa10ByCard : null;
+      p.kind === "raw"
+        ? rawByCard
+        : p.kind === "psa9"
+          ? psa9ByCard
+          : p.kind === "psa10"
+            ? psa10ByCard
+            : null;
     if (!bucket) continue;
     const existing = bucket.get(p.cardId) ?? {};
     existing[p.sourceId] = p.priceCents;
     bucket.set(p.cardId, existing);
   }
 
-  // --- sealed prices ----------------------------------------------------------
+  // --- sealed prices (live, from sources) -------------------------------------
   const productIds = productRows.map((p) => p.productId);
   const sealedPriceRows = await db
     .select({
@@ -129,57 +145,101 @@ export async function loadRankingsFromDb(): Promise<RankingsPayload> {
   }
 
   // --- assemble ----------------------------------------------------------------
-  const cardsBySet = new Map<string, CardPriceData[]>();
-  for (const c of cardRows) {
+  const toCardPriceData = (c: (typeof cardRows)[number]): CardPriceData => {
     const entry: CardPriceData = {
       cardId: c.id,
       name: c.name,
       number: c.number,
       rarity: c.rarity,
+      imageUrl: c.imageUrl,
       raw: rawByCard.get(c.id) ?? {},
     };
     const psa9 = psa9ByCard.get(c.id);
     const psa10 = psa10ByCard.get(c.id);
     if (psa9) entry.psa9 = psa9;
     if (psa10) entry.psa10 = psa10;
+    return entry;
+  };
 
+  const cardsBySet = new Map<string, CardPriceData[]>();
+  const cardById = new Map<string, (typeof cardRows)[number]>();
+  for (const c of cardRows) {
+    cardById.set(c.id, c);
     const bucket = cardsBySet.get(c.setId);
+    const entry = toCardPriceData(c);
     if (bucket) bucket.push(entry);
     else cardsBySet.set(c.setId, [entry]);
   }
 
-  const products: ProductPayload[] = productRows.map((p) => ({
-    gameSlug: p.gameSlug as ProductPayload["gameSlug"],
-    gameName: p.gameName,
-    setCode: p.setCode,
-    setName: p.setName,
-    releaseDate: p.releaseDate,
-    productId: p.productId,
-    productName: p.productName,
-    productSlug: p.productSlug,
-    productType: p.productType,
-    packsContained: p.packsContained,
-    msrpCents: p.msrpCents,
-    sealed: sealedByProduct.get(p.productId) ?? {},
-    // No live sealed price => ROI falls back (labelled) and the UI marks it.
-    sealedIsPlaceholder: !sealedByProduct.has(p.productId),
-    guaranteedCardIds: p.guaranteedCardIds,
-    boxGuarantees: p.prBoxGuarantees as ProductPayload["boxGuarantees"],
-    pullRates: {
-      version: p.prVersion,
-      // DB stores 0 for "undisclosed or placeholder"; the payload restores
-      // the distinction the UI cares about (null = undisclosed).
-      sampleSizePacks:
-        p.prSample === 0 && p.prConfidence !== "placeholder" ? null : p.prSample,
-      sourceUrl: p.prSourceUrl,
-      sourceNote: p.prSourceNote,
-      confidence: p.prConfidence,
-      slots: p.prSlots,
-      guaranteedSlots: p.prGuaranteedSlots as ProductPayload["pullRates"]["guaranteedSlots"],
-      alternateEstimates: p.prAlternates as unknown as AlternateEstimate[],
-    },
-    cards: cardsBySet.get(p.setId) ?? [],
-  }));
+  const products: ProductPayload[] = productRows.map((p) => {
+    // Live sealed source prices win; the hand-tracked figure is the labelled
+    // fallback. Median across sources once more than one covers sealed.
+    const sealed = sealedByProduct.get(p.productId) ?? {};
+    const liveValues = Object.values(sealed);
+    const liveMarket =
+      liveValues.length > 0
+        ? [...liveValues].sort((a, b) => a - b)[Math.floor((liveValues.length - 1) / 2)]!
+        : null;
+
+    const market: ProductPayload["market"] =
+      liveMarket !== null
+        ? { priceCents: liveMarket, isManual: false, asOf: null, source: "live sources" }
+        : {
+            priceCents: p.manualMarketCents,
+            isManual: p.manualMarketCents !== null,
+            asOf: p.manualMarketAsOf,
+            source: p.manualMarketSource,
+          };
+
+    // The set's cards, plus this product's guaranteed promos from other sets
+    // (their "promo" rarity is in no pull-rate slot, so they cannot pollute
+    // tier averages or the chase table — they price only the fixed extras).
+    const ownCards = cardsBySet.get(p.setId) ?? [];
+    const extraPromos = p.guaranteedCardIds
+      .map((id) => cardById.get(id))
+      .filter((c): c is NonNullable<typeof c> => c !== undefined && c.setId !== p.setId)
+      .map(toCardPriceData);
+
+    const promos = p.guaranteedCardIds.flatMap((id) => {
+      const c = cardById.get(id);
+      return c
+        ? [{ cardId: c.id, name: c.name, number: c.number, imageUrl: c.imageUrl }]
+        : [];
+    });
+
+    return {
+      gameSlug: p.gameSlug as ProductPayload["gameSlug"],
+      gameName: p.gameName,
+      setCode: p.setCode,
+      setName: p.setName,
+      releaseDate: p.releaseDate,
+      productId: p.productId,
+      productName: p.productName,
+      productSlug: p.productSlug,
+      productType: p.productType,
+      packsContained: p.packsContained,
+      imageUrl: p.logoUrl,
+      msrpCents: p.msrpCents,
+      market,
+      sealed,
+      guaranteedCardIds: p.guaranteedCardIds,
+      promos,
+      contentsNote: p.contentsNote,
+      boxGuarantees: p.prBoxGuarantees as ProductPayload["boxGuarantees"],
+      pullRates: {
+        version: p.prVersion,
+        sampleSizePacks:
+          p.prSample === 0 && p.prConfidence !== "placeholder" ? null : p.prSample,
+        sourceUrl: p.prSourceUrl,
+        sourceNote: p.prSourceNote,
+        confidence: p.prConfidence,
+        slots: p.prSlots,
+        guaranteedSlots: p.prGuaranteedSlots as ProductPayload["pullRates"]["guaranteedSlots"],
+        alternateEstimates: p.prAlternates as unknown as AlternateEstimate[],
+      },
+      cards: [...ownCards, ...extraPromos],
+    };
+  });
 
   const availableSources = [...sourcesWithData].map((id) => ({
     id,

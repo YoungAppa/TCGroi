@@ -8,6 +8,7 @@ import {
   latestPrices,
   priceSnapshots,
   pullRateTables,
+  sealedProducts,
   sets,
 } from "@/lib/db";
 import { enabledPriceAdapters } from "@/lib/prices/registry";
@@ -57,9 +58,47 @@ export async function refreshPrices() {
         and(eq(pullRateTables.setId, sets.id), eq(pullRateTables.isActive, true)),
       );
 
+    // Plus any set containing a product's guaranteed promo card (svp): those
+    // cards enter EV as fixed extras and need prices even though their set
+    // never ranks.
+    const promoSetRows = await db.execute<{
+      id: string;
+      code: string;
+      name: string;
+      release_date: string | null;
+      language: "EN" | "JP";
+      external_ids: Record<string, string>;
+      slug: string;
+    }>(sql`
+      select distinct s.id, s.code, s.name, s.release_date, s.language,
+                      s.external_ids, g.slug
+      from ${sealedProducts} sp
+      cross join lateral jsonb_array_elements_text(sp.guaranteed_card_ids) as gc(card_id)
+      join ${cards} c on c.id = gc.card_id::uuid
+      join ${sets} s on s.id = c.set_id
+      join ${games} g on g.id = s.game_id
+      where not exists (
+        select 1 from ${pullRateTables} prt
+        where prt.set_id = s.id and prt.is_active = true
+      )
+    `);
+
+    const allSetsToPrice = [
+      ...rankableSets,
+      ...[...promoSetRows].map((r) => ({
+        id: r.id,
+        code: r.code,
+        name: r.name,
+        releaseDate: r.release_date,
+        language: r.language,
+        externalIds: r.external_ids,
+        gameSlug: r.slug as "pokemon" | "one-piece" | "mtg",
+      })),
+    ];
+
     let snapshotsWritten = 0;
 
-    for (const setRow of rankableSets) {
+    for (const setRow of allSetsToPrice) {
       const catalogSet: CatalogSet = {
         code: setRow.code,
         name: setRow.name,
@@ -118,7 +157,7 @@ export async function refreshPrices() {
       }
     }
 
-    return { adaptersRun: adapters.length, setsPriced: rankableSets.length, snapshotsWritten };
+    return { adaptersRun: adapters.length, setsPriced: allSetsToPrice.length, snapshotsWritten };
   });
 }
 

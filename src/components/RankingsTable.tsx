@@ -1,19 +1,21 @@
 "use client";
 
+/* eslint-disable @next/next/no-img-element -- external card/set art domains
+   are not configured for next/image yet; plain img is deliberate here. */
+
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
-import { computeForPayload } from "@/lib/data/compute";
+import { computeProduct, type ProductComputation } from "@/lib/data/compute";
 import type { ProductPayload } from "@/lib/data/types";
 import { formatCents, formatProbability } from "@/lib/ev/format";
-import type { EvResult } from "@/lib/ev/types";
 
 import { ConfidenceBadge, RoiCell } from "./badges";
 import { SourceFilter } from "./SourceFilter";
 import { useFilterState } from "./useFilterState";
 
-type SortKey = "roi" | "ev" | "price" | "evPerPack" | "pSirBox";
-type Row = { payload: ProductPayload; ev: EvResult };
+type SortKey = "roiMarket" | "roiRetail" | "ev" | "market" | "evPerPack" | "pTopBox";
+type Row = { payload: ProductPayload; c: ProductComputation };
 
 /** The rarity whose per-box probability headlines the rankings, per game. */
 const HEADLINE_RARITY: Record<string, string[]> = {
@@ -25,20 +27,21 @@ function headlineProb(row: Row): number {
   const rarities = HEADLINE_RARITY[row.payload.gameSlug] ?? [];
   let best = 0;
   for (const r of rarities) {
-    const p = row.ev.probAtLeastOne[r];
+    const p = row.c.ev.probAtLeastOne[r];
     if (p !== undefined && p > best) best = p;
   }
   return best;
 }
 
 const SORTS: Record<SortKey, (r: Row) => number> = {
-  // null ROI sinks to the bottom rather than sorting as 0 (which would rank
-  // "unknown" above genuinely bad boxes).
-  roi: (r) => r.ev.roi ?? -Infinity,
-  ev: (r) => r.ev.evProductCents,
-  price: (r) => r.ev.sealedPriceCents ?? -Infinity,
-  evPerPack: (r) => r.ev.evPackCents,
-  pSirBox: headlineProb,
+  // null sinks to the bottom rather than sorting as 0 — "unknown" must not
+  // outrank genuinely bad products.
+  roiMarket: (r) => r.c.roiMarket ?? -Infinity,
+  roiRetail: (r) => r.c.roiRetail ?? -Infinity,
+  ev: (r) => r.c.ev.evProductCents,
+  market: (r) => r.payload.market.priceCents ?? -Infinity,
+  evPerPack: (r) => r.c.ev.evPackCents,
+  pTopBox: headlineProb,
 };
 
 export function RankingsTable({
@@ -49,23 +52,18 @@ export function RankingsTable({
   availableSources: { id: string; displayName: string }[];
 }) {
   const { state, setState, withFilter } = useFilterState();
-  const [sortKey, setSortKey] = useState<SortKey>("roi");
+  const [sortKey, setSortKey] = useState<SortKey>("roiMarket");
   const [sortDesc, setSortDesc] = useState(true);
   const [game, setGame] = useState<string>("all");
 
   const availableIds = useMemo(() => availableSources.map((s) => s.id), [availableSources]);
 
-  // The instant-recompute promise: every EV on the page derives from the
-  // payload + URL state, entirely client-side.
   const rows: Row[] = useMemo(
     () =>
       products
         .filter((p) => game === "all" || p.gameSlug === game)
         .filter((p) => p.pullRates.confidence !== "placeholder")
-        .map((payload) => ({
-          payload,
-          ev: computeForPayload(payload, state, availableIds),
-        })),
+        .map((payload) => ({ payload, c: computeProduct(payload, state, availableIds) })),
     [products, state, availableIds, game],
   );
 
@@ -83,6 +81,7 @@ export function RankingsTable({
   }
 
   const games = [...new Set(products.map((p) => p.gameSlug))];
+  const anyManualMarket = rows.some((r) => r.payload.market.isManual);
 
   return (
     <div className="space-y-4">
@@ -112,18 +111,30 @@ export function RankingsTable({
       <div className="overflow-x-auto rounded-lg border border-border">
         <table className="w-full text-sm">
           <thead>
+            {/* Group header: the retail/market split is the page's thesis. */}
+            <tr className="border-b border-border/60 bg-surface text-center text-[10px] uppercase tracking-wider text-muted">
+              <th colSpan={2} className="px-3 py-1" />
+              <th colSpan={2} className="border-l border-border/60 px-3 py-1">
+                Retail (MSRP)
+              </th>
+              <th colSpan={2} className="border-l border-border/60 px-3 py-1">
+                Current market
+              </th>
+              <th colSpan={2} className="border-l border-border/60 px-3 py-1" />
+            </tr>
             <tr className="border-b border-border bg-surface text-left text-xs uppercase tracking-wide text-muted">
               <th className="px-3 py-2 font-medium">Product</th>
-              <SortHeader label="ROI" k="roi" cur={sortKey} desc={sortDesc} onClick={clickSort} />
               <SortHeader label="EV" k="ev" cur={sortKey} desc={sortDesc} onClick={clickSort} />
-              <SortHeader label="Price" k="price" cur={sortKey} desc={sortDesc} onClick={clickSort} />
-              <SortHeader label="EV / pack" k="evPerPack" cur={sortKey} desc={sortDesc} onClick={clickSort} />
-              <SortHeader label="P(top hit)/box" k="pSirBox" cur={sortKey} desc={sortDesc} onClick={clickSort} />
+              <th className="tabular border-l border-border/60 px-3 py-2 font-medium">MSRP</th>
+              <SortHeader label="ROI" k="roiRetail" cur={sortKey} desc={sortDesc} onClick={clickSort} />
+              <SortHeader label="Price" k="market" cur={sortKey} desc={sortDesc} onClick={clickSort} borderLeft />
+              <SortHeader label="ROI" k="roiMarket" cur={sortKey} desc={sortDesc} onClick={clickSort} />
+              <SortHeader label="P(top hit)" k="pTopBox" cur={sortKey} desc={sortDesc} onClick={clickSort} borderLeft />
               <th className="px-3 py-2 font-medium">Data</th>
             </tr>
           </thead>
           <tbody>
-            {sorted.map(({ payload, ev }) => (
+            {sorted.map(({ payload, c }) => (
               <tr
                 key={payload.productId}
                 className="border-b border-border/50 transition-colors last:border-0 hover:bg-surface"
@@ -133,30 +144,47 @@ export function RankingsTable({
                     href={withFilter(
                       `/${payload.gameSlug}/${payload.setCode}/${payload.productSlug}`,
                     )}
-                    className="block"
+                    className="flex items-center gap-2"
                   >
-                    <span className="font-medium">{payload.setName}</span>{" "}
-                    <span className="text-muted">{payload.productName}</span>
+                    {payload.imageUrl && (
+                      <img
+                        src={payload.imageUrl}
+                        alt=""
+                        loading="lazy"
+                        className="h-6 w-14 shrink-0 object-contain"
+                      />
+                    )}
+                    <span>
+                      <span className="font-medium">{payload.setName}</span>{" "}
+                      <span className="text-muted">{payload.productName}</span>
+                    </span>
                   </Link>
                 </td>
-                <td className="tabular px-3 py-2">
-                  <RoiCell roi={ev.roi} />
+                <td className="tabular px-3 py-2">{formatCents(c.ev.evProductCents)}</td>
+                <td className="tabular border-l border-border/60 px-3 py-2 text-muted">
+                  {payload.msrpCents !== null ? formatCents(payload.msrpCents) : "—"}
                 </td>
-                <td className="tabular px-3 py-2">{formatCents(ev.evProductCents)}</td>
                 <td className="tabular px-3 py-2">
-                  {ev.sealedPriceCents !== null ? formatCents(ev.sealedPriceCents) : "—"}
-                  {payload.sealedIsPlaceholder && (
+                  <RoiCell roi={c.roiRetail} />
+                </td>
+                <td className="tabular border-l border-border/60 px-3 py-2">
+                  {payload.market.priceCents !== null
+                    ? formatCents(payload.market.priceCents)
+                    : "—"}
+                  {payload.market.isManual && (
                     <span
-                      title="Sealed price is a hand-entered placeholder until a sealed price source is connected"
+                      title={`Hand-tracked ${payload.market.asOf ?? ""} — ${payload.market.source ?? ""}. Replaced automatically once a sealed price source is connected.`}
                       className="ml-1 cursor-help text-amber-400"
                     >
                       *
                     </span>
                   )}
                 </td>
-                <td className="tabular px-3 py-2">{formatCents(ev.evPackCents)}</td>
                 <td className="tabular px-3 py-2">
-                  {formatProbability(headlineProb({ payload, ev }))}
+                  <RoiCell roi={c.roiMarket} />
+                </td>
+                <td className="tabular border-l border-border/60 px-3 py-2">
+                  {formatProbability(headlineProb({ payload, c }))}
                 </td>
                 <td className="px-3 py-2">
                   <ConfidenceBadge
@@ -171,10 +199,10 @@ export function RankingsTable({
       </div>
 
       <p className="text-xs text-muted">
-        * Sealed prices marked with an asterisk are hand-entered placeholders —
-        no configured price source covers sealed products yet. EV is computed
-        from live card prices; ROI against a placeholder price is directional
-        only.
+        Retail ROI answers &quot;is it worth opening at MSRP&quot;; market ROI answers
+        &quot;is it worth opening at what it actually costs today&quot;.
+        {anyManualMarket &&
+          " Market prices marked * are hand-tracked with a source and date — a live sealed price source replaces them automatically."}
       </p>
     </div>
   );
@@ -186,16 +214,18 @@ function SortHeader({
   cur,
   desc,
   onClick,
+  borderLeft = false,
 }: {
   label: string;
   k: SortKey;
   cur: SortKey;
   desc: boolean;
   onClick: (k: SortKey) => void;
+  borderLeft?: boolean;
 }) {
   const active = cur === k;
   return (
-    <th className="px-3 py-2 font-medium">
+    <th className={`px-3 py-2 font-medium ${borderLeft ? "border-l border-border/60" : ""}`}>
       <button
         onClick={() => onClick(k)}
         className={`inline-flex items-center gap-1 uppercase tracking-wide ${

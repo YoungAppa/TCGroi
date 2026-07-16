@@ -15,6 +15,13 @@
       "when": 1784236196043,
       "tag": "0001_wise_talos",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1784242012483,
+      "tag": "0002_lyrical_obadiah_stane",
+      "breakpoints": true
     }
   ]
 }

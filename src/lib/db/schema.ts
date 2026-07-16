@@ -73,6 +73,8 @@ export const sets = pgTable(
     name: text("name").notNull(),
     releaseDate: date("release_date"),
     language: setLanguage("language").notNull().default("EN"),
+    /** Set logo from the catalog provider — used as product imagery. */
+    logoUrl: text("logo_url"),
     /** Per-catalog-source IDs, e.g. { tcgdex: "sv08", pokemontcg_io: "sv8" }. */
     externalIds: jsonb("external_ids")
       .$type<Record<string, string>>()
@@ -147,6 +149,18 @@ export const sealedProducts = pgTable(
     /** Packs inside. EV(product) = EV(pack) * packsContained + extras. */
     packsContained: integer("packs_contained").notNull(),
     msrpCents: integer("msrp_cents"),
+    /**
+     * Hand-tracked current market (street/scalper) price, with provenance.
+     * A stopgap until a sealed-capable price source (PriceCharting) supplies
+     * live data — the payload prefers source prices over this whenever they
+     * exist. Kept out of latest_prices deliberately: manual entries are not
+     * snapshots from a source and must never masquerade as one.
+     */
+    manualMarketCents: integer("manual_market_cents"),
+    manualMarketAsOf: date("manual_market_as_of"),
+    manualMarketSource: text("manual_market_source"),
+    /** Unmodelled contents (metal cards, accessories) disclosed to the user. */
+    contentsNote: text("contents_note"),
     /**
      * Guaranteed non-pack contents, e.g. an ETB promo card. Referenced by the
      * EV engine as fixed add-on value.

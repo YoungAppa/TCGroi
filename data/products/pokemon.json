@@ -1,5 +1,5 @@
 {
-  "_comment": "Hand-maintained sealed product definitions. Catalog APIs index singles only, so products are data we own, like pull rates. packsContained and msrpCents are physical/published facts. Market prices for these come from a sealed-capable price source (PriceCharting) once configured; until then ROI falls back to MSRP and is labelled as such.",
+  "_comment": "Hand-maintained sealed product definitions. packsContained and msrpCents are physical/published facts. marketCents is a hand-tracked CURRENT market (street) price with provenance and an as-of date — a labelled stopgap that a sealed-capable price source (PriceCharting) automatically supersedes; the data layer prefers live source prices whenever they exist. promos lists guaranteed non-pack cards by pokemontcg.io id; they are ingested from the svp promo set, priced live, and added to EV as fixed extras.",
   "products": [
     {
       "setCode": "sv8",
@@ -7,7 +7,10 @@
       "slug": "booster-box",
       "type": "booster_box",
       "packsContained": 36,
-      "msrpCents": 16344
+      "msrpCents": 16344,
+      "marketCents": 30953,
+      "marketAsOf": "2026-07-16",
+      "marketSource": "pittpokeresearch.com (TCGplayer-market-derived tracker)"
     },
     {
       "setCode": "sv8",
@@ -15,7 +18,10 @@
       "slug": "booster-pack",
       "type": "booster_pack",
       "packsContained": 1,
-      "msrpCents": 454
+      "msrpCents": 454,
+      "marketCents": 827,
+      "marketAsOf": "2026-07-16",
+      "marketSource": "pittpokeresearch.com (TCGplayer-market-derived tracker)"
     },
     {
       "setCode": "sv8",
@@ -23,7 +29,10 @@
       "slug": "elite-trainer-box",
       "type": "etb",
       "packsContained": 9,
-      "msrpCents": 4999
+      "msrpCents": 4999,
+      "marketCents": 13335,
+      "marketAsOf": "2026-07-16",
+      "marketSource": "pittpokeresearch.com (TCGplayer-market-derived tracker)"
     },
     {
       "setCode": "sv8pt5",
@@ -31,7 +40,10 @@
       "slug": "booster-bundle",
       "type": "bundle",
       "packsContained": 6,
-      "msrpCents": 2694
+      "msrpCents": 2694,
+      "marketCents": 9816,
+      "marketAsOf": "2026-07-16",
+      "marketSource": "pittpokeresearch.com (TCGplayer-market-derived tracker)"
     },
     {
       "setCode": "sv8pt5",
@@ -39,7 +51,10 @@
       "slug": "elite-trainer-box",
       "type": "etb",
       "packsContained": 9,
-      "msrpCents": 4999
+      "msrpCents": 4999,
+      "marketCents": 17012,
+      "marketAsOf": "2026-07-16",
+      "marketSource": "pittpokeresearch.com (TCGplayer-market-derived tracker)"
     },
     {
       "setCode": "sv8pt5",
@@ -63,7 +78,37 @@
       "slug": "booster-pack",
       "type": "booster_pack",
       "packsContained": 1,
-      "msrpCents": 449
+      "msrpCents": 449,
+      "marketCents": 2888,
+      "marketAsOf": "2026-07-16",
+      "marketSource": "pittpokeresearch.com (TCGplayer-market-derived tracker)"
+    },
+    {
+      "setCode": "sv3pt5",
+      "name": "Elite Trainer Box (9 packs)",
+      "slug": "elite-trainer-box",
+      "type": "etb",
+      "packsContained": 9,
+      "msrpCents": null,
+      "marketCents": 17366,
+      "marketAsOf": "2026-07-16",
+      "marketSource": "pittpokeresearch.com (TCGplayer-market-derived tracker); launch MSRP not confidently sourced, so retail ROI is not shown"
+    },
+    {
+      "setCode": "sv3pt5",
+      "name": "Ultra-Premium Collection (16 packs)",
+      "slug": "ultra-premium-collection",
+      "type": "case",
+      "packsContained": 16,
+      "msrpCents": 11999,
+      "marketCents": 100000,
+      "marketAsOf": "2026-07-16",
+      "marketSource": "user-reported (~$1,000), corroborated by Wargamer coverage of $1,000+ retail listings; PriceCharting tracks this product and will replace this figure",
+      "promos": [
+        { "externalId": "svp-53", "note": "Mew ex etched foil promo" },
+        { "externalId": "svp-52", "note": "Mewtwo full-art foil promo" }
+      ],
+      "contentsNote": "Also contains a metal Mew ex card, playmat, deck box, coin and dice, which carry real resale value but are not modelled — EV understates this product's contents."
     },
     {
       "setCode": "sv1",

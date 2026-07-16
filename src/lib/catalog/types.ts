@@ -14,6 +14,8 @@ export interface CatalogSet {
   language: "EN" | "JP";
   /** Cards the provider claims exist, for a post-ingest sanity check. */
   expectedCardCount: number | null;
+  /** Set logo image, where the provider has one. Used as product imagery. */
+  logoUrl?: string | null;
   externalIds: Record<string, string>;
 }
 

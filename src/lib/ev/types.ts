@@ -28,6 +28,8 @@ export interface CardPriceData {
   number: string;
   /** Must match a rarity slug in the set's pull-rate table to contribute. */
   rarity: string;
+  /** Pass-through for UI thumbnails; the engine never reads it. */
+  imageUrl?: string | null;
   raw: PriceBySource;
   psa9?: PriceBySource;
   psa10?: PriceBySource;

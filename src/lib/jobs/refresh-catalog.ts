@@ -44,9 +44,12 @@ export async function refreshCatalog() {
 
       const wantedCodes =
         adapter.gameSlug === "pokemon"
-          ? new Set(
-              loaded.filter((l) => l.file.game === "pokemon").map((l) => l.file.setCode),
-            )
+          ? new Set([
+              ...loaded.filter((l) => l.file.game === "pokemon").map((l) => l.file.setCode),
+              // Black Star Promos: never has a pull-rate table, but products'
+              // guaranteed promo cards live here and need catalog + prices.
+              "svp",
+            ])
           : null; // null = all
 
       const allSets = await adapter.fetchSets();
@@ -156,6 +159,15 @@ const productFileSchema = z.object({
       type: z.enum(["booster_pack", "booster_box", "etb", "bundle", "display", "case"]),
       packsContained: z.number().int().positive(),
       msrpCents: z.number().int().positive().nullable(),
+      // Hand-tracked market price: all three fields travel together.
+      marketCents: z.number().int().positive().optional(),
+      marketAsOf: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+      marketSource: z.string().min(1).optional(),
+      /** Guaranteed non-pack cards, by catalog-provider external id. */
+      promos: z
+        .array(z.object({ externalId: z.string().min(1), note: z.string().optional() }))
+        .default([]),
+      contentsNote: z.string().optional(),
     }),
   ),
 });
@@ -188,6 +200,31 @@ async function loadSealedProducts(gameIdBySlug: Map<string, string>): Promise<nu
         );
       }
 
+      // A market price without provenance is just a rumour — refuse it.
+      if (p.marketCents !== undefined && (!p.marketAsOf || !p.marketSource)) {
+        throw new Error(
+          `data/products/${slug}.json: ${p.setCode}/${p.slug} has marketCents without marketAsOf + marketSource.`,
+        );
+      }
+
+      // Resolve promo external ids -> our card UUIDs. Loud on a miss: a
+      // guaranteed card silently absent understates the product's EV.
+      const guaranteedCardIds: string[] = [];
+      for (const promo of p.promos) {
+        const [cardRow] = await db
+          .select({ id: cards.id })
+          .from(cards)
+          .where(
+            sql`${cards.externalIds} @> ${JSON.stringify({ pokemontcg_io: promo.externalId })}::jsonb`,
+          );
+        if (!cardRow) {
+          throw new Error(
+            `data/products/${slug}.json: promo ${promo.externalId} (${promo.note ?? "?"}) not found in the catalog — is its set ingested?`,
+          );
+        }
+        guaranteedCardIds.push(cardRow.id);
+      }
+
       await db
         .insert(sealedProducts)
         .values({
@@ -197,6 +234,11 @@ async function loadSealedProducts(gameIdBySlug: Map<string, string>): Promise<nu
           slug: p.slug,
           packsContained: p.packsContained,
           msrpCents: p.msrpCents,
+          manualMarketCents: p.marketCents ?? null,
+          manualMarketAsOf: p.marketAsOf ?? null,
+          manualMarketSource: p.marketSource ?? null,
+          contentsNote: p.contentsNote ?? null,
+          guaranteedCardIds,
         })
         .onConflictDoUpdate({
           target: [sealedProducts.setId, sealedProducts.slug],
@@ -205,6 +247,11 @@ async function loadSealedProducts(gameIdBySlug: Map<string, string>): Promise<nu
             name: p.name,
             packsContained: p.packsContained,
             msrpCents: p.msrpCents,
+            manualMarketCents: p.marketCents ?? null,
+            manualMarketAsOf: p.marketAsOf ?? null,
+            manualMarketSource: p.marketSource ?? null,
+            contentsNote: p.contentsNote ?? null,
+            guaranteedCardIds,
             updatedAt: new Date(),
           },
         });
@@ -225,6 +272,7 @@ async function upsertSet(gameId: string, cs: CatalogSet): Promise<string> {
       name: cs.name,
       releaseDate: cs.releaseDate,
       language: cs.language,
+      logoUrl: cs.logoUrl ?? null,
       externalIds: cs.externalIds,
     })
     .onConflictDoUpdate({
@@ -232,6 +280,7 @@ async function upsertSet(gameId: string, cs: CatalogSet): Promise<string> {
       set: {
         name: cs.name,
         releaseDate: cs.releaseDate,
+        logoUrl: cs.logoUrl ?? null,
         externalIds: sql`${sets.externalIds} || ${JSON.stringify(cs.externalIds)}::jsonb`,
         updatedAt: new Date(),
       },

@@ -47,7 +47,8 @@ const POKEMON_RARITY_MAP: Record<string, string> = {
   "amazing rare": "ultra_rare",
   "radiant rare": "double_rare",
   "trainer gallery rare holo": "illustration_rare",
-  promo: "rare",
+  // Own tier, never in a pull-rate slot — see the note in POKEMON_RARITIES.
+  promo: "promo",
 };
 
 export function normalizePokemonRarity(raw: string | null | undefined): string | null {
