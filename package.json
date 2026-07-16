@@ -16,7 +16,8 @@
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "db:seed": "tsx --env-file=.env.local scripts/seed.ts",
-    "verify": "npm run typecheck && npm run lint && npm run test"
+    "verify": "npm run typecheck && npm run lint && npm run test && npm run check:pullrates",
+    "check:pullrates": "tsx scripts/check-pullrates.ts"
   },
   "dependencies": {
     "drizzle-orm": "^0.45.2",

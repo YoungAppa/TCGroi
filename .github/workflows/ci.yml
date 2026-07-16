@@ -31,6 +31,12 @@ jobs:
       - name: Unit tests
         run: npm run test
 
+      - name: Validate pull-rate data
+        # These files are hand-written. A typo'd rarity or a mis-scaled
+        # probability produces a believable wrong EV, not an error, so it must
+        # not be able to merge.
+        run: npm run check:pullrates
+
       - name: Build
         # Proves the non-negotiable: the app builds with no price source
         # configured. Only DATABASE_URL + ADMIN_SECRET are set here, and the

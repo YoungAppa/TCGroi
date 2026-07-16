@@ -1,0 +1,20 @@
+{
+  "game": "pokemon",
+  "setCode": "sv8",
+  "version": 1,
+  "sampleSizePacks": null,
+  "sourceUrl": "https://www.thepricedex.com/set/sv8/surging-sparks/pull-rates",
+  "sourceNote": "ThePriceDex publishes per-tier odds for Surging Sparks (Hyper Rare 1 in 188.7, Special Illustration Rare 1 in 87.0, Ultra Rare 1 in 14.8, Illustration Rare 1 in 13.0, ACE SPEC 1 in 19.9, Double Rare 1 in 5.9), described as estimates from community data. It does NOT disclose how many packs those estimates are based on, which caps this table at low confidence regardless of how plausible the numbers look. Corroboration is mixed: a widely-cited documented 500-pack Surging Sparks opening reported 7 SIRs (~1 in 71), against the 1 in 87 used here — a ~20% disagreement, which is within the clustering error expected at n=500 but is a real reason not to trust the third significant figure. Treat as directional. Set-to-set variation is genuinely large (SV Base runs SIR ~1 in 33), so these numbers must not be generalised to other sets.",
+  "confidence": "low",
+  "slots": [
+    { "rarity": "double_rare", "perPackProbability": 0.1695 },
+    { "rarity": "illustration_rare", "perPackProbability": 0.0769 },
+    { "rarity": "ultra_rare", "perPackProbability": 0.0676 },
+    { "rarity": "ace_spec_rare", "perPackProbability": 0.0503 },
+    { "rarity": "special_illustration_rare", "perPackProbability": 0.0115 },
+    { "rarity": "hyper_rare", "perPackProbability": 0.0053 }
+  ],
+  "guaranteedSlots": [],
+  "boxGuarantees": [],
+  "showWhenPlaceholder": false
+}

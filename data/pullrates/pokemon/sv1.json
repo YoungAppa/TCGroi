@@ -1,0 +1,19 @@
+{
+  "game": "pokemon",
+  "setCode": "sv1",
+  "version": 1,
+  "sampleSizePacks": 1728,
+  "sourceUrl": "https://cardshoplive.com/pages/hit-rates-for-pokemon-tcg-scarlet-and-violet",
+  "sourceNote": "Card Shop Live published per-rarity hit COUNTS from 1,728 Scarlet & Violet Base packs they opened themselves: Double Rare 234, Ultra Rare 112, Illustration Rare 130, Special Illustration Rare 52, Hyper Rare 32. Probabilities below are those counts divided by 1,728, not rounded figures quoted from elsewhere. Caveat: this is one retailer's own openings, not a multi-source aggregate, so it may carry allocation bias; the sample is large and the counts are published, which is why it is rated high rather than medium. The Pokemon Company publishes no official odds and Card Shop Live explicitly says to use the data with caution. No ACE SPEC slot existed in SV Base (ACE SPEC returned in Paradox Rift), so no tier is listed for it.",
+  "confidence": "high",
+  "slots": [
+    { "rarity": "double_rare", "perPackProbability": 0.1354 },
+    { "rarity": "illustration_rare", "perPackProbability": 0.0752 },
+    { "rarity": "ultra_rare", "perPackProbability": 0.0648 },
+    { "rarity": "special_illustration_rare", "perPackProbability": 0.0301 },
+    { "rarity": "hyper_rare", "perPackProbability": 0.0185 }
+  ],
+  "guaranteedSlots": [],
+  "boxGuarantees": [],
+  "showWhenPlaceholder": false
+}
