@@ -1,5 +1,55 @@
 # Changelog
 
+## Phase 4 (in progress) — Pull-rate layer
+
+Zod schema, loader, and validation for `/data/pullrates/{game}/{setCode}.json`,
+wired into CI. The schema's job is to make dishonest data unrepresentable:
+rarity slugs are checked against the game's vocabulary, duplicate tiers and
+over-1 probability sums are rejected, `boxGuarantees.mode` has no default, and
+`confidence` is bounded by the evidence behind it.
+
+`sampleSizePacks` is nullable, which the research forced. Three states that
+must not be conflated: **a number** (the source published its sample), **null**
+(a real community estimate whose sample was never disclosed), **0**
+(placeholder — nobody measured). An undisclosed sample caps a table at `low`.
+
+Two real, cited sets so far — no invented numbers:
+
+| Set | Confidence | Sample | Source |
+| --- | --- | --- | --- |
+| `sv1` Scarlet & Violet Base | `high` | 1,728 packs | Card Shop Live published per-rarity hit **counts** |
+| `sv8` Surging Sparks | `low` | undisclosed | ThePriceDex per-tier odds; a 500-pack opening disagrees ~20% |
+
+Set-to-set variation is large and real (SIR ≈ 1 in 33 for SV Base vs ≈ 1 in 87
+for Surging Sparks), so no set inherits another's rates.
+
+## Phase 2 — Catalog adapters
+
+Providers chosen by probing the live APIs, not by reading docs.
+
+- **Pokémon: pokemontcg.io.** TCGdex was rejected — it exposes `rarity` only on
+  its individual-card endpoint, so a 252-card set would cost 252 requests.
+  pokemontcg.io returns full cards with rarity at 250/page, keyless.
+- **One Piece: optcgapi, catalog only.** Every record carries `date_scraped`;
+  its prices are scraped rather than licensed, and consuming them would launder
+  a TCGplayer ToS violation through a third party. Card facts taken, prices
+  ignored. One Piece EV waits on PriceCharting.
+
+Two bugs found by verifying against live data:
+
+1. **Card identity was wrong.** The unique index was `(set, number)`, but OP-09
+   prints `OP09-118` three times — base SEC $36, Alternate Art $100, Manga
+   $5,500 — and 25 numbers in that set have multiple printings. Identity is now
+   `(set, number, treatment)`.
+2. **Treatment mapping was lossy and ate the expensive cards.** Wanted Poster
+   and Alternate Art both mapped to `alt_art`, so the dedupe silently dropped
+   one printing of every card having both — Shanks $258 vs $27, Teach $256 vs
+   $33, Buggy $181 vs $16. Wanted Poster is now its own treatment and tier;
+   live ingest went 156 → 159 of 159 records.
+
+Both adapters now fail loudly on an unmapped rarity or identity collision. A
+dropped card crashes nothing — it just quietly lowers EV on a public page.
+
 ## Phase 1 — EV/ROI math engine
 
 Pure, zero-I/O math library in `src/lib/ev`, built test-first. 97 tests.
