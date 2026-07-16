@@ -1,0 +1,146 @@
+/**
+ * Maps raw catalog-provider fields onto our rarity vocabulary and treatments.
+ *
+ * This module is pure and heavily tested because a mapping miss is silent: an
+ * unrecognised rarity does not throw, it just produces a card that no
+ * pull-rate tier claims, and its value vanishes from EV with no error.
+ */
+import { isKnownRarity } from "./rarities";
+
+export interface NormalizedCard {
+  rarity: string;
+  treatment: string;
+  /** Card name with any treatment suffix stripped. */
+  name: string;
+}
+
+// ---------------------------------------------------------------------------
+// Pokémon
+// ---------------------------------------------------------------------------
+
+/**
+ * pokemontcg.io rarity strings -> our slugs. Verified against the live API:
+ * Surging Sparks (sv8) returns exactly these nine values.
+ */
+const POKEMON_RARITY_MAP: Record<string, string> = {
+  common: "common",
+  uncommon: "uncommon",
+  rare: "rare",
+  "double rare": "double_rare",
+  "ace spec rare": "ace_spec_rare",
+  "illustration rare": "illustration_rare",
+  "ultra rare": "ultra_rare",
+  "special illustration rare": "special_illustration_rare",
+  "hyper rare": "hyper_rare",
+  // Older-era rarities, for sets we may ingest later. Mapped to the nearest
+  // modern tier so they land somewhere sensible rather than vanishing.
+  "rare holo": "rare",
+  "rare holo ex": "ultra_rare",
+  "rare holo gx": "ultra_rare",
+  "rare holo v": "double_rare",
+  "rare holo vmax": "ultra_rare",
+  "rare holo vstar": "ultra_rare",
+  "rare ultra": "ultra_rare",
+  "rare secret": "hyper_rare",
+  "rare rainbow": "hyper_rare",
+  "rare shiny": "ultra_rare",
+  "amazing rare": "ultra_rare",
+  "radiant rare": "double_rare",
+  "trainer gallery rare holo": "illustration_rare",
+  promo: "rare",
+};
+
+export function normalizePokemonRarity(raw: string | null | undefined): string | null {
+  if (!raw) return null;
+  return POKEMON_RARITY_MAP[raw.trim().toLowerCase()] ?? null;
+}
+
+// ---------------------------------------------------------------------------
+// One Piece
+// ---------------------------------------------------------------------------
+
+/**
+ * optcgapi reports base rarity codes only. The treatment that actually drives
+ * price and odds — Manga, Alternate Art, SP — is encoded in the *card name*
+ * suffix instead, e.g. "Gol.D.Roger (Manga)" is reported as rarity "SEC".
+ *
+ * Concretely, in OP-09: base SEC Gol.D.Roger is $36, the Alternate Art is
+ * $100, and the Manga is $5,500 — a 150x spread the rarity field cannot see.
+ * Collapsing those into one "secret_rare" tier would average a $5,500 chase
+ * card together with a $36 bulk SEC and make One Piece EV meaningless.
+ *
+ * So the treatment suffix is promoted to a first-class rarity tier, which is
+ * what the One Piece vocab (alt_art / manga_rare / special) already expects.
+ */
+const ONE_PIECE_BASE_RARITY_MAP: Record<string, string> = {
+  c: "common",
+  uc: "uncommon",
+  r: "rare",
+  sr: "super_rare",
+  l: "leader",
+  sec: "secret_rare",
+  p: "common", // promo
+  sp: "special",
+  "sp card": "special",
+};
+
+/**
+ * Treatment suffixes seen in optcgapi card_name values, longest-first so that
+ * a more specific match wins.
+ */
+const ONE_PIECE_TREATMENTS: { suffix: RegExp; treatment: string; rarity: string | null }[] = [
+  { suffix: /\(manga\)\s*$/i, treatment: "manga", rarity: "manga_rare" },
+  /**
+   * Wanted Poster must stay distinct from Alternate Art in BOTH fields.
+   *
+   * Mapping them to the same treatment collapses their identity — a card with
+   * both printings (OP09-004 Shanks, OP09-093 Teach, OP09-051 Buggy in OP-09
+   * alone) loses one of them to the dedupe. Mapping them to the same rarity
+   * averages a ~$258 chase card against a ~$27 one.
+   */
+  { suffix: /\(wanted poster\)\s*$/i, treatment: "wanted_poster", rarity: "wanted_poster" },
+  { suffix: /\(alternate art\)\s*$/i, treatment: "alt_art", rarity: "alt_art" },
+  { suffix: /\(alt art\)\s*$/i, treatment: "alt_art", rarity: "alt_art" },
+  { suffix: /\(parallel\)\s*$/i, treatment: "parallel", rarity: "alt_art" },
+  // SP is a treatment AND its own rarity tier.
+  { suffix: /\(sp\)\s*$/i, treatment: "sp", rarity: "special" },
+];
+
+/**
+ * Derives rarity + treatment + clean name for a One Piece card.
+ *
+ * `rawRarity` is optcgapi's rarity code (C/UC/R/SR/L/SEC); `rawName` may carry
+ * a treatment suffix that overrides it.
+ */
+export function normalizeOnePieceCard(
+  rawName: string,
+  rawRarity: string | null | undefined,
+): NormalizedCard | null {
+  const baseRarity = rawRarity
+    ? (ONE_PIECE_BASE_RARITY_MAP[rawRarity.trim().toLowerCase()] ?? null)
+    : null;
+
+  for (const t of ONE_PIECE_TREATMENTS) {
+    if (t.suffix.test(rawName)) {
+      return {
+        // The treatment's tier wins: a Manga SEC belongs with manga rares, not
+        // with base SECs.
+        rarity: t.rarity ?? baseRarity ?? "rare",
+        treatment: t.treatment,
+        name: rawName.replace(t.suffix, "").trim(),
+      };
+    }
+  }
+
+  if (!baseRarity) return null;
+  return { rarity: baseRarity, treatment: "base", name: rawName.trim() };
+}
+
+/** Guard used by the ingest job before writing a card. */
+export function assertKnownRarity(gameSlug: string, rarity: string): void {
+  if (!isKnownRarity(gameSlug, rarity)) {
+    throw new Error(
+      `Rarity "${rarity}" is not in the ${gameSlug} vocabulary. Add it to RARITY_VOCAB or fix the mapping — an unknown rarity silently drops out of EV.`,
+    );
+  }
+}

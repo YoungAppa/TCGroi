@@ -10,6 +10,7 @@ CREATE TABLE "cards" (
 	"name" text NOT NULL,
 	"number" text NOT NULL,
 	"rarity" text NOT NULL,
+	"treatment" text DEFAULT 'base' NOT NULL,
 	"variants" jsonb DEFAULT '{}'::jsonb NOT NULL,
 	"image_url" text,
 	"external_ids" jsonb DEFAULT '{}'::jsonb NOT NULL,
@@ -119,7 +120,7 @@ ALTER TABLE "price_snapshots" ADD CONSTRAINT "price_snapshots_source_id_price_so
 ALTER TABLE "pull_rate_tables" ADD CONSTRAINT "pull_rate_tables_set_id_sets_id_fk" FOREIGN KEY ("set_id") REFERENCES "public"."sets"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "sealed_products" ADD CONSTRAINT "sealed_products_set_id_sets_id_fk" FOREIGN KEY ("set_id") REFERENCES "public"."sets"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "sets" ADD CONSTRAINT "sets_game_id_games_id_fk" FOREIGN KEY ("game_id") REFERENCES "public"."games"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-CREATE UNIQUE INDEX "cards_set_number_uq" ON "cards" USING btree ("set_id","number");--> statement-breakpoint
+CREATE UNIQUE INDEX "cards_set_number_treatment_uq" ON "cards" USING btree ("set_id","number","treatment");--> statement-breakpoint
 CREATE INDEX "cards_set_rarity_idx" ON "cards" USING btree ("set_id","rarity");--> statement-breakpoint
 CREATE INDEX "job_runs_job_started_idx" ON "job_runs" USING btree ("job","started_at");--> statement-breakpoint
 CREATE UNIQUE INDEX "latest_prices_card_uq" ON "latest_prices" USING btree ("card_id","source_id","kind") WHERE "latest_prices"."card_id" IS NOT NULL;--> statement-breakpoint

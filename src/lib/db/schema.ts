@@ -101,7 +101,19 @@ export const cards = pgTable(
     number: text("number").notNull(),
     /** Must be a member of the parent game's rarityVocab. */
     rarity: text("rarity").notNull(),
-    /** Variant flags, e.g. { reverseHolo: true, firstEdition: false }. */
+    /**
+     * Printing treatment. Part of a card's identity, NOT decoration.
+     *
+     * A collector number does not identify a card on its own. One Piece OP-09
+     * prints OP09-118 three times — base Secret Rare ($36), Alternate Art
+     * ($100), and Manga ($5,500) — and those are different cards with
+     * different odds and a 150x price spread. Keying on number alone would
+     * reject two of the three and delete the chase cards from EV.
+     *
+     * "base" for an ordinary printing.
+     */
+    treatment: text("treatment").notNull().default("base"),
+    /** Variant flags, e.g. { firstEdition: false }. */
     variants: jsonb("variants")
       .$type<Record<string, boolean>>()
       .notNull()
@@ -115,7 +127,8 @@ export const cards = pgTable(
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [
-    uniqueIndex("cards_set_number_uq").on(t.setId, t.number),
+    // Identity is (set, number, treatment) — see the treatment column.
+    uniqueIndex("cards_set_number_treatment_uq").on(t.setId, t.number, t.treatment),
     index("cards_set_rarity_idx").on(t.setId, t.rarity),
   ],
 );

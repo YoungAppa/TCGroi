@@ -33,6 +33,13 @@ export const ONE_PIECE_RARITIES = [
   "super_rare",
   "leader",
   "alt_art", // parallel / alternate-art treatment
+  /**
+   * Wanted Poster is its own tier, not a flavour of alt_art. Verified against
+   * live OP-09 data: where a card has both printings, the Wanted Poster runs
+   * ~10x the Alternate Art (Shanks $258 vs $27; Teach $256 vs $33). Averaging
+   * them into one tier would badly misstate both.
+   */
+  "wanted_poster",
   "secret_rare",
   "manga_rare",
   "special", // SP cards
@@ -71,6 +78,7 @@ export const RARITY_LABELS: Record<string, string> = {
   super_rare: "Super Rare",
   leader: "Leader",
   alt_art: "Alternate Art",
+  wanted_poster: "Wanted Poster",
   secret_rare: "Secret Rare",
   manga_rare: "Manga Rare",
   special: "Special (SP)",

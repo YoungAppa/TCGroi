@@ -1,5 +1,5 @@
 {
-  "id": "40b6eedc-71c4-4364-ac00-334390343a53",
+  "id": "ab0a58f2-0e96-4ddf-a111-b5b44f816c3b",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -39,6 +39,13 @@
           "primaryKey": false,
           "notNull": true
         },
+        "treatment": {
+          "name": "treatment",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'base'"
+        },
         "variants": {
           "name": "variants",
           "type": "jsonb",
@@ -75,8 +82,8 @@
         }
       },
       "indexes": {
-        "cards_set_number_uq": {
-          "name": "cards_set_number_uq",
+        "cards_set_number_treatment_uq": {
+          "name": "cards_set_number_treatment_uq",
           "columns": [
             {
               "expression": "set_id",
@@ -86,6 +93,12 @@
             },
             {
               "expression": "number",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "treatment",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
