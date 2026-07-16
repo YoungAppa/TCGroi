@@ -23,6 +23,12 @@ const serverEnvSchema = z.object({
     .enum(["pokemontcg_io", "justtcg", "tcgapi", "scrydex"])
     .default("pokemontcg_io"),
   TCGPLAYER_MIRROR_API_KEY: z.string().min(1).optional(),
+  /**
+   * Scrydex authenticates with a key AND a team id (X-Api-Key + X-Team-ID).
+   * The key rides in TCGPLAYER_MIRROR_API_KEY; the team id lives here. Both
+   * must be present for the scrydex provider to report enabled.
+   */
+  SCRYDEX_TEAM_ID: z.string().min(1).optional(),
   /** Optional. Raises pokemontcg.io's rate limit; never required. */
   POKEMONTCG_IO_KEY: z.string().min(1).optional(),
 

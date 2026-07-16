@@ -2,6 +2,7 @@ import type { CatalogSet } from "@/lib/catalog/types";
 import { getEnv } from "@/lib/env";
 
 import { pokemonTcgIoPriceProvider } from "../providers/pokemontcgio-prices";
+import { scrydexPriceProvider } from "../providers/scrydex-prices";
 import {
   PriceSourceError,
   type PriceSourceAdapter,
@@ -30,10 +31,13 @@ interface MirrorProvider {
 
 const PROVIDERS: Record<string, MirrorProvider | undefined> = {
   pokemontcg_io: pokemonTcgIoPriceProvider,
-  // justtcg / tcgapi / scrydex slot in here. Each needs
-  // TCGPLAYER_MIRROR_API_KEY and would report enabled() accordingly. They are
-  // not implemented yet because pokemontcg_io covers Pokémon for free and
-  // One Piece pricing is PriceCharting's job.
+  // User-selected paid upgrade: covers One Piece too (licensed), so choosing
+  // it lights up OP raw prices. Needs TCGPLAYER_MIRROR_API_KEY +
+  // SCRYDEX_TEAM_ID, and a live-shape verification run (probe-scrydex) before
+  // its numbers are trusted.
+  scrydex: scrydexPriceProvider,
+  // justtcg / tcgapi could slot in here; not implemented — pokemontcg_io
+  // covers Pokémon free and scrydex is the chosen paid path.
 };
 
 export class TcgplayerMarketAdapter implements PriceSourceAdapter {
