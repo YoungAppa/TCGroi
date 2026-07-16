@@ -1,5 +1,46 @@
 # Changelog
 
+## Phase 3 — Price adapters
+
+`PriceSourceAdapter` with the swappable-provider split: `tcgplayer_market`
+fronts a mirror chosen by `TCGPLAYER_MIRROR_PROVIDER`, so everything downstream
+sees one stable source id and swapping providers never touches the UI, the
+engine, or stored snapshots. We never call TCGplayer directly.
+
+| Source | State | Notes |
+| --- | --- | --- |
+| `tcgplayer_market` | **live** | via pokemontcg.io — free, keyless, same-day data, Pokémon only |
+| `pricecharting_ebay` | token-gated | eBay-sold + graded + sealed. Field mapping **unverified** — no token yet |
+| `ebay_direct` | stub | `enabled() === false` |
+| `cardmarket` | stub | pokemontcg.io embeds a block, but it was ~8 months stale — not usable |
+
+**Verified with no keys configured:** `tcgplayer_market=true`,
+`pricecharting=false`, stubs `false`, graded mode hidden. The non-negotiable is
+now observable, not promised.
+
+### First real number, end to end, with no database
+
+`npx tsx scripts/ev-demo.ts sv8` runs live catalog + live prices + the
+hand-written pull-rate file through the EV engine:
+
+```
+Surging Sparks booster box — 252/252 cards priced
+EV/pack $2.27 · EV/box $81.77 · box $129.99 · ROI −37.1%
+Top chase: Pikachu ex #238 — $357.04, 1 in 957 packs, 3.7%/box
+P(SIR per box) 34.1%
+```
+
+It corroborates independently: Pikachu ex #238 *is* the set's known chase card,
+and our 34.1% SIR-per-box differs from the community's "roughly 40%" precisely
+because they assume 1-in-71 where we use 1-in-87 — the same conflict the
+disagreement layer prints.
+
+Caveats are printed, not buried: the $129.99 box price is a demo input (no
+configured source prices sealed product yet), and chase odds inherit the
+uniform-within-tier assumption — which puts Pikachu ex at 1-in-957 against a
+community claim nearer 1-in-216. That gap is the assumption's limit, made
+visible.
+
 ## Phase 4 (in progress) — Pull-rate layer
 
 Zod schema, loader, and validation for `/data/pullrates/{game}/{setCode}.json`,
