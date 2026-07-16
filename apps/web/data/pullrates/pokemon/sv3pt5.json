@@ -1,32 +1,19 @@
 {
   "game": "pokemon",
   "setCode": "sv3pt5",
-  "version": 1,
-  "sampleSizePacks": null,
-  "sourceUrl": "https://www.thepricedex.com/set/sv3pt5/151/pull-rates",
-  "sourceNote": "ThePriceDex per-tier odds for Scarlet & Violet 151 (Hyper Rare 1 in 51.5, Special Illustration Rare 1 in 32.2, Ultra Rare 1 in 15.5, Illustration Rare 1 in 11.8, Double Rare 1 in 7.5), described as community-data estimates with no disclosed sample size — which caps this table at low confidence under our rules regardless of corroboration. Corroboration is unusually good, though: PokePatch independently republishes near-identical figures (SIR 3.1% vs our 3.11%, IR 8.5% vs 8.47%) claiming '1,000+ packs' without a precise count; both almost certainly trace to TCGplayer's published study for the set, whose article is client-rendered and unreadable to our tooling. Recorded as an alternate estimate so the product page shows the near-agreement. Structure verified against the live catalog: 207 cards, tiers C/UC/R/DR/UR/IR/SIR/HR, no ACE SPEC (predates its return in Temporal Forces). 151's energy-foil slot (~1 in 4) is not modelled — foil basic energies carry negligible market value.",
-  "confidence": "low",
+  "version": 2,
+  "sampleSizePacks": 1500,
+  "sourceUrl": "https://www.tcgplayer.com/content/article/Pok%C3%A9mon-TCG-Scarlet-Violet%E2%80%94151-Pull-Rates/b237df74-fbb0-40d0-9e13-d69ee6e804d9/",
+  "sourceNote": "TCGplayer Authentication Center study, read directly from the primary article (Peter Day, updated 2025-02-27): more than 1,500 Scarlet & Violet 151 booster packs opened, per-tier rates with 95% confidence intervals — Double Rare 13.28% ±1.57, Illustration Rare 8.50% ±1.29, Ultra Rare 6.44% ±1.13, Special Illustration Rare 3.11% ±0.80, Hyper Rare 1.94% ±0.64. One documented short-print anomaly: Illustration Rare Caterpie measured 0.17%, BELOW the 95% CI floor (0.20%) for its tier — the only card in the study outside its interval, so per-card odds for Caterpie specifically may be optimistic here. God Packs exist in 151 (full IR/SIR starter evolution lines) but the study states they are too rare to meaningfully influence card availability; they are unmodelled. The foil-energy slot (24.83% ±2.00) is unmodelled — foil basic energies carry negligible market value. Version 1 used republished figures capped at low; this is the same study read at the source.",
+  "confidence": "high",
   "slots": [
-    { "rarity": "double_rare", "perPackProbability": 0.1333 },
-    { "rarity": "illustration_rare", "perPackProbability": 0.0847 },
-    { "rarity": "ultra_rare", "perPackProbability": 0.0645 },
+    { "rarity": "double_rare", "perPackProbability": 0.1328 },
+    { "rarity": "illustration_rare", "perPackProbability": 0.085 },
+    { "rarity": "ultra_rare", "perPackProbability": 0.0644 },
     { "rarity": "special_illustration_rare", "perPackProbability": 0.0311 },
     { "rarity": "hyper_rare", "perPackProbability": 0.0194 }
   ],
-  "alternateEstimates": [
-    {
-      "sourceUrl": "https://pokepatch.com/2025/05/15/scarlet-violet-151-pull-rates-in-pokemon-tcg-set/",
-      "note": "PokePatch, aggregating community openings and TCGplayer marketplace data from a stated but unquantified '1,000+ packs': Double Rare 13.2%, Illustration Rare 8.5%, Ultra Rare 6.4%, SIR 3.1%, Hyper Rare 1.9%. Agrees with the primary within rounding on every tier — shown so the agreement is visible, not just asserted.",
-      "sampleSizePacks": null,
-      "slots": [
-        { "rarity": "double_rare", "perPackProbability": 0.132 },
-        { "rarity": "illustration_rare", "perPackProbability": 0.085 },
-        { "rarity": "ultra_rare", "perPackProbability": 0.064 },
-        { "rarity": "special_illustration_rare", "perPackProbability": 0.031 },
-        { "rarity": "hyper_rare", "perPackProbability": 0.019 }
-      ]
-    }
-  ],
+  "alternateEstimates": [],
   "guaranteedSlots": [],
   "boxGuarantees": [],
   "showWhenPlaceholder": false

@@ -1,11 +1,11 @@
 {
   "game": "pokemon",
   "setCode": "sv8pt5",
-  "version": 1,
+  "version": 2,
   "sampleSizePacks": 1200,
   "sourceUrl": "https://www.tcgplayer.com/content/article/Pok%C3%A9mon-TCG-Prismatic-Evolutions-Pull-Rates/d94889ea-f76a-4a13-b74d-5b0b071220a7/",
-  "sourceNote": "TCGplayer's published pull-rate study for Prismatic Evolutions, based on 1,200 booster packs opened (their stated sample; smaller than their usual because this is a special set). Headline figures: Special Illustration Rare 1 in 45 packs — roughly twice the SIR rate of the preceding four sets — and ACE SPEC about 1 in 21. Per-tier odds here follow that study as republished by ThePriceDex (Hyper Rare 1 in 178.6, SIR 1 in 45.0, Ultra Rare 1 in 13.4, ACE SPEC 1 in 21.4, Double Rare 1 in 6.1), which match TCGplayer's headline numbers where both state them. Rated medium rather than high deliberately: the primary article is client-side rendered and was verified through two independent republications rather than read directly. Structure note, verified against the live catalog: this set has NO Illustration Rare tier (32 SIRs, 0 IRs, 180 cards). Every card also exists as a Poke Ball or Master Ball reverse pattern (community figures ~1 in 3 and ~1 in 20 packs respectively); those are printing variants of existing cards rather than separate tiers, and are not yet modelled — EV here slightly UNDERSTATES pack value as a result. God packs exist with no reliable published odds (community aggregates put them anywhere from 1 in 1,500 to 1 in 4,000); they are likewise unmodelled.",
-  "confidence": "medium",
+  "sourceNote": "TCGplayer Authentication Center study, read directly from the primary article (Peter Day, published 2025-01-17, updated 2025-01-27): more than 1,200 Prismatic Evolutions booster packs opened. Two nuances from the primary that republications miss. (1) Multi-SIR packs exist — 'Demigod Packs' with three SIRs and 'God Packs' with the full Eeveelution SIR line — so the SIR figure (~1 in 45) is the average COUNT of SIRs per pack, not the probability a pack contains one; TCGplayer states P(pack has >=1 SIR) is somewhat below 1/45 while the per-pack average holds. Our EV math uses expected count, so EV is computed correctly; the P(at least one SIR) shown per product is slightly OVERSTATED as a result. Their sample contained an estimated two Demigod packs and zero God packs (some SIR Eeveelutions were never pulled at all). (2) Structure, verified against the live catalog: no Illustration Rare tier exists (32 SIRs, 0 IRs, 180 cards); instead every C/UC/R has Poke Ball (~1 in 3) and Master Ball (~1 in 20) reverse variants, which are printing variants of existing cards and are unmodelled — EV slightly understates pack value. Version 1 rated this medium via republications; this is the primary, read directly.",
+  "confidence": "high",
   "slots": [
     { "rarity": "double_rare", "perPackProbability": 0.1639 },
     { "rarity": "ultra_rare", "perPackProbability": 0.0746 },
@@ -16,7 +16,7 @@
   "alternateEstimates": [
     {
       "sourceUrl": "https://tcgtalk.com/guides/prismatic-evolutions-pull-rates-god-pack",
-      "note": "A documented 200-pack community opening (the source itself concedes supply shortages prevented a statistically significant sample) reports SIR at roughly 1 in 53 packs, ACE SPEC 1 in 29, and Hyper Rare 1 in 152 — SIR ~15% rarer than TCGplayer's 1 in 45. At n=200 the disagreement is well within clustering error.",
+      "note": "A 200-pack community opening (the source concedes supply shortages prevented a significant sample) reports SIR ~1 in 53, ACE SPEC 1 in 29, Hyper Rare 1 in 152. Well within clustering error of the n=1,200 primary.",
       "sampleSizePacks": 200,
       "slots": [
         { "rarity": "special_illustration_rare", "perPackProbability": 0.0189 },
