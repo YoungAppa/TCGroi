@@ -82,14 +82,26 @@ const ONE_PIECE_BASE_RARITY_MAP: Record<string, string> = {
   p: "common", // promo
   sp: "special",
   "sp card": "special",
+  tr: "treasure_rare", // live OP-06 data: "Nami (TR)" carries rarity code TR
 };
 
 /**
  * Treatment suffixes seen in optcgapi card_name values, longest-first so that
  * a more specific match wins.
  */
+/**
+ * A treatment parenthetical is usually terminal — "Gol.D.Roger (Manga)" — but
+ * OP-05 style names put a numeric disambiguator after it:
+ * "Trafalgar Law (Alternate Art) (069)". So each pattern matches its
+ * parenthetical when followed only by an optional "(digits)" tail, and
+ * stripping it preserves that tail: the (069) is part of the card's name.
+ */
+function treatmentPattern(label: string): RegExp {
+  return new RegExp(`\\s*\\(${label}\\)(?=(?:\\s*\\(\\d+\\))?\\s*$)`, "i");
+}
+
 const ONE_PIECE_TREATMENTS: { suffix: RegExp; treatment: string; rarity: string | null }[] = [
-  { suffix: /\(manga\)\s*$/i, treatment: "manga", rarity: "manga_rare" },
+  { suffix: treatmentPattern("manga"), treatment: "manga", rarity: "manga_rare" },
   /**
    * Wanted Poster must stay distinct from Alternate Art in BOTH fields.
    *
@@ -98,12 +110,17 @@ const ONE_PIECE_TREATMENTS: { suffix: RegExp; treatment: string; rarity: string 
    * alone) loses one of them to the dedupe. Mapping them to the same rarity
    * averages a ~$258 chase card against a ~$27 one.
    */
-  { suffix: /\(wanted poster\)\s*$/i, treatment: "wanted_poster", rarity: "wanted_poster" },
-  { suffix: /\(alternate art\)\s*$/i, treatment: "alt_art", rarity: "alt_art" },
-  { suffix: /\(alt art\)\s*$/i, treatment: "alt_art", rarity: "alt_art" },
-  { suffix: /\(parallel\)\s*$/i, treatment: "parallel", rarity: "alt_art" },
+  { suffix: treatmentPattern("wanted poster"), treatment: "wanted_poster", rarity: "wanted_poster" },
+  // One per booster box (OP-01 era). Found by the ingest failing loudly on
+  // OP-01 — exactly the failure mode the collision check exists to catch.
+  { suffix: treatmentPattern("box topper"), treatment: "box_topper", rarity: "box_topper" },
+  { suffix: treatmentPattern("alternate art"), treatment: "alt_art", rarity: "alt_art" },
+  { suffix: treatmentPattern("alt art"), treatment: "alt_art", rarity: "alt_art" },
+  { suffix: treatmentPattern("parallel"), treatment: "parallel", rarity: "alt_art" },
   // SP is a treatment AND its own rarity tier.
-  { suffix: /\(sp\)\s*$/i, treatment: "sp", rarity: "special" },
+  { suffix: treatmentPattern("sp"), treatment: "sp", rarity: "special" },
+  // Treasure Rare, likewise (live OP-06: "Nami (TR)").
+  { suffix: treatmentPattern("tr"), treatment: "treasure", rarity: "treasure_rare" },
 ];
 
 /**
@@ -112,6 +129,16 @@ const ONE_PIECE_TREATMENTS: { suffix: RegExp; treatment: string; rarity: string 
  * `rawRarity` is optcgapi's rarity code (C/UC/R/SR/L/SEC); `rawName` may carry
  * a treatment suffix that overrides it.
  */
+/**
+ * Some optcgapi names carry a trailing set annotation after the treatment,
+ * e.g. "Jack (Parallel) - Two Legends (OP08)" (live OP-08 data). It is
+ * display noise, not identity — the set is already known from context — and
+ * it hides the treatment from the terminal-position matchers, so it is
+ * stripped first. The pattern is deliberately narrow: " - <text> (<set code>)"
+ * at end of string only.
+ */
+const SET_ANNOTATION = /\s+-\s+[^()]+\(\s*(?:OP|EB|ST)-?\d+\s*\)\s*$/i;
+
 export function normalizeOnePieceCard(
   rawName: string,
   rawRarity: string | null | undefined,
@@ -119,6 +146,8 @@ export function normalizeOnePieceCard(
   const baseRarity = rawRarity
     ? (ONE_PIECE_BASE_RARITY_MAP[rawRarity.trim().toLowerCase()] ?? null)
     : null;
+
+  rawName = rawName.replace(SET_ANNOTATION, "").trim();
 
   for (const t of ONE_PIECE_TREATMENTS) {
     if (t.suffix.test(rawName)) {

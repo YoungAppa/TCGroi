@@ -123,7 +123,7 @@ export const pokemonTcgIoPriceProvider = {
       const res = await fetchJson(
         `${BASE}/cards?q=${q}&page=${page}&pageSize=${PAGE_SIZE}&select=id,tcgplayer`,
         cardsResponse,
-        { provider: "pokemontcg_io", headers },
+        { provider: "pokemontcg_io", headers, treat404AsTransient: true, retries: 4 },
       );
 
       const capturedAt = new Date();

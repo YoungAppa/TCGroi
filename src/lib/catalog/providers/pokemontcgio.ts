@@ -1,4 +1,4 @@
-import { z } from "zod";
+﻿import { z } from "zod";
 
 import { fetchJson } from "../http";
 import { normalizePokemonRarity } from "../normalize";
@@ -65,7 +65,7 @@ export class PokemonTcgIoAdapter implements CatalogAdapter {
     const res = await fetchJson(
       `${BASE}/sets?orderBy=-releaseDate&pageSize=${PAGE_SIZE}`,
       setsResponse,
-      { provider: this.providerId, headers: this.headers() },
+      { provider: this.providerId, headers: this.headers(), treat404AsTransient: true, retries: 4 },
     );
 
     return res.data.map((s) => ({
@@ -88,7 +88,7 @@ export class PokemonTcgIoAdapter implements CatalogAdapter {
       const res = await fetchJson(
         `${BASE}/cards?q=${q}&page=${page}&pageSize=${PAGE_SIZE}`,
         cardsResponse,
-        { provider: this.providerId, headers: this.headers() },
+        { provider: this.providerId, headers: this.headers(), treat404AsTransient: true, retries: 4 },
       );
 
       for (const c of res.data) {

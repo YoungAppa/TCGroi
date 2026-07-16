@@ -127,6 +127,56 @@ describe("normalizeOnePieceCard", () => {
     expect(new Set(identities).size).toBe(printings.length);
   });
 
+  it("separates Box Topper printings", () => {
+    // Regression: OP-01 ingest failed loudly on six unmapped "(Box Topper)"
+    // cards — real printings, one guaranteed per box, distinct prices.
+    expect(normalizeOnePieceCard("Perona (Box Topper)", "R")).toEqual({
+      rarity: "box_topper",
+      treatment: "box_topper",
+      name: "Perona",
+    });
+  });
+
+  it("handles a treatment followed by a numeric disambiguator", () => {
+    // Regression from live OP-05: "Trafalgar Law (Alternate Art) (069)" — the
+    // treatment is not terminal; the (069) is part of the card's name and must
+    // survive the strip.
+    expect(normalizeOnePieceCard("Trafalgar Law (Alternate Art) (069)", "SR")).toEqual({
+      rarity: "alt_art",
+      treatment: "alt_art",
+      name: "Trafalgar Law (069)",
+    });
+  });
+
+  it("does not treat an embedded word as a treatment unless positioned as one", () => {
+    // "(SP)" mid-name with trailing text is not a treatment suffix.
+    expect(normalizeOnePieceCard("Weird (SP) Name", "R")).toEqual({
+      rarity: "rare",
+      treatment: "base",
+      name: "Weird (SP) Name",
+    });
+  });
+
+  it("classifies Treasure Rare via code or suffix", () => {
+    // Live OP-06: "Nami (TR)" with rarity code "TR".
+    expect(normalizeOnePieceCard("Nami (TR)", "TR")).toEqual({
+      rarity: "treasure_rare",
+      treatment: "treasure",
+      name: "Nami",
+    });
+    // Code alone, no suffix.
+    expect(normalizeOnePieceCard("Nami", "TR")!.rarity).toBe("treasure_rare");
+  });
+
+  it("strips a trailing set annotation before treatment matching", () => {
+    // Live OP-08: "Jack (Parallel) - Two Legends (OP08)".
+    expect(normalizeOnePieceCard("Jack (Parallel) - Two Legends (OP08)", "SR")).toEqual({
+      rarity: "alt_art",
+      treatment: "parallel",
+      name: "Jack",
+    });
+  });
+
   it("separates SP printings", () => {
     expect(normalizeOnePieceCard("Nami (SP)", "SR")).toEqual({
       rarity: "special",

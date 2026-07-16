@@ -40,6 +40,15 @@ export const ONE_PIECE_RARITIES = [
    * them into one tier would badly misstate both.
    */
   "wanted_poster",
+  /**
+   * Box-topper printings (OP-01 era): one guaranteed per booster box, drawn
+   * from a small pool. A distinct printing with its own price, and its
+   * one-per-box nature makes it a boxGuarantee in pull-rate files, never a
+   * random per-pack slot.
+   */
+  "box_topper",
+  /** Treasure Rare — EB-line chase treatment inserted into some sets. */
+  "treasure_rare",
   "secret_rare",
   "manga_rare",
   "special", // SP cards
@@ -79,6 +88,8 @@ export const RARITY_LABELS: Record<string, string> = {
   leader: "Leader",
   alt_art: "Alternate Art",
   wanted_poster: "Wanted Poster",
+  box_topper: "Box Topper",
+  treasure_rare: "Treasure Rare",
   secret_rare: "Secret Rare",
   manga_rare: "Manga Rare",
   special: "Special (SP)",

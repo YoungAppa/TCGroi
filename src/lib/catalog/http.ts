@@ -20,9 +20,22 @@ export async function fetchJson<T>(
     headers?: Record<string, string>;
     timeoutMs?: number;
     retries?: number;
+    /**
+     * pokemontcg.io's keyless tier emits transient 404s under rate pressure —
+     * observed live on endpoints that succeed on retry. Providers with that
+     * behaviour opt in here; for everyone else a 404 stays fail-fast, because
+     * retrying a genuinely missing resource just burns quota.
+     */
+    treat404AsTransient?: boolean;
   },
 ): Promise<T> {
-  const { provider, headers = {}, timeoutMs = 30_000, retries = 2 } = opts;
+  const {
+    provider,
+    headers = {},
+    timeoutMs = 30_000,
+    retries = 2,
+    treat404AsTransient = false,
+  } = opts;
 
   let lastErr: unknown;
   for (let attempt = 0; attempt <= retries; attempt++) {
@@ -57,6 +70,10 @@ export async function fetchJson<T>(
 
       if (!res.ok) {
         lastErr = new CatalogError(`HTTP ${res.status} on ${url}`, provider);
+        if (res.status === 404 && treat404AsTransient) {
+          await sleep(2000 * (attempt + 1));
+          continue;
+        }
         // 4xx other than 429 won't fix themselves — fail fast.
         if (res.status < 500) throw lastErr;
         continue;
