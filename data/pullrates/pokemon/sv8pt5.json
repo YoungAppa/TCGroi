@@ -1,0 +1,31 @@
+{
+  "game": "pokemon",
+  "setCode": "sv8pt5",
+  "version": 1,
+  "sampleSizePacks": 1200,
+  "sourceUrl": "https://www.tcgplayer.com/content/article/Pok%C3%A9mon-TCG-Prismatic-Evolutions-Pull-Rates/d94889ea-f76a-4a13-b74d-5b0b071220a7/",
+  "sourceNote": "TCGplayer's published pull-rate study for Prismatic Evolutions, based on 1,200 booster packs opened (their stated sample; smaller than their usual because this is a special set). Headline figures: Special Illustration Rare 1 in 45 packs — roughly twice the SIR rate of the preceding four sets — and ACE SPEC about 1 in 21. Per-tier odds here follow that study as republished by ThePriceDex (Hyper Rare 1 in 178.6, SIR 1 in 45.0, Ultra Rare 1 in 13.4, ACE SPEC 1 in 21.4, Double Rare 1 in 6.1), which match TCGplayer's headline numbers where both state them. Rated medium rather than high deliberately: the primary article is client-side rendered and was verified through two independent republications rather than read directly. Structure note, verified against the live catalog: this set has NO Illustration Rare tier (32 SIRs, 0 IRs, 180 cards). Every card also exists as a Poke Ball or Master Ball reverse pattern (community figures ~1 in 3 and ~1 in 20 packs respectively); those are printing variants of existing cards rather than separate tiers, and are not yet modelled — EV here slightly UNDERSTATES pack value as a result. God packs exist with no reliable published odds (community aggregates put them anywhere from 1 in 1,500 to 1 in 4,000); they are likewise unmodelled.",
+  "confidence": "medium",
+  "slots": [
+    { "rarity": "double_rare", "perPackProbability": 0.1639 },
+    { "rarity": "ultra_rare", "perPackProbability": 0.0746 },
+    { "rarity": "ace_spec_rare", "perPackProbability": 0.0467 },
+    { "rarity": "special_illustration_rare", "perPackProbability": 0.0222 },
+    { "rarity": "hyper_rare", "perPackProbability": 0.0056 }
+  ],
+  "alternateEstimates": [
+    {
+      "sourceUrl": "https://tcgtalk.com/guides/prismatic-evolutions-pull-rates-god-pack",
+      "note": "A documented 200-pack community opening (the source itself concedes supply shortages prevented a statistically significant sample) reports SIR at roughly 1 in 53 packs, ACE SPEC 1 in 29, and Hyper Rare 1 in 152 — SIR ~15% rarer than TCGplayer's 1 in 45. At n=200 the disagreement is well within clustering error.",
+      "sampleSizePacks": 200,
+      "slots": [
+        { "rarity": "special_illustration_rare", "perPackProbability": 0.0189 },
+        { "rarity": "ace_spec_rare", "perPackProbability": 0.0345 },
+        { "rarity": "hyper_rare", "perPackProbability": 0.0066 }
+      ]
+    }
+  ],
+  "guaranteedSlots": [],
+  "boxGuarantees": [],
+  "showWhenPlaceholder": false
+}
