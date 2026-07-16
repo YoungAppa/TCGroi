@@ -6,7 +6,7 @@
  */
 import { desc, eq, sql } from "drizzle-orm";
 
-import { cards, games, getDb, jobRuns, pullRateTables, sets } from "@/lib/db";
+import { cards, games, getDb, jobRuns, latestPrices, pullRateTables, sets } from "@/lib/db";
 
 async function main() {
   const db = getDb();
@@ -61,6 +61,31 @@ async function main() {
   for (const t of tables) {
     console.log(`  ${t.code.padEnd(8)} v${t.version} ${String(t.confidence).padEnd(12)} n=${t.n} active=${t.active}`);
   }
+
+  console.log("\n=== prices: most valuable cards in latest_prices ===");
+  const top = await db
+    .select({
+      name: cards.name,
+      number: cards.number,
+      rarity: cards.rarity,
+      cents: latestPrices.priceCents,
+      kind: latestPrices.kind,
+      src: latestPrices.sourceId,
+    })
+    .from(latestPrices)
+    .innerJoin(cards, eq(latestPrices.cardId, cards.id))
+    .orderBy(desc(latestPrices.priceCents))
+    .limit(6);
+  for (const r of top) {
+    console.log(
+      `  $${(r.cents / 100).toFixed(2).padStart(8)}  ${r.kind}/${r.src}  ${r.name} #${r.number} [${r.rarity}]`,
+    );
+  }
+
+  const [{ n: lpCount } = { n: 0 }] = await db
+    .select({ n: sql<number>`count(*)` })
+    .from(latestPrices);
+  console.log(`  latest_prices rows: ${lpCount}`);
 
   console.log("\n=== job runs ===");
   const runs = await db
