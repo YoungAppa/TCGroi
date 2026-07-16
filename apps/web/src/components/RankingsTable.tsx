@@ -8,7 +8,7 @@ import { useMemo, useState } from "react";
 
 import { computeProduct, type ProductComputation } from "@/lib/data/compute";
 import type { ProductPayload } from "@/lib/data/types";
-import { formatCents, formatProbability } from "@/lib/ev/format";
+import { formatCents, formatProbability } from "@packroi/ev/format";
 
 import { ConfidenceBadge, RoiCell } from "./badges";
 import { SourceFilter } from "./SourceFilter";

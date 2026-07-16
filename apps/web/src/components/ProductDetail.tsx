@@ -9,13 +9,13 @@ import { useMemo, useState } from "react";
 import { rarityLabel } from "@/lib/catalog/rarities";
 import { computeProduct } from "@/lib/data/compute";
 import type { ProductPayload } from "@/lib/data/types";
-import { blendPrices, packsForProbability } from "@/lib/ev";
+import { blendPrices, packsForProbability } from "@packroi/ev";
 import {
   formatCents,
   formatOneIn,
   formatProbability,
-} from "@/lib/ev/format";
-import { effectiveSources } from "@/lib/ev/url-state";
+} from "@packroi/ev/format";
+import { effectiveSources } from "@packroi/ev/url-state";
 import { computeDisagreements } from "@/lib/pullrates/disagreement";
 import { pullRateFileSchema } from "@/lib/pullrates/schema";
 

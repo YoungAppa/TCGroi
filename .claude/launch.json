@@ -4,7 +4,7 @@
     {
       "name": "packroi-dev",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
+      "runtimeArgs": ["run", "dev", "-w", "@packroi/web"],
       "cwd": "C:\\Users\\adamh\\packroi",
       "port": 3000
     }

@@ -8,7 +8,7 @@ import {
   parseFilterState,
   serializeFilterState,
   type FilterState,
-} from "@/lib/ev/url-state";
+} from "@packroi/ev/url-state";
 
 /**
  * The source-filter state. The URL is the single source of truth for CHANGES

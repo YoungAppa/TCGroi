@@ -5,8 +5,8 @@ import { notFound } from "next/navigation";
 import { ProductDetail } from "@/components/ProductDetail";
 import { getProduct, getRankings } from "@/lib/data";
 import { computeProduct } from "@/lib/data/compute";
-import { formatCents, formatRoi } from "@/lib/ev/format";
-import { DEFAULT_FILTER_STATE } from "@/lib/ev/url-state";
+import { formatCents, formatRoi } from "@packroi/ev/format";
+import { DEFAULT_FILTER_STATE } from "@packroi/ev/url-state";
 
 // ISR alongside the rankings page.
 export const revalidate = 3600;

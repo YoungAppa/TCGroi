@@ -9,7 +9,7 @@ import {
   sealedProducts,
   sets,
 } from "@/lib/db";
-import type { CardPriceData, PriceBySource } from "@/lib/ev/types";
+import type { CardPriceData, PriceBySource } from "@packroi/ev/types";
 import { PRICE_SOURCES, type PriceSourceId } from "@/lib/prices/sources";
 import type { AlternateEstimate } from "@/lib/pullrates/schema";
 

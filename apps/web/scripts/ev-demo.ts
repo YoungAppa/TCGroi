@@ -23,7 +23,7 @@ import {
   type EvOptions,
   type PullRateTable,
   type SealedProductInput,
-} from "@/lib/ev";
+} from "@packroi/ev";
 import { pokemonTcgIoPriceProvider } from "@/lib/prices/providers/pokemontcgio-prices";
 import type { PriceableCard } from "@/lib/prices/types";
 import { computeDisagreements } from "@/lib/pullrates/disagreement";

@@ -6,9 +6,9 @@ import { useMemo, useState } from "react";
 import { rarityLabel } from "@/lib/catalog/rarities";
 import { computeProduct } from "@/lib/data/compute";
 import type { ProductPayload } from "@/lib/data/types";
-import { blendPrices } from "@/lib/ev";
-import { formatCents } from "@/lib/ev/format";
-import { effectiveSources } from "@/lib/ev/url-state";
+import { blendPrices } from "@packroi/ev";
+import { formatCents } from "@packroi/ev/format";
+import { effectiveSources } from "@packroi/ev/url-state";
 
 import { ConfidenceBadge, RoiCell } from "./badges";
 import { SourceFilter } from "./SourceFilter";

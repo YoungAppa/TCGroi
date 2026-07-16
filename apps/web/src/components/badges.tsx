@@ -1,4 +1,4 @@
-import { formatRoi } from "@/lib/ev/format";
+import { formatRoi } from "@packroi/ev/format";
 import type { Confidence } from "@/lib/pullrates/schema";
 
 /**

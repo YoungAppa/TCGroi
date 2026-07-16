@@ -1,7 +1,7 @@
 "use client";
 
-import { effectiveSources, type FilterState } from "@/lib/ev/url-state";
-import type { BlendStrategy } from "@/lib/ev/types";
+import { effectiveSources, type FilterState } from "@packroi/ev/url-state";
+import type { BlendStrategy } from "@packroi/ev/types";
 
 /**
  * The skinsearch-style source pills + blend selector.

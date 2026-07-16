@@ -22,25 +22,15 @@ jobs:
 
       - run: npm ci
 
-      - name: Typecheck
-        run: npm run typecheck
-
-      - name: Lint
-        run: npm run lint
-
-      - name: Unit tests
-        run: npm run test
-
-      - name: Validate pull-rate data
-        # These files are hand-written. A typo'd rarity or a mis-scaled
-        # probability produces a believable wrong EV, not an error, so it must
-        # not be able to merge.
-        run: npm run check:pullrates
+      # Typecheck + lint + unit tests + pull-rate data validation, across all
+      # workspaces (packages/ev carries the EV engine's coverage thresholds).
+      - name: Verify
+        run: npm run verify
 
       - name: Build
         # Proves the non-negotiable: the app builds with no price source
-        # configured. Only DATABASE_URL + ADMIN_SECRET are set here, and the
-        # URL points nowhere — a build that needs a live DB would fail this.
+        # configured and no reachable database. getRankings degrades to an
+        # empty payload; a build that needs live data would fail this.
         run: npm run build
         env:
           DATABASE_URL: postgres://ci:ci@localhost:5432/packroi

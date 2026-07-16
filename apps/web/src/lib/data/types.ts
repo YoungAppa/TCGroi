@@ -1,4 +1,4 @@
-import type { CardPriceData, PriceBySource, PullRateSlot } from "@/lib/ev/types";
+import type { CardPriceData, PriceBySource, PullRateSlot } from "@packroi/ev/types";
 import type { AlternateEstimate, Confidence } from "@/lib/pullrates/schema";
 
 /**

@@ -5,8 +5,8 @@ import {
   type EvResult,
   type PullRateTable,
   type SealedProductInput,
-} from "@/lib/ev";
-import { effectiveSources, type FilterState } from "@/lib/ev/url-state";
+} from "@packroi/ev";
+import { effectiveSources, type FilterState } from "@packroi/ev/url-state";
 
 import type { ProductPayload } from "./types";
 
