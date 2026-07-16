@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit tests
+        run: npm run test
+
+      - name: Build
+        # Proves the non-negotiable: the app builds with no price source
+        # configured. Only DATABASE_URL + ADMIN_SECRET are set here, and the
+        # URL points nowhere — a build that needs a live DB would fail this.
+        run: npm run build
+        env:
+          DATABASE_URL: postgres://ci:ci@localhost:5432/packroi
+          ADMIN_SECRET: ci-placeholder-secret
