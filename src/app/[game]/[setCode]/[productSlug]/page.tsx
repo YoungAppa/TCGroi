@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { ProductDetail } from "@/components/ProductDetail";
@@ -60,7 +61,13 @@ export default async function ProductPage({ params }: { params: Promise<Params> 
     <div className="space-y-4">
       <div>
         <p className="text-xs uppercase tracking-wide text-muted">
-          {payload.gameName} · {payload.setCode}
+          {payload.gameName} ·{" "}
+          <Link
+            href={`/${payload.gameSlug}/${payload.setCode}`}
+            className="underline hover:text-foreground"
+          >
+            {payload.setCode}
+          </Link>
           {payload.releaseDate ? ` · ${payload.releaseDate}` : ""}
         </p>
         <h1 className="text-2xl font-bold tracking-tight">
