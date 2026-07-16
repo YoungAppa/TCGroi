@@ -4,7 +4,7 @@
   "version": 1,
   "sampleSizePacks": null,
   "sourceUrl": "https://www.thepricedex.com/set/sv8/surging-sparks/pull-rates",
-  "sourceNote": "ThePriceDex publishes per-tier odds for Surging Sparks (Hyper Rare 1 in 188.7, Special Illustration Rare 1 in 87.0, Ultra Rare 1 in 14.8, Illustration Rare 1 in 13.0, ACE SPEC 1 in 19.9, Double Rare 1 in 5.9), described as estimates from community data. It does NOT disclose how many packs those estimates are based on, which caps this table at low confidence regardless of how plausible the numbers look. Corroboration is mixed: a widely-cited documented 500-pack Surging Sparks opening reported 7 SIRs (~1 in 71), against the 1 in 87 used here — a ~20% disagreement, which is within the clustering error expected at n=500 but is a real reason not to trust the third significant figure. Treat as directional. Set-to-set variation is genuinely large (SV Base runs SIR ~1 in 33), so these numbers must not be generalised to other sets.",
+  "sourceNote": "ThePriceDex publishes per-tier odds for Surging Sparks (Hyper Rare 1 in 188.7, Special Illustration Rare 1 in 87.0, Ultra Rare 1 in 14.8, Illustration Rare 1 in 13.0, ACE SPEC 1 in 19.9, Double Rare 1 in 5.9), described as estimates from community data. It does NOT disclose how many packs those estimates are based on, which caps this table at low confidence regardless of how plausible the numbers look. A rival estimate from a documented 500-pack opening is recorded in alternateEstimates and disagrees by ~22% on SIR; the product page shows both rather than pretending the community agrees. Set-to-set variation is genuinely large (SV Base runs SIR ~1 in 33 vs ~1 in 87 here), so these numbers must not be generalised to other sets.",
   "confidence": "low",
   "slots": [
     { "rarity": "double_rare", "perPackProbability": 0.1695 },
@@ -13,6 +13,14 @@
     { "rarity": "ace_spec_rare", "perPackProbability": 0.0503 },
     { "rarity": "special_illustration_rare", "perPackProbability": 0.0115 },
     { "rarity": "hyper_rare", "perPackProbability": 0.0053 }
+  ],
+  "alternateEstimates": [
+    {
+      "sourceUrl": "https://tcgtalk.com/guides/surging-sparks-pull-rates-case-opening",
+      "note": "A documented 500-pack Surging Sparks opening reported 7 Special Illustration Rares, i.e. roughly 1 in 71 packs, against ThePriceDex's 1 in 87. At n=500 a 7-hit count carries wide error (a couple of hits either way moves the rate a lot), so this does not settle the question — it shows the honest range.",
+      "sampleSizePacks": 500,
+      "slots": [{ "rarity": "special_illustration_rare", "perPackProbability": 0.014 }]
+    }
   ],
   "guaranteedSlots": [],
   "boxGuarantees": [],

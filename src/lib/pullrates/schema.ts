@@ -45,6 +45,28 @@ const boxGuaranteeSchema = z.object({
   mode: z.enum(["additive", "floor"]),
 });
 
+/**
+ * A second source's numbers for the same set.
+ *
+ * Community pull-rate sources routinely disagree — Surging Sparks SIR is
+ * reported as 1-in-71 by a documented 500-pack opening and 1-in-87 by
+ * ThePriceDex, a ~20% spread. Silently picking a winner would fake a precision
+ * nobody has. Recording the rival estimate lets the product page show the
+ * spread, which is a more honest answer than any single number.
+ *
+ * These never enter the EV math — `slots` above is the number used. This is
+ * disclosure, not a second opinion the engine averages in.
+ */
+const alternateEstimateSchema = z.object({
+  sourceUrl: z.string().url(),
+  note: z.string().min(1),
+  sampleSizePacks: z.number().int().nonnegative().nullable(),
+  /** Only the tiers this source disagrees on need listing. */
+  slots: z.array(slotSchema).min(1),
+});
+
+export type AlternateEstimate = z.infer<typeof alternateEstimateSchema>;
+
 export const pullRateFileSchema = z
   .object({
     $schema: z.string().optional(),
@@ -68,7 +90,10 @@ export const pullRateFileSchema = z
     sourceUrl: z.string().url(),
     sourceNote: z.string().min(1),
     confidence: confidenceSchema,
+    /** The rates the EV engine actually uses. */
     slots: z.array(slotSchema),
+    /** Rival published estimates, shown to the user. Never used in the math. */
+    alternateEstimates: z.array(alternateEstimateSchema).default([]),
     guaranteedSlots: z.array(guaranteedSlotSchema).default([]),
     boxGuarantees: z.array(boxGuaranteeSchema).default([]),
     /** Placeholder tables stay out of public rankings unless forced on. */
@@ -94,6 +119,27 @@ export const pullRateFileSchema = z
     );
     file.boxGuarantees.forEach((g, i) =>
       checkRarity(g.rarity, ["boxGuarantees", i, "rarity"]),
+    );
+    file.alternateEstimates.forEach((a, ai) =>
+      a.slots.forEach((s, si) =>
+        checkRarity(s.rarity, ["alternateEstimates", ai, "slots", si, "rarity"]),
+      ),
+    );
+
+    // An alternate estimate must contest a tier the primary actually claims,
+    // otherwise there is nothing to compare it against and it renders as a
+    // dangling number.
+    const primaryTiers = new Set(file.slots.map((s) => s.rarity));
+    file.alternateEstimates.forEach((a, ai) =>
+      a.slots.forEach((s, si) => {
+        if (!primaryTiers.has(s.rarity)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ["alternateEstimates", ai, "slots", si, "rarity"],
+            message: `Alternate estimate covers "${s.rarity}", which the primary slots do not list — there is nothing to compare it to.`,
+          });
+        }
+      }),
     );
 
     // --- no duplicate tiers -------------------------------------------------
