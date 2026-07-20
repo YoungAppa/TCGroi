@@ -194,7 +194,8 @@ export function ProductDetail({
           </div>
         )}
 
-        <table className="w-full text-sm">
+        <div className="overflow-x-auto">
+        <table className="w-full min-w-[22rem] text-sm">
           <thead>
             <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted">
               <th className="py-1.5 pr-3">Tier</th>
@@ -229,6 +230,7 @@ export function ProductDetail({
             ))}
           </tbody>
         </table>
+        </div>
 
         <p className="text-xs text-muted">
           Expected hits per product: {ev.expectedHits.toFixed(2)} (counting every

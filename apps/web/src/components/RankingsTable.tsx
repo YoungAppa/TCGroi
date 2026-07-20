@@ -4,7 +4,7 @@
    are not configured for next/image yet; plain img is deliberate here. */
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useSyncExternalStore } from "react";
 
 import { computeProduct, type ProductComputation } from "@/lib/data/compute";
 import type { ProductPayload } from "@/lib/data/types";
@@ -56,7 +56,11 @@ export function RankingsTable({
   const [sortKey, setSortKey] = useState<SortKey>("roiMarket");
   const [sortDesc, setSortDesc] = useState(true);
   const [game, setGame] = useState<string>("all");
-  const [view, setView] = useState<ViewMode>("list");
+  // View defaults to icons on a phone (the 8-column list scrolls sideways
+  // there), list on desktop — until the user picks one explicitly.
+  const [userView, setUserView] = useState<ViewMode | null>(null);
+  const isNarrow = useIsNarrow();
+  const view: ViewMode = userView ?? (isNarrow ? "icons" : "list");
   // Which price-column groups the List view shows. Independent of the EV source
   // selection above — hiding a column never changes how EV is computed.
   const [showRetail, setShowRetail] = useState(true);
@@ -277,14 +281,14 @@ export function RankingsTable({
           {/* List / Icon view toggle */}
           <div className="flex overflow-hidden rounded border border-border text-xs">
             <button
-              onClick={() => setView("list")}
+              onClick={() => setUserView("list")}
               aria-pressed={view === "list"}
               className={`px-2.5 py-1 ${view === "list" ? "bg-surface-raised text-foreground" : "text-muted hover:text-foreground"}`}
             >
               ▤ List
             </button>
             <button
-              onClick={() => setView("icons")}
+              onClick={() => setUserView("icons")}
               aria-pressed={view === "icons"}
               className={`border-l border-border px-2.5 py-1 ${view === "icons" ? "bg-surface-raised text-foreground" : "text-muted hover:text-foreground"}`}
             >
@@ -363,6 +367,19 @@ export function RankingsTable({
           " Market prices marked * are hand-tracked with a source and date — a live sealed price source replaces them automatically."}
       </p>
     </div>
+  );
+}
+
+/** True on phone-width viewports. SSR-safe (assumes desktop on the server). */
+function useIsNarrow(): boolean {
+  return useSyncExternalStore(
+    (onChange) => {
+      const mq = window.matchMedia("(max-width: 639px)");
+      mq.addEventListener("change", onChange);
+      return () => mq.removeEventListener("change", onChange);
+    },
+    () => window.matchMedia("(max-width: 639px)").matches,
+    () => false,
   );
 }
 
