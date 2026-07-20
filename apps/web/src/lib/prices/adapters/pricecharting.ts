@@ -47,6 +47,8 @@ const BASE = "https://www.pricecharting.com/price-guide/download-custom";
  */
 const PC_BRACKET_TO_CANON: Record<string, string> = {
   "alternate art": "alt_art",
+  // Some sets abbreviate it (Luffy OP01-003 $873, Vivi OP04-118 $30). Same tier.
+  "alt art": "alt_art",
   parallel: "alt_art",
   manga: "manga",
   // The pack manga printing is labelled inconsistently across sets — both
@@ -62,6 +64,27 @@ const PC_BRACKET_TO_CANON: Record<string, string> = {
   "treasure rare": "treasure_rare",
   sp: "sp",
 };
+
+/**
+ * Brackets we deliberately DO NOT map, and why — a coverage audit will keep
+ * flagging the cards they leave unpriced, so the reasoning lives here to stop a
+ * future reader "fixing" it by mapping them and quietly injecting wrong prices:
+ *
+ *   [Foil] — NOT an alias for the base printing. 14 codes carry BOTH an
+ *     unbracketed base row and a distinct [Foil] row at different prices, so
+ *     "[Foil] -> base" would mismatch them. The OP-09 super-rares that list only
+ *     a [Foil] row stay unpriced rather than risk the other 14.
+ *   [SP Foil] — a card's SP printing is sometimes filed this way, but the same
+ *     code also carries [Championship] ($510), [Serial] ($2,308) and promo rows;
+ *     with no clean signal for which is the pulled SP, we leave the cross-set SP
+ *     reprints (OP-08's list) unpriced instead of guessing among them.
+ *   [Errata], [Championship …], [Serial], [PRB01]/[PRB-02], [Judge], [Winner],
+ *   [Anniversary …] — tournament/promo/misprint printings, not the pack card.
+ *
+ * The rule throughout: a wrong price is worse than a missing one (the EV engine
+ * excludes an unpriced card but trusts a priced one), so map only when the
+ * bracket unambiguously identifies the pack printing.
+ */
 /** Our card.treatment -> the same canonical slug PC_BRACKET_TO_CANON produces. */
 const OUR_TREATMENT_TO_CANON: Record<string, string> = {
   parallel: "alt_art",

@@ -45,6 +45,10 @@ const OP_CSV = [
   // Parallel (optcgapi's word for the ★ alt art) and SP.
   "13,One Piece Paramount War,Trafalgar Law [Parallel] OP02-069,$5.00",
   "14,One Piece Paramount War,Nami [SP] OP02-060,$50.00",
+  // Abbreviated "[Alt Art]" (some sets) alongside a distinct "[Alt Art Errata]"
+  // that must NOT be mistaken for it.
+  "17,One Piece Romance Dawn,Monkey.D.Luffy [Alt Art Errata] OP01-003,$660.15",
+  "18,One Piece Romance Dawn,Monkey.D.Luffy [Alt Art] OP01-003,$873.15",
   // Sealed rows (no code, no bracket).
   "15,One Piece Wings of the Captain,Booster Box,$353.95",
   "16,One Piece Wings of the Captain,Booster Pack,$6.50",
@@ -156,6 +160,13 @@ describe("PriceChartingAdapter — One Piece treatment matching", () => {
   it("canonicalises our 'parallel' treatment to PriceCharting's [Alternate Art]", async () => {
     const a = new PriceChartingAdapter();
     expect(await priceOne(a, opSet("Paramount War"), card("OP02-069", "parallel"))).toBe(500);
+  });
+
+  it("maps the abbreviated [Alt Art] but not [Alt Art Errata]", async () => {
+    const a = new PriceChartingAdapter();
+    // The errata ($660) is a distinct misprint printing and must be ignored;
+    // the plain [Alt Art] ($873) is the one that matches our alt_art card.
+    expect(await priceOne(a, opSet("Romance Dawn"), card("OP01-003", "alt_art"))).toBe(87315);
   });
 
   it("matches SP", async () => {
