@@ -1,0 +1,20 @@
+{
+  "game": "pokemon",
+  "setCode": "me1",
+  "version": 1,
+  "sampleSizePacks": 5000,
+  "sourceUrl": "https://www.tcgplayer.com/content/article/Pok%C3%A9mon-TCG-Mega-Evolution-Pull-Rates/40cbeedc-21ce-473b-aef1-74e3969d9f91/",
+  "sourceNote": "TCGplayer Authentication Center study, read directly from the primary article (Peter Day, published 2025-09-30): more than 5,000 Mega Evolution booster packs opened, per-tier rates with 95% confidence intervals — Double Rare 20.91% ±1.12, Ultra Rare 8.23% ±0.76, Illustration Rare 10.89% ±0.86, Special Illustration Rare 0.99% ±0.27, Mega Hyper Rare 0.08% ±0.08. Mega Evolution opens the ME series: Ultra Rares and Illustration Rares are more common than in Destined Rivals, but the Hyper Rare tier is replaced by the new Mega Hyper Rare (gold four-pointed star), only two cards in the set at a staggering ~1 in 1,260 packs (~35 booster boxes each). No ACE SPEC or regular Hyper Rare tier.",
+  "confidence": "high",
+  "slots": [
+    { "rarity": "double_rare", "perPackProbability": 0.2091 },
+    { "rarity": "ultra_rare", "perPackProbability": 0.0823 },
+    { "rarity": "illustration_rare", "perPackProbability": 0.1089 },
+    { "rarity": "special_illustration_rare", "perPackProbability": 0.0099 },
+    { "rarity": "mega_hyper_rare", "perPackProbability": 0.0008 }
+  ],
+  "alternateEstimates": [],
+  "guaranteedSlots": [],
+  "boxGuarantees": [],
+  "showWhenPlaceholder": false
+}

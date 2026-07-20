@@ -33,6 +33,12 @@ export const POKEMON_RARITIES = [
   "special_illustration_rare",
   "hyper_rare", // gold
   /**
+   * Mega Evolution era (me1+, 2025) replaced Hyper Rare with Mega Hyper Rare —
+   * a gold four-pointed-star rarity that is drastically scarcer (~1 in 1,260
+   * packs vs ~1 in 140 for the old Hyper Rare), so it is its own tier.
+   */
+  "mega_hyper_rare",
+  /**
    * Shiny tiers, reintroduced in the special set Paldean Fates (sv4pt5) after
    * Hidden/Shining Fates. Their own tiers, not folded into ultra/special: a
    * Shiny Rare is a common-value baby shiny (120 of them, ~$1 each) while a
@@ -103,6 +109,7 @@ export const RARITY_LABELS: Record<string, string> = {
   ultra_rare: "Ultra Rare",
   special_illustration_rare: "Special Illustration Rare",
   hyper_rare: "Hyper Rare",
+  mega_hyper_rare: "Mega Hyper Rare",
   shiny_rare: "Shiny Rare",
   shiny_ultra_rare: "Shiny Ultra Rare",
   super_rare: "Super Rare",

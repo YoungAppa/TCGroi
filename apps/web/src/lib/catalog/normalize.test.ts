@@ -52,6 +52,12 @@ describe("normalizePokemonRarity", () => {
     expect(normalizePokemonRarity("Rare Shiny")).toBe("ultra_rare");
   });
 
+  it("maps the Mega Evolution-era Mega Hyper Rare to its own tier", () => {
+    expect(normalizePokemonRarity("Mega Hyper Rare")).toBe("mega_hyper_rare");
+    // The old Hyper Rare is unaffected.
+    expect(normalizePokemonRarity("Hyper Rare")).toBe("hyper_rare");
+  });
+
   it("is case- and whitespace-insensitive", () => {
     expect(normalizePokemonRarity("  hYpEr RaRe  ")).toBe("hyper_rare");
   });
