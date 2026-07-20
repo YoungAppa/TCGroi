@@ -116,28 +116,44 @@ export class PriceChartingAdapter implements PriceSourceAdapter {
     return t;
   }
 
-  /** Download one category CSV. Job-time only — never a request path. */
+  /**
+   * Download one category CSV. Job-time only — never a request path.
+   *
+   * These feeds are multi-MB, so a transient stall shouldn't sink the whole
+   * run: retry with backoff. Per-attempt timeout stays well under the Vercel
+   * cron cap (only two categories download per run, each memoised). A 4xx —
+   * bad token, unknown category — is not retried.
+   */
   private async downloadCsv(category: string): Promise<string> {
     const token = this.assertToken();
     const url = `${BASE}?t=${encodeURIComponent(token)}&category=${category}`;
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 180_000);
-    try {
-      const res = await fetch(url, { signal: controller.signal });
-      if (!res.ok) {
-        throw new PriceSourceError(`HTTP ${res.status} downloading ${category} CSV`, this.id);
+    const RETRIES = 2;
+    let lastErr: unknown;
+    for (let attempt = 0; attempt <= RETRIES; attempt++) {
+      if (attempt > 0) await new Promise((r) => setTimeout(r, 1500 * attempt));
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 90_000);
+      try {
+        const res = await fetch(url, { signal: controller.signal });
+        if (!res.ok) {
+          const err = new PriceSourceError(`HTTP ${res.status} downloading ${category} CSV`, this.id);
+          if (res.status >= 400 && res.status < 500) throw err;
+          lastErr = err;
+          continue;
+        }
+        return await res.text();
+      } catch (err) {
+        if (err instanceof PriceSourceError && /HTTP 4\d\d/.test(err.message)) throw err;
+        lastErr = err;
+      } finally {
+        clearTimeout(timer);
       }
-      return await res.text();
-    } catch (err) {
-      if (err instanceof PriceSourceError) throw err;
-      throw new PriceSourceError(
-        `failed to download ${category} CSV: ${err instanceof Error ? err.message : String(err)}`,
-        this.id,
-        { cause: err },
-      );
-    } finally {
-      clearTimeout(timer);
     }
+    throw new PriceSourceError(
+      `failed to download ${category} CSV after ${RETRIES + 1} attempts: ${lastErr instanceof Error ? lastErr.message : String(lastErr)}`,
+      this.id,
+      { cause: lastErr },
+    );
   }
 
   /**
