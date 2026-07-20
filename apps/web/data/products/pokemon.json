@@ -437,6 +437,126 @@
       "type": "booster_pack",
       "packsContained": 1,
       "msrpCents": 449
+    },
+    {
+      "setCode": "me2",
+      "name": "Booster Box (36 packs)",
+      "slug": "booster-box",
+      "type": "booster_box",
+      "packsContained": 36,
+      "msrpCents": 16164
+    },
+    {
+      "setCode": "me2",
+      "name": "Elite Trainer Box (9 packs)",
+      "slug": "elite-trainer-box",
+      "type": "etb",
+      "packsContained": 9,
+      "msrpCents": 4999
+    },
+    {
+      "setCode": "me2",
+      "name": "Booster Pack",
+      "slug": "booster-pack",
+      "type": "booster_pack",
+      "packsContained": 1,
+      "msrpCents": 449
+    },
+    {
+      "setCode": "me3",
+      "name": "Booster Box (36 packs)",
+      "slug": "booster-box",
+      "type": "booster_box",
+      "packsContained": 36,
+      "msrpCents": 16164
+    },
+    {
+      "setCode": "me3",
+      "name": "Elite Trainer Box (9 packs)",
+      "slug": "elite-trainer-box",
+      "type": "etb",
+      "packsContained": 9,
+      "msrpCents": 4999
+    },
+    {
+      "setCode": "me3",
+      "name": "Booster Pack",
+      "slug": "booster-pack",
+      "type": "booster_pack",
+      "packsContained": 1,
+      "msrpCents": 449
+    },
+    {
+      "setCode": "me4",
+      "name": "Booster Box (36 packs)",
+      "slug": "booster-box",
+      "type": "booster_box",
+      "packsContained": 36,
+      "msrpCents": 16164
+    },
+    {
+      "setCode": "me4",
+      "name": "Elite Trainer Box (9 packs)",
+      "slug": "elite-trainer-box",
+      "type": "etb",
+      "packsContained": 9,
+      "msrpCents": 4999
+    },
+    {
+      "setCode": "me4",
+      "name": "Booster Pack",
+      "slug": "booster-pack",
+      "type": "booster_pack",
+      "packsContained": 1,
+      "msrpCents": 449
+    },
+    {
+      "setCode": "zsv10pt5",
+      "name": "Booster Box (36 packs)",
+      "slug": "booster-box",
+      "type": "booster_box",
+      "packsContained": 36,
+      "msrpCents": 16164
+    },
+    {
+      "setCode": "zsv10pt5",
+      "name": "Elite Trainer Box (9 packs)",
+      "slug": "elite-trainer-box",
+      "type": "etb",
+      "packsContained": 9,
+      "msrpCents": 4999
+    },
+    {
+      "setCode": "zsv10pt5",
+      "name": "Booster Pack",
+      "slug": "booster-pack",
+      "type": "booster_pack",
+      "packsContained": 1,
+      "msrpCents": 449
+    },
+    {
+      "setCode": "rsv10pt5",
+      "name": "Booster Box (36 packs)",
+      "slug": "booster-box",
+      "type": "booster_box",
+      "packsContained": 36,
+      "msrpCents": 16164
+    },
+    {
+      "setCode": "rsv10pt5",
+      "name": "Elite Trainer Box (9 packs)",
+      "slug": "elite-trainer-box",
+      "type": "etb",
+      "packsContained": 9,
+      "msrpCents": 4999
+    },
+    {
+      "setCode": "rsv10pt5",
+      "name": "Booster Pack",
+      "slug": "booster-pack",
+      "type": "booster_pack",
+      "packsContained": 1,
+      "msrpCents": 449
     }
   ]
 }

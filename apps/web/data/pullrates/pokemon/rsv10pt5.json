@@ -1,0 +1,20 @@
+{
+  "game": "pokemon",
+  "setCode": "rsv10pt5",
+  "version": 1,
+  "sampleSizePacks": 700,
+  "sourceUrl": "https://www.tcgplayer.com/content/article/Pok%C3%A9mon-TCG-Black-Bolt-and-White-Flare-Pull-Rates/bac92199-a2a7-4668-b4a4-2647a111776f/",
+  "sourceNote": "TCGplayer / eBay Authentication Center study (Peter Day, published 2025-07-21): White Flare and Black Bolt data combined into one 700+ pack sample on the stated assumption the two split sets share rates — Double Rare 21.11% ±2.98, Ultra Rare 5.83% ±1.71, Illustration Rare 16.39% ±2.70, Special Illustration Rare 1.25% ±0.81. Confidence is capped at MEDIUM: the sample is much smaller than a normal study (wide CIs) and the sets are combined. Illustration Rares are ~1 in 6 (twice the usual rate) but there are 70 of them. The Black White Rare chase (Reshiram ex / Victini) is reported as UNKNOWN — the study found zero in 700 packs — so its slot uses an estimated ~1 in 1,600, included only so the tier's value isn't dropped from EV; treat it as indicative. Poke Ball / Master Ball reverse-holo foils (~30% and ~5% of packs) are not modelled: pokemontcg.io lists them as price variants, not separate cards.",
+  "confidence": "medium",
+  "slots": [
+    { "rarity": "double_rare", "perPackProbability": 0.2111 },
+    { "rarity": "ultra_rare", "perPackProbability": 0.0583 },
+    { "rarity": "illustration_rare", "perPackProbability": 0.1639 },
+    { "rarity": "special_illustration_rare", "perPackProbability": 0.0125 },
+    { "rarity": "black_white_rare", "perPackProbability": 0.0006 }
+  ],
+  "alternateEstimates": [],
+  "guaranteedSlots": [],
+  "boxGuarantees": [],
+  "showWhenPlaceholder": false
+}

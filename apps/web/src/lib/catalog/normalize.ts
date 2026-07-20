@@ -34,6 +34,8 @@ const POKEMON_RARITY_MAP: Record<string, string> = {
   "hyper rare": "hyper_rare",
   // Mega Evolution era's gold chase rarity (me1+), its own tier.
   "mega hyper rare": "mega_hyper_rare",
+  // Black Bolt / White Flare chase rarity (Zekrom ex / Reshiram ex / Victini).
+  "black white rare": "black_white_rare",
   // Shiny tiers, live in Paldean Fates (sv4pt5). Their own tiers — see the note
   // in POKEMON_RARITIES. Distinct from the legacy "rare shiny" string below,
   // which older sets used for a single ultra-tier shiny and which stays mapped

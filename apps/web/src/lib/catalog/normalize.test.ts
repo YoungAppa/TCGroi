@@ -58,6 +58,10 @@ describe("normalizePokemonRarity", () => {
     expect(normalizePokemonRarity("Hyper Rare")).toBe("hyper_rare");
   });
 
+  it("maps the Black Bolt / White Flare Black White Rare to its own tier", () => {
+    expect(normalizePokemonRarity("Black White Rare")).toBe("black_white_rare");
+  });
+
   it("is case- and whitespace-insensitive", () => {
     expect(normalizePokemonRarity("  hYpEr RaRe  ")).toBe("hyper_rare");
   });

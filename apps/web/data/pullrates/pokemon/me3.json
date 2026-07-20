@@ -1,0 +1,20 @@
+{
+  "game": "pokemon",
+  "setCode": "me3",
+  "version": 1,
+  "sampleSizePacks": 3500,
+  "sourceUrl": "https://www.tcgplayer.com/content/article/Pok%C3%A9mon-TCG-Perfect-Order-Pull-Rates/73148119-ebcb-40b7-84b6-52b3a6d0c631/",
+  "sourceNote": "TCGplayer Authentication Center study, read directly from the primary article (Peter Day, published 2026-04-03): more than 3,500 Perfect Order booster packs opened, per-tier rates with 95% confidence intervals — Double Rare 20.97% ±1.34, Ultra Rare 8.54% ±0.92, Illustration Rare 11.20% ±1.03, Special Illustration Rare 1.23% ±0.36, Mega Hyper Rare 0.06% ±0.08. The study notes a smaller sample than usual, with rates identical (within the CI) to Mega Evolution and Phantasmal Flames. One Mega Hyper Rare (Mega Zygarde ex). No ACE SPEC or regular Hyper Rare tier.",
+  "confidence": "high",
+  "slots": [
+    { "rarity": "double_rare", "perPackProbability": 0.2097 },
+    { "rarity": "ultra_rare", "perPackProbability": 0.0854 },
+    { "rarity": "illustration_rare", "perPackProbability": 0.112 },
+    { "rarity": "special_illustration_rare", "perPackProbability": 0.0123 },
+    { "rarity": "mega_hyper_rare", "perPackProbability": 0.0006 }
+  ],
+  "alternateEstimates": [],
+  "guaranteedSlots": [],
+  "boxGuarantees": [],
+  "showWhenPlaceholder": false
+}

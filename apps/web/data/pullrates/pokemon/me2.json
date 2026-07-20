@@ -1,0 +1,20 @@
+{
+  "game": "pokemon",
+  "setCode": "me2",
+  "version": 1,
+  "sampleSizePacks": 5000,
+  "sourceUrl": "https://www.tcgplayer.com/content/article/Pok%C3%A9mon-TCG-Phantasmal-Flames-Pull-Rates/9abae60d-b7fb-448f-874e-176f78d6a6ca/",
+  "sourceNote": "TCGplayer Authentication Center study, read directly from the primary article (Peter Day, updated 2026-02-24): more than 5,000 Phantasmal Flames booster packs opened, per-tier rates with 95% confidence intervals — Double Rare 20.77% ±1.12, Ultra Rare 8.06% ±0.75, Illustration Rare 10.97% ±0.86, Special Illustration Rare 1.25% ±0.31, Mega Hyper Rare 0.08% ±0.08. The study finds these effectively identical to Mega Evolution. Only one Mega Hyper Rare card (Mega Charizard X ex) at ~1 in 1,260 packs. No ACE SPEC or regular Hyper Rare tier.",
+  "confidence": "high",
+  "slots": [
+    { "rarity": "double_rare", "perPackProbability": 0.2077 },
+    { "rarity": "ultra_rare", "perPackProbability": 0.0806 },
+    { "rarity": "illustration_rare", "perPackProbability": 0.1097 },
+    { "rarity": "special_illustration_rare", "perPackProbability": 0.0125 },
+    { "rarity": "mega_hyper_rare", "perPackProbability": 0.0008 }
+  ],
+  "alternateEstimates": [],
+  "guaranteedSlots": [],
+  "boxGuarantees": [],
+  "showWhenPlaceholder": false
+}

@@ -1,0 +1,20 @@
+{
+  "game": "pokemon",
+  "setCode": "me4",
+  "version": 1,
+  "sampleSizePacks": 8500,
+  "sourceUrl": "https://www.tcgplayer.com/content/article/Pok%C3%A9mon-TCG-Chaos-Rising-Pull-Rates/304e8bfc-175a-4d31-93fe-5bb1be11e5d2/",
+  "sourceNote": "TCGplayer Authentication Center study, read directly from the primary article (Peter Day, published 2026-06-04): more than 8,500 Chaos Rising booster packs opened, per-tier rates with 95% confidence intervals — Double Rare 20.30% ±0.85, Ultra Rare 8.29% ±0.58, Illustration Rare 10.66% ±0.65, Special Illustration Rare 1.21% ±0.23, Mega Hyper Rare 0.10% ±0.07. On par with the other Mega Evolution Series sets (Phantasmal Flames, Perfect Order); the MHR looked slightly easier but not significantly so. One Mega Hyper Rare card. No ACE SPEC or regular Hyper Rare tier.",
+  "confidence": "high",
+  "slots": [
+    { "rarity": "double_rare", "perPackProbability": 0.203 },
+    { "rarity": "ultra_rare", "perPackProbability": 0.0829 },
+    { "rarity": "illustration_rare", "perPackProbability": 0.1066 },
+    { "rarity": "special_illustration_rare", "perPackProbability": 0.0121 },
+    { "rarity": "mega_hyper_rare", "perPackProbability": 0.001 }
+  ],
+  "alternateEstimates": [],
+  "guaranteedSlots": [],
+  "boxGuarantees": [],
+  "showWhenPlaceholder": false
+}

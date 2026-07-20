@@ -39,6 +39,12 @@ export const POKEMON_RARITIES = [
    */
   "mega_hyper_rare",
   /**
+   * Black Bolt / White Flare (2025) chase rarity — Zekrom ex, Reshiram ex,
+   * Victini. Its own tier; TCGplayer's study found zero in 700 packs, so its
+   * rate is estimated where used.
+   */
+  "black_white_rare",
+  /**
    * Shiny tiers, reintroduced in the special set Paldean Fates (sv4pt5) after
    * Hidden/Shining Fates. Their own tiers, not folded into ultra/special: a
    * Shiny Rare is a common-value baby shiny (120 of them, ~$1 each) while a
@@ -110,6 +116,7 @@ export const RARITY_LABELS: Record<string, string> = {
   special_illustration_rare: "Special Illustration Rare",
   hyper_rare: "Hyper Rare",
   mega_hyper_rare: "Mega Hyper Rare",
+  black_white_rare: "Black White Rare",
   shiny_rare: "Shiny Rare",
   shiny_ultra_rare: "Shiny Ultra Rare",
   super_rare: "Super Rare",
