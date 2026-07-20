@@ -87,15 +87,18 @@ export default function MethodologyPage() {
             direction.
           </li>
           <li>
-            <strong>Sealed placeholder prices.</strong> Where a sealed price is
-            marked with an asterisk, it is hand-entered, not live. EV is live;
-            that ROI is directional.
+            <strong>Sealed prices are live where matched.</strong> Box / ETB /
+            pack market prices come from PriceCharting. A figure marked with an
+            asterisk is a hand-tracked fallback for the few products without a
+            live match — directional, not live.
           </li>
           <li>
-            <strong>Graded mode (when available)</strong> values submissions as
-            PSA 10 × gem rate + PSA 9 × grade-9 rate − grading fee, and gives
-            zero value to the ~20% grading 8 or below — so it understates
-            graded EV. Conservative on purpose.
+            <strong>Grading is a break-even guide, not a graded EV.</strong> The
+            product page shows PSA&apos;s real per-card grading fee and the
+            break-even a PSA 10 must clear over the raw price. We do{" "}
+            <em>not</em> predict graded profit: graded (PSA 10/9) sale prices
+            and per-card PSA population odds are not in our data source yet, and
+            we will not invent them.
           </li>
           <li>
             <strong>Selling is not free.</strong> EV uses market prices; actual
@@ -108,16 +111,28 @@ export default function MethodologyPage() {
       <section className="space-y-2">
         <h2 className="text-lg font-semibold">Price data</h2>
         <p>
-          Card prices are TCGplayer market prices obtained through a
-          third-party mirror (currently pokemontcg.io), refreshed on a
-          schedule — never scraped, and never fetched while you load a page.
-          This product uses pokemontcg.io data but is not endorsed by or
-          affiliated with pokemontcg.io, TCGplayer, or The Pokémon Company.
+          Card prices come from up to two sources you can toggle and blend:{" "}
+          <strong>TCGplayer Market</strong> (via the pokemontcg.io mirror,
+          Pokémon only) and <strong>eBay sold</strong> (via PriceCharting, both
+          games). With more than one selected the number shown is a blend —
+          median by default. Everything refreshes on a schedule and is read from
+          our database; no external price API is ever called while you load a
+          page.
         </p>
         <p className="text-muted">
-          One Piece card facts come from optcgapi.com; its prices are
-          deliberately not used, and One Piece EV stays hidden until a licensed
-          price source covers it.
+          One Piece card facts come from optcgapi.com, whose scraped prices we
+          deliberately ignore; One Piece prices come from PriceCharting&apos;s
+          eBay-sold data instead — so One Piece now ranks with real EV.{" "}
+          <strong>Sealed</strong> box / ETB / pack prices are also live from
+          PriceCharting; a figure marked with an asterisk is a hand-tracked
+          fallback for the few products without a live match. Each product page
+          also charts its market price over time from the daily snapshots the
+          price job accumulates.
+        </p>
+        <p className="text-muted">
+          This product uses pokemontcg.io and PriceCharting data but is not
+          endorsed by or affiliated with them, TCGplayer, eBay, The Pokémon
+          Company, or Bandai.
         </p>
       </section>
 
