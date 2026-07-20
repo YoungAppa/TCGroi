@@ -153,7 +153,7 @@ export function ProductDetail({
                     src={p.imageUrl}
                     alt={p.name}
                     loading="lazy"
-                    className="h-24 w-auto rounded border border-border object-contain"
+                    className="h-40 w-auto rounded-lg border border-border object-contain"
                   />
                 )}
                 <div>
@@ -236,59 +236,72 @@ export function ProductDetail({
         </p>
       </section>
 
-      {/* ---- chase table ---- */}
-      <section className="space-y-2">
-        <h2 className="text-lg font-semibold">Chase cards</h2>
+      {/* ---- chase gallery ---- */}
+      <section className="space-y-3">
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <h2 className="text-lg font-semibold">Chase cards</h2>
+          {ev.chase.length > 0 && (
+            <span className="text-xs text-muted">
+              {ev.chase.length} priced · biggest hits first
+            </span>
+          )}
+        </div>
         {ev.chase.length === 0 ? (
           <p className="text-sm text-muted">No priced chase cards.</p>
         ) : (
-          <div className="overflow-x-auto rounded-lg border border-border">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border bg-surface text-left text-xs uppercase tracking-wide text-muted">
-                  <th className="px-3 py-2">Card</th>
-                  <th className="px-3 py-2">Tier</th>
-                  <th className="px-3 py-2">Value</th>
-                  <th className="px-3 py-2">Odds</th>
-                  <th className="px-3 py-2">P(≥1) / {shortType(payload.productType)}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {ev.chase.map((c) => {
-                  const img = payload.cards.find((x) => x.cardId === c.cardId)?.imageUrl;
-                  return (
-                    <tr key={c.cardId} className="border-b border-border/40 last:border-0">
-                      <td className="px-3 py-1.5">
-                        <span className="flex items-center gap-2">
-                          {img && (
-                            <img
-                              src={img}
-                              alt=""
-                              loading="lazy"
-                              className="h-12 w-auto rounded-sm border border-border object-contain"
-                            />
-                          )}
-                          <span>
-                            {c.name} <span className="text-muted">#{c.number}</span>
-                          </span>
-                        </span>
-                      </td>
-                      <td className="px-3 py-1.5 text-muted">{rarityLabel(c.rarity)}</td>
-                      <td className="tabular px-3 py-1.5">{formatCents(c.valueCents)}</td>
-                      <td className="tabular px-3 py-1.5">{formatOneIn(c.oneInPacks)}</td>
-                      <td className="tabular px-3 py-1.5">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5">
+            {ev.chase.map((c) => {
+              const img = payload.cards.find((x) => x.cardId === c.cardId)?.imageUrl;
+              return (
+                <div
+                  key={c.cardId}
+                  className="group flex flex-col overflow-hidden rounded-xl border border-border bg-surface transition hover:border-accent/60 hover:shadow-lg hover:shadow-black/30"
+                >
+                  <div className="relative aspect-[5/7] w-full overflow-hidden bg-surface-raised">
+                    {img ? (
+                      <img
+                        src={img}
+                        alt={c.name}
+                        loading="lazy"
+                        className="h-full w-full object-contain transition-transform duration-200 group-hover:scale-[1.04]"
+                      />
+                    ) : (
+                      <div className="flex h-full items-center justify-center text-xs text-muted">
+                        no image
+                      </div>
+                    )}
+                    <span className="tabular absolute right-1.5 top-1.5 rounded-md bg-black/75 px-1.5 py-0.5 text-sm font-semibold text-emerald-300 shadow-sm backdrop-blur-sm">
+                      {formatCents(c.valueCents)}
+                    </span>
+                  </div>
+                  <div className="flex flex-1 flex-col gap-1 p-2.5">
+                    <div
+                      className="truncate text-sm font-medium"
+                      title={`${c.name} #${c.number}`}
+                    >
+                      {c.name} <span className="text-muted">#{c.number}</span>
+                    </div>
+                    <div className="text-xs text-muted">{rarityLabel(c.rarity)}</div>
+                    <div className="mt-auto flex items-center justify-between gap-1 pt-1.5 text-xs">
+                      <span className="tabular text-muted">{formatOneIn(c.oneInPacks)}</span>
+                      <span
+                        className="tabular rounded bg-surface-raised px-1.5 py-0.5 font-medium"
+                        title={`Chance of at least one per ${shortType(payload.productType)}`}
+                      >
                         {formatProbability(c.probPerProduct)}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         )}
         <p className="text-xs text-muted">
-          Per-card odds assume every card in a tier is equally likely — no public
-          data quantifies short prints. See{" "}
+          Each tile: card value (top-right), odds per pack, and the chance of at
+          least one per {shortType(payload.productType)} (bottom-right). Per-card
+          odds assume every card in a tier is equally likely — no public data
+          quantifies short prints. See{" "}
           <Link href={withFilter("/methodology")} className="underline">
             methodology
           </Link>
