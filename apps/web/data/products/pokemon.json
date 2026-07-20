@@ -365,6 +365,54 @@
       "marketCents": 2359,
       "marketAsOf": "2026-07-20",
       "marketSource": "PriceCharting (eBay sold), 2026-07-20"
+    },
+    {
+      "setCode": "sv9",
+      "name": "Booster Box (36 packs)",
+      "slug": "booster-box",
+      "type": "booster_box",
+      "packsContained": 36,
+      "msrpCents": 16164
+    },
+    {
+      "setCode": "sv9",
+      "name": "Elite Trainer Box (9 packs)",
+      "slug": "elite-trainer-box",
+      "type": "etb",
+      "packsContained": 9,
+      "msrpCents": 4999
+    },
+    {
+      "setCode": "sv9",
+      "name": "Booster Pack",
+      "slug": "booster-pack",
+      "type": "booster_pack",
+      "packsContained": 1,
+      "msrpCents": 449
+    },
+    {
+      "setCode": "sv10",
+      "name": "Booster Box (36 packs)",
+      "slug": "booster-box",
+      "type": "booster_box",
+      "packsContained": 36,
+      "msrpCents": 16164
+    },
+    {
+      "setCode": "sv10",
+      "name": "Elite Trainer Box (9 packs)",
+      "slug": "elite-trainer-box",
+      "type": "etb",
+      "packsContained": 9,
+      "msrpCents": 4999
+    },
+    {
+      "setCode": "sv10",
+      "name": "Booster Pack",
+      "slug": "booster-pack",
+      "type": "booster_pack",
+      "packsContained": 1,
+      "msrpCents": 449
     }
   ]
 }

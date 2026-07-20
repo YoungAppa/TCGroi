@@ -1,0 +1,20 @@
+{
+  "game": "pokemon",
+  "setCode": "sv9",
+  "version": 1,
+  "sampleSizePacks": 8000,
+  "sourceUrl": "https://www.tcgplayer.com/content/article/Pok%C3%A9mon-TCG-Journey-Together-Pull-Rates/1b9f379f-97cb-45cc-b6f6-a1a070a422cd/",
+  "sourceNote": "TCGplayer Authentication Center study, read directly from the primary article (Peter Day, published 2025-03-28): more than 8,000 Journey Together booster packs opened, per-tier rates with 95% confidence intervals — Double Rare 20.29% ±0.85, Ultra Rare 6.54% ±0.52, Illustration Rare 8.50% ±0.59, Special Illustration Rare 1.16% ±0.23, Hyper Rare 0.73% ±0.18. Journey Together nudged the odds up from the 2024 sets: Double Rares 1-in-5 (vs 1-in-6) and Illustration Rares 1-in-12 (vs 1-in-13), a change the study confirms exceeds the 95% CI of every 2024 set. First set since Temporal Forces with no ACE SPEC tier.",
+  "confidence": "high",
+  "slots": [
+    { "rarity": "double_rare", "perPackProbability": 0.2029 },
+    { "rarity": "ultra_rare", "perPackProbability": 0.0654 },
+    { "rarity": "illustration_rare", "perPackProbability": 0.085 },
+    { "rarity": "special_illustration_rare", "perPackProbability": 0.0116 },
+    { "rarity": "hyper_rare", "perPackProbability": 0.0073 }
+  ],
+  "alternateEstimates": [],
+  "guaranteedSlots": [],
+  "boxGuarantees": [],
+  "showWhenPlaceholder": false
+}

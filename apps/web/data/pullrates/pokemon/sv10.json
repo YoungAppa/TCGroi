@@ -1,0 +1,20 @@
+{
+  "game": "pokemon",
+  "setCode": "sv10",
+  "version": 1,
+  "sampleSizePacks": 8000,
+  "sourceUrl": "https://www.tcgplayer.com/content/article/Pok%C3%A9mon-TCG-Destined-Rivals-Pull-Rates/43ba832e-44c9-45a4-ae2e-594df2defdda/",
+  "sourceNote": "TCGplayer Authentication Center study, read directly from the primary article (Peter Day, published 2025-05-30): more than 8,000 Destined Rivals booster packs opened, per-tier rates with 95% confidence intervals — Double Rare 19.83% ±0.84, Ultra Rare 6.39% ±0.52, Illustration Rare 8.29% ±0.58, Special Illustration Rare 1.06% ±0.22, Hyper Rare 0.67% ±0.17. The study finds these effectively identical to Journey Together (differences within the CI). No ACE SPEC tier. Destined Rivals' larger Secret Rare pool (22 UR, 23 IR, 11 SIR) makes any specific chase card roughly half as likely as in the smaller Journey Together.",
+  "confidence": "high",
+  "slots": [
+    { "rarity": "double_rare", "perPackProbability": 0.1983 },
+    { "rarity": "ultra_rare", "perPackProbability": 0.0639 },
+    { "rarity": "illustration_rare", "perPackProbability": 0.0829 },
+    { "rarity": "special_illustration_rare", "perPackProbability": 0.0106 },
+    { "rarity": "hyper_rare", "perPackProbability": 0.0067 }
+  ],
+  "alternateEstimates": [],
+  "guaranteedSlots": [],
+  "boxGuarantees": [],
+  "showWhenPlaceholder": false
+}
