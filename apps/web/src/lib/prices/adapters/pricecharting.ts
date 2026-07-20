@@ -68,13 +68,17 @@ const PK_CONSOLE_OVERRIDE: Record<string, string> = {
   sv3pt5: "Pokemon Scarlet & Violet 151",
 };
 
-/** Our sealed product-type -> the exact PriceCharting sealed product-name. */
-const SEALED_LABEL: Record<string, string> = {
-  booster_box: "Booster Box",
-  booster_pack: "Booster Pack",
-  etb: "Elite Trainer Box",
-  bundle: "Booster Bundle",
-  case: "Ultra Premium Collection Box",
+/**
+ * Our sealed product-type -> candidate PriceCharting product-names, tried in
+ * order. Most sets use the first; a few name the same product differently
+ * (Scarlet & Violet base calls its box "Base Set Booster Box").
+ */
+const SEALED_LABELS: Record<string, string[]> = {
+  booster_box: ["Booster Box", "Base Set Booster Box"],
+  booster_pack: ["Booster Pack"],
+  etb: ["Elite Trainer Box"],
+  bundle: ["Booster Bundle"],
+  case: ["Ultra Premium Collection Box"],
 };
 
 /** Everything parsed from one category CSV: card prices and sealed prices. */
@@ -271,8 +275,12 @@ export class PriceChartingAdapter implements PriceSourceAdapter {
 
     const capturedAt = new Date();
     const out: PriceSnapshotInput[] = [];
-    for (const [type, label] of Object.entries(SEALED_LABEL)) {
-      const cents = data.sealed.get(`${consoleName}|${label}`);
+    for (const [type, labels] of Object.entries(SEALED_LABELS)) {
+      let cents: number | undefined;
+      for (const label of labels) {
+        cents = data.sealed.get(`${consoleName}|${label}`);
+        if (cents !== undefined && cents > 0) break;
+      }
       if (cents === undefined || cents <= 0) continue;
       // externalProductId is our product-type; the job resolves it to the set's
       // sealed product of that type.
