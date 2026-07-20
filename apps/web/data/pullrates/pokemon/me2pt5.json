@@ -1,0 +1,21 @@
+{
+  "game": "pokemon",
+  "setCode": "me2pt5",
+  "version": 1,
+  "sampleSizePacks": 2000,
+  "sourceUrl": "https://www.tcgplayer.com/content/article/Pok%C3%A9mon-TCG-Ascended-Heroes-Pull-Rates/60143d94-88a7-42ce-8e73-babd7b3fabd6/",
+  "sourceNote": "TCGplayer Authentication Center study, read directly from the primary article (Peter Day, published 2026-02-24): more than 2,000 Ascended Heroes booster packs opened, per-tier rates with 95% confidence intervals — Double Rare 20.37% ±1.70, Ultra Rare 4.81% ±0.90, Mega Attack Rare 3.47% ±0.77, Illustration Rare 11.25% ±1.33, Special Illustration Rare 1.44% ±0.50, Mega Hyper Rare 0.19% ±0.18. Ascended Heroes is the largest English set ever; the new Mega Attack Rare effectively replaces an Ultra Rare in the packs where it appears (~3% of the difference from the ~8% UR rate of earlier Mega sets). God Packs (three Mega Attack Rares + seven SIRs) were not observed and are not modelled. No ACE SPEC or regular Hyper Rare tier. The article's per-card 'Any Ultra Rare' sub-table lists 20.77% — a transcription slip duplicating the Double Rare row; the summary table, the ~5% prose, and the per-card math (0.34%×14) all agree on 4.81%, used here.",
+  "confidence": "high",
+  "slots": [
+    { "rarity": "double_rare", "perPackProbability": 0.2037 },
+    { "rarity": "ultra_rare", "perPackProbability": 0.0481 },
+    { "rarity": "mega_attack_rare", "perPackProbability": 0.0347 },
+    { "rarity": "illustration_rare", "perPackProbability": 0.1125 },
+    { "rarity": "special_illustration_rare", "perPackProbability": 0.0144 },
+    { "rarity": "mega_hyper_rare", "perPackProbability": 0.0019 }
+  ],
+  "alternateEstimates": [],
+  "guaranteedSlots": [],
+  "boxGuarantees": [],
+  "showWhenPlaceholder": false
+}

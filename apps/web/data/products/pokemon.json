@@ -463,6 +463,30 @@
       "msrpCents": 449
     },
     {
+      "setCode": "me2pt5",
+      "name": "Elite Trainer Box (9 packs)",
+      "slug": "elite-trainer-box",
+      "type": "etb",
+      "packsContained": 9,
+      "msrpCents": 4999
+    },
+    {
+      "setCode": "me2pt5",
+      "name": "Booster Bundle (6 packs)",
+      "slug": "booster-bundle",
+      "type": "bundle",
+      "packsContained": 6,
+      "msrpCents": 2694
+    },
+    {
+      "setCode": "me2pt5",
+      "name": "Booster Pack",
+      "slug": "booster-pack",
+      "type": "booster_pack",
+      "packsContained": 1,
+      "msrpCents": 449
+    },
+    {
       "setCode": "me3",
       "name": "Booster Box (36 packs)",
       "slug": "booster-box",

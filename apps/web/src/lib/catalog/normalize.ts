@@ -34,6 +34,11 @@ const POKEMON_RARITY_MAP: Record<string, string> = {
   "hyper rare": "hyper_rare",
   // Mega Evolution era's gold chase rarity (me1+), its own tier.
   "mega hyper rare": "mega_hyper_rare",
+  // Ascended Heroes (me2pt5) Mega Attack Rare. pokemontcg.io emits it in the
+  // unusual underscore form "MEGA_ATTACK_RARE" (most rarities are space-cased);
+  // map both forms so a later space-cased fix upstream still lands.
+  "mega_attack_rare": "mega_attack_rare",
+  "mega attack rare": "mega_attack_rare",
   // Black Bolt / White Flare chase rarity (Zekrom ex / Reshiram ex / Victini).
   "black white rare": "black_white_rare",
   // Shiny tiers, live in Paldean Fates (sv4pt5). Their own tiers — see the note

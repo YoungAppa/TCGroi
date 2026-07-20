@@ -97,6 +97,12 @@ export async function refreshPrices() {
     ];
 
     let snapshotsWritten = 0;
+    // A single set's flaky external call (pokemontcg.io occasionally 404s a
+    // valid set under load; Neon occasionally drops a write) must not abort the
+    // whole run and strand every set after it. We isolate each (set, adapter)
+    // fetch+write, record the failure, and press on — every write is
+    // append-only + idempotent, so the next run retries only what failed.
+    const failures: { set: string; adapter: string; error: string }[] = [];
 
     for (const setRow of allSetsToPrice) {
       const catalogSet: CatalogSet = {
@@ -148,28 +154,42 @@ export async function refreshPrices() {
       const sealedIdByType = new Map(sealedRows.map((s) => [s.type as string, s.id]));
 
       for (const adapter of adapters) {
-        // Priority order: sealed first (cheapest, highest value per call for
-        // quota-bound providers), then cards. Graded runs with cards.
-        const sealed = adapter.supports.sealed
-          ? await adapter.fetchSealedPrices(catalogSet)
-          : [];
-        const raw = adapter.supports.cardsRaw
-          ? await adapter.fetchCardPrices(catalogSet, priceable)
-          : [];
-        const graded =
-          adapter.supports.cardsGraded && adapter.fetchGradedPrices
-            ? await adapter.fetchGradedPrices(priceable)
+        try {
+          // Priority order: sealed first (cheapest, highest value per call for
+          // quota-bound providers), then cards. Graded runs with cards.
+          const sealed = adapter.supports.sealed
+            ? await adapter.fetchSealedPrices(catalogSet)
             : [];
+          const raw = adapter.supports.cardsRaw
+            ? await adapter.fetchCardPrices(catalogSet, priceable)
+            : [];
+          const graded =
+            adapter.supports.cardsGraded && adapter.fetchGradedPrices
+              ? await adapter.fetchGradedPrices(priceable)
+              : [];
 
-        snapshotsWritten += await writeSnapshots(
-          [...sealed, ...raw, ...graded],
-          cardIdByExternal,
-          sealedIdByType,
-        );
+          snapshotsWritten += await writeSnapshots(
+            [...sealed, ...raw, ...graded],
+            cardIdByExternal,
+            sealedIdByType,
+          );
+        } catch (err) {
+          failures.push({
+            set: setRow.code,
+            adapter: adapter.id,
+            error: err instanceof Error ? err.message : String(err),
+          });
+        }
       }
     }
 
-    return { adaptersRun: adapters.length, setsPriced: allSetsToPrice.length, snapshotsWritten };
+    return {
+      adaptersRun: adapters.length,
+      setsPriced: allSetsToPrice.length,
+      snapshotsWritten,
+      failures: failures.length,
+      ...(failures.length > 0 ? { failed: failures } : {}),
+    };
   });
 }
 

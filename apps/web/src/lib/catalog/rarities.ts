@@ -30,6 +30,15 @@ export const POKEMON_RARITIES = [
   "ace_spec_rare",
   "illustration_rare", // full-art character illustration
   "ultra_rare", // full-art ex / Supporter
+  /**
+   * Ascended Heroes (me2pt5, 2026) introduced the Mega Attack Rare: a full-card
+   * alt-art Mega Evolution ex with its attacks written over the art in katakana
+   * (Mega Froslass ex, Mega Diancie ex). Its own tier — it effectively replaces
+   * an Ultra Rare in the packs where it appears (~3.5% vs the UR's ~4.8%), and
+   * its value sits between UR and Special Illustration Rare, so folding it into
+   * either would misstate both. pokemontcg.io emits it as "MEGA_ATTACK_RARE".
+   */
+  "mega_attack_rare",
   "special_illustration_rare",
   "hyper_rare", // gold
   /**
@@ -113,6 +122,7 @@ export const RARITY_LABELS: Record<string, string> = {
   ace_spec_rare: "ACE SPEC Rare",
   illustration_rare: "Illustration Rare",
   ultra_rare: "Ultra Rare",
+  mega_attack_rare: "Mega Attack Rare",
   special_illustration_rare: "Special Illustration Rare",
   hyper_rare: "Hyper Rare",
   mega_hyper_rare: "Mega Hyper Rare",

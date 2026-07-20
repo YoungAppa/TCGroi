@@ -62,6 +62,15 @@ describe("normalizePokemonRarity", () => {
     expect(normalizePokemonRarity("Black White Rare")).toBe("black_white_rare");
   });
 
+  it("maps the Ascended Heroes Mega Attack Rare from both string forms", () => {
+    // pokemontcg.io emits the unusual underscore form for this set; accept the
+    // space-cased form too in case that is normalised upstream later.
+    expect(normalizePokemonRarity("MEGA_ATTACK_RARE")).toBe("mega_attack_rare");
+    expect(normalizePokemonRarity("Mega Attack Rare")).toBe("mega_attack_rare");
+    // It is its own tier, not folded into Ultra Rare.
+    expect(normalizePokemonRarity("Ultra Rare")).toBe("ultra_rare");
+  });
+
   it("is case- and whitespace-insensitive", () => {
     expect(normalizePokemonRarity("  hYpEr RaRe  ")).toBe("hyper_rare");
   });
