@@ -16,6 +16,7 @@ import { useFilterState } from "./useFilterState";
 
 type SortKey = "roiMarket" | "roiRetail" | "ev" | "market" | "evPerPack" | "pTopBox";
 type Row = { payload: ProductPayload; c: ProductComputation };
+type ViewMode = "list" | "icons";
 
 /** The rarity whose per-box probability headlines the rankings, per game. */
 const HEADLINE_RARITY: Record<string, string[]> = {
@@ -44,8 +45,6 @@ const SORTS: Record<SortKey, (r: Row) => number> = {
   pTopBox: headlineProb,
 };
 
-type ViewMode = "list" | "icons";
-
 export function RankingsTable({
   products,
   availableSources,
@@ -58,6 +57,10 @@ export function RankingsTable({
   const [sortDesc, setSortDesc] = useState(true);
   const [game, setGame] = useState<string>("all");
   const [view, setView] = useState<ViewMode>("list");
+  // Which price-column groups the List view shows. Independent of the EV source
+  // selection above — hiding a column never changes how EV is computed.
+  const [showRetail, setShowRetail] = useState(true);
+  const [showMarket, setShowMarket] = useState(true);
 
   const availableIds = useMemo(() => availableSources.map((s) => s.id), [availableSources]);
 
@@ -75,6 +78,17 @@ export function RankingsTable({
     return [...rows].sort((a, b) => (metric(b) - metric(a)) * (sortDesc ? 1 : -1));
   }, [rows, sortKey, sortDesc]);
 
+  // One section per game so the two games never interleave in a single table.
+  const gameSections = useMemo(() => {
+    const m = new Map<string, { name: string; rows: Row[] }>();
+    for (const r of sorted) {
+      const key = r.payload.gameSlug;
+      if (!m.has(key)) m.set(key, { name: r.payload.gameName, rows: [] });
+      m.get(key)!.rows.push(r);
+    }
+    return [...m.entries()].map(([slug, v]) => ({ slug, ...v }));
+  }, [sorted]);
+
   function clickSort(key: SortKey) {
     if (key === sortKey) setSortDesc((d) => !d);
     else {
@@ -85,16 +99,145 @@ export function RankingsTable({
 
   const games = [...new Set(products.map((p) => p.gameSlug))];
   const anyManualMarket = rows.some((r) => r.payload.market.isManual);
+  // At least one price column must remain — snap the other on if both go off.
+  const retailOn = showRetail || !showMarket;
+  const marketOn = showMarket || !showRetail;
+
+  function renderGrid(sectionRows: Row[]) {
+    return (
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+        {sectionRows.map((row) => (
+          <IconTile key={row.payload.productId} row={row} withFilter={withFilter} />
+        ))}
+      </div>
+    );
+  }
+
+  function renderList(sectionRows: Row[]) {
+    return (
+      <div className="overflow-x-auto rounded-lg border border-border">
+        <table className="w-full text-sm">
+          <thead>
+            {/* Group header: the retail/market split is the page's thesis. */}
+            <tr className="border-b border-border/60 bg-surface text-center text-[10px] uppercase tracking-wider text-muted">
+              <th colSpan={2} className="px-3 py-1" />
+              {retailOn && (
+                <th colSpan={2} className="border-l border-border/60 px-3 py-1">
+                  Retail (MSRP)
+                </th>
+              )}
+              {marketOn && (
+                <th colSpan={2} className="border-l border-border/60 px-3 py-1">
+                  Current market
+                </th>
+              )}
+              <th colSpan={2} className="border-l border-border/60 px-3 py-1" />
+            </tr>
+            <tr className="border-b border-border bg-surface text-left text-xs uppercase tracking-wide text-muted">
+              <th className="px-3 py-2 font-medium">Product</th>
+              <SortHeader label="EV" k="ev" cur={sortKey} desc={sortDesc} onClick={clickSort} />
+              {retailOn && (
+                <>
+                  <th className="tabular border-l border-border/60 px-3 py-2 font-medium">MSRP</th>
+                  <SortHeader label="ROI" k="roiRetail" cur={sortKey} desc={sortDesc} onClick={clickSort} />
+                </>
+              )}
+              {marketOn && (
+                <>
+                  <SortHeader label="Price" k="market" cur={sortKey} desc={sortDesc} onClick={clickSort} borderLeft />
+                  <SortHeader label="ROI" k="roiMarket" cur={sortKey} desc={sortDesc} onClick={clickSort} />
+                </>
+              )}
+              <SortHeader label="P(top hit)" k="pTopBox" cur={sortKey} desc={sortDesc} onClick={clickSort} borderLeft />
+              <th className="px-3 py-2 font-medium">Data</th>
+            </tr>
+          </thead>
+          <tbody>
+            {sectionRows.map(({ payload, c }) => (
+              <tr
+                key={payload.productId}
+                className="border-b border-border/50 transition-colors last:border-0 hover:bg-surface"
+              >
+                <td className="px-3 py-2">
+                  <Link
+                    href={withFilter(`/${payload.gameSlug}/${payload.setCode}/${payload.productSlug}`)}
+                    className="flex items-center gap-2"
+                  >
+                    {payload.imageUrl && (
+                      <img
+                        src={payload.imageUrl}
+                        alt=""
+                        loading="lazy"
+                        className="h-6 w-14 shrink-0 object-contain"
+                      />
+                    )}
+                    <span>
+                      <span className="font-medium">{payload.setName}</span>{" "}
+                      <span className="text-muted">{payload.productName}</span>
+                    </span>
+                  </Link>
+                </td>
+                <td className="tabular px-3 py-2">{formatCents(c.ev.evProductCents)}</td>
+                {retailOn && (
+                  <>
+                    <td className="tabular border-l border-border/60 px-3 py-2 text-muted">
+                      {payload.msrpCents !== null ? formatCents(payload.msrpCents) : "—"}
+                    </td>
+                    <td className="tabular px-3 py-2">
+                      <RoiCell roi={c.roiRetail} />
+                    </td>
+                  </>
+                )}
+                {marketOn && (
+                  <>
+                    <td className="tabular border-l border-border/60 px-3 py-2">
+                      {payload.market.priceCents !== null ? formatCents(payload.market.priceCents) : "—"}
+                      {payload.market.isManual && (
+                        <span
+                          title={`Hand-tracked ${payload.market.asOf ?? ""} — ${payload.market.source ?? ""}. Replaced automatically once a sealed price source is connected.`}
+                          className="ml-1 cursor-help text-amber-400"
+                        >
+                          *
+                        </span>
+                      )}
+                    </td>
+                    <td className="tabular px-3 py-2">
+                      <RoiCell roi={c.roiMarket} />
+                    </td>
+                  </>
+                )}
+                <td className="tabular border-l border-border/60 px-3 py-2">
+                  {formatProbability(headlineProb({ payload, c }))}
+                </td>
+                <td className="px-3 py-2">
+                  <ConfidenceBadge
+                    confidence={payload.pullRates.confidence}
+                    sampleSizePacks={payload.pullRates.sampleSizePacks}
+                  />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <SourceFilter
-          available={availableSources}
-          state={state}
-          onChange={setState}
-          gradedAvailable={false /* wired in Phase 6 when a graded source exists */}
-        />
+        <div className="flex flex-wrap items-center gap-2">
+          <SourceFilter
+            available={availableSources}
+            state={state}
+            onChange={setState}
+            gradedAvailable={false /* wired in Phase 6 when a graded source exists */}
+          />
+          {/* Column toggles: which price columns the List view shows. */}
+          <span className="ml-1 text-xs uppercase tracking-wide text-muted">Columns</span>
+          <ColumnPill label="Retail (MSRP)" on={retailOn} onClick={() => setShowRetail((v) => !v)} />
+          <ColumnPill label="Market" on={marketOn} onClick={() => setShowMarket((v) => !v)} />
+        </div>
         <div className="flex items-center gap-3">
           {games.length > 1 && (
             <select
@@ -130,103 +273,15 @@ export function RankingsTable({
         </div>
       </div>
 
-      {view === "icons" ? (
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-          {sorted.map((row) => (
-            <IconTile key={row.payload.productId} row={row} withFilter={withFilter} />
-          ))}
-        </div>
-      ) : (
-        <div className="overflow-x-auto rounded-lg border border-border">
-        <table className="w-full text-sm">
-          <thead>
-            {/* Group header: the retail/market split is the page's thesis. */}
-            <tr className="border-b border-border/60 bg-surface text-center text-[10px] uppercase tracking-wider text-muted">
-              <th colSpan={2} className="px-3 py-1" />
-              <th colSpan={2} className="border-l border-border/60 px-3 py-1">
-                Retail (MSRP)
-              </th>
-              <th colSpan={2} className="border-l border-border/60 px-3 py-1">
-                Current market
-              </th>
-              <th colSpan={2} className="border-l border-border/60 px-3 py-1" />
-            </tr>
-            <tr className="border-b border-border bg-surface text-left text-xs uppercase tracking-wide text-muted">
-              <th className="px-3 py-2 font-medium">Product</th>
-              <SortHeader label="EV" k="ev" cur={sortKey} desc={sortDesc} onClick={clickSort} />
-              <th className="tabular border-l border-border/60 px-3 py-2 font-medium">MSRP</th>
-              <SortHeader label="ROI" k="roiRetail" cur={sortKey} desc={sortDesc} onClick={clickSort} />
-              <SortHeader label="Price" k="market" cur={sortKey} desc={sortDesc} onClick={clickSort} borderLeft />
-              <SortHeader label="ROI" k="roiMarket" cur={sortKey} desc={sortDesc} onClick={clickSort} />
-              <SortHeader label="P(top hit)" k="pTopBox" cur={sortKey} desc={sortDesc} onClick={clickSort} borderLeft />
-              <th className="px-3 py-2 font-medium">Data</th>
-            </tr>
-          </thead>
-          <tbody>
-            {sorted.map(({ payload, c }) => (
-              <tr
-                key={payload.productId}
-                className="border-b border-border/50 transition-colors last:border-0 hover:bg-surface"
-              >
-                <td className="px-3 py-2">
-                  <Link
-                    href={withFilter(
-                      `/${payload.gameSlug}/${payload.setCode}/${payload.productSlug}`,
-                    )}
-                    className="flex items-center gap-2"
-                  >
-                    {payload.imageUrl && (
-                      <img
-                        src={payload.imageUrl}
-                        alt=""
-                        loading="lazy"
-                        className="h-6 w-14 shrink-0 object-contain"
-                      />
-                    )}
-                    <span>
-                      <span className="font-medium">{payload.setName}</span>{" "}
-                      <span className="text-muted">{payload.productName}</span>
-                    </span>
-                  </Link>
-                </td>
-                <td className="tabular px-3 py-2">{formatCents(c.ev.evProductCents)}</td>
-                <td className="tabular border-l border-border/60 px-3 py-2 text-muted">
-                  {payload.msrpCents !== null ? formatCents(payload.msrpCents) : "—"}
-                </td>
-                <td className="tabular px-3 py-2">
-                  <RoiCell roi={c.roiRetail} />
-                </td>
-                <td className="tabular border-l border-border/60 px-3 py-2">
-                  {payload.market.priceCents !== null
-                    ? formatCents(payload.market.priceCents)
-                    : "—"}
-                  {payload.market.isManual && (
-                    <span
-                      title={`Hand-tracked ${payload.market.asOf ?? ""} — ${payload.market.source ?? ""}. Replaced automatically once a sealed price source is connected.`}
-                      className="ml-1 cursor-help text-amber-400"
-                    >
-                      *
-                    </span>
-                  )}
-                </td>
-                <td className="tabular px-3 py-2">
-                  <RoiCell roi={c.roiMarket} />
-                </td>
-                <td className="tabular border-l border-border/60 px-3 py-2">
-                  {formatProbability(headlineProb({ payload, c }))}
-                </td>
-                <td className="px-3 py-2">
-                  <ConfidenceBadge
-                    confidence={payload.pullRates.confidence}
-                    sampleSizePacks={payload.pullRates.sampleSizePacks}
-                  />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        </div>
-      )}
+      {gameSections.map(({ slug, name, rows: sectionRows }) => (
+        <section key={slug} className="space-y-2">
+          <h2 className="flex items-baseline gap-2 text-sm font-semibold uppercase tracking-wide">
+            {name}
+            <span className="text-xs font-normal text-muted">{sectionRows.length} products</span>
+          </h2>
+          {view === "icons" ? renderGrid(sectionRows) : renderList(sectionRows)}
+        </section>
+      ))}
 
       <p className="text-xs text-muted">
         Retail ROI answers &quot;is it worth opening at MSRP&quot;; market ROI answers
@@ -235,6 +290,22 @@ export function RankingsTable({
           " Market prices marked * are hand-tracked with a source and date — a live sealed price source replaces them automatically."}
       </p>
     </div>
+  );
+}
+
+function ColumnPill({ label, on, onClick }: { label: string; on: boolean; onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      aria-pressed={on}
+      className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
+        on
+          ? "border-accent bg-accent/15 text-accent"
+          : "border-border bg-surface text-muted hover:text-foreground"
+      }`}
+    >
+      {label}
+    </button>
   );
 }
 
@@ -249,10 +320,9 @@ const TYPE_LABEL: Record<ProductPayload["productType"], string> = {
 };
 
 /**
- * Icon-view tile: the set logo stands in as product art (we have no photos of
- * the sealed products themselves), with a product-type badge to tell a set's
- * Pack/Box/ETB apart. Hovering fades in the set's three biggest chase cards
- * over the logo — the payoff the whole site is about, made visual.
+ * Icon-view tile. Pokémon has set logos; One Piece (optcgapi) has none, so the
+ * set's biggest chase card stands in as the hero there. Either way, hovering
+ * fades the hero out and fans in the set's three biggest chase cards.
  */
 function IconTile({
   row,
@@ -271,8 +341,10 @@ function IconTile({
     }))
     .filter((ch) => ch.img);
 
-  // Market ROI is the headline; fall back to retail when there's no market price.
   const roi = c.roiMarket ?? c.roiRetail;
+  // Set logo when we have one; otherwise the top chase card is the hero.
+  const heroImg = payload.imageUrl ?? chase[0]?.img ?? null;
+  const heroIsCard = !payload.imageUrl && heroImg !== null;
 
   return (
     <Link
@@ -289,14 +361,14 @@ function IconTile({
         />
       </div>
 
-      {/* Hero: set logo, overlaid on hover by the three chase cards. */}
+      {/* Hero: set logo or top chase card, overlaid on hover by the chase trio. */}
       <div className="relative flex h-28 items-center justify-center rounded-lg bg-surface-raised/40">
-        {payload.imageUrl ? (
+        {heroImg ? (
           <img
-            src={payload.imageUrl}
+            src={heroImg}
             alt={payload.setName}
             loading="lazy"
-            className="max-h-20 max-w-[85%] object-contain transition-opacity duration-200 group-hover:opacity-0"
+            className={`${heroIsCard ? "h-full" : "max-h-20 max-w-[85%]"} w-auto object-contain transition-opacity duration-200 group-hover:opacity-0`}
           />
         ) : (
           <span className="px-2 text-center text-sm font-semibold text-muted transition-opacity group-hover:opacity-0">
@@ -307,17 +379,14 @@ function IconTile({
         {chase.length > 0 && (
           <div className="pointer-events-none absolute inset-0 flex items-center justify-center gap-1.5 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
             {chase.map((ch, i) => (
-              <span key={ch.key} className="relative flex flex-col items-center">
-                <img
-                  src={ch.img!}
-                  alt=""
-                  loading="lazy"
-                  className="h-24 w-auto rounded-sm border border-border object-contain shadow-md"
-                  style={{
-                    transform: `rotate(${(i - 1) * 7}deg) translateY(${i === 1 ? -2 : 4}px)`,
-                  }}
-                />
-              </span>
+              <img
+                key={ch.key}
+                src={ch.img!}
+                alt=""
+                loading="lazy"
+                className="h-24 w-auto rounded-sm border border-border object-contain shadow-md"
+                style={{ transform: `rotate(${(i - 1) * 7}deg) translateY(${i === 1 ? -2 : 4}px)` }}
+              />
             ))}
           </div>
         )}
