@@ -1,0 +1,21 @@
+{
+  "game": "pokemon",
+  "setCode": "sv5",
+  "version": 1,
+  "sampleSizePacks": 8000,
+  "sourceUrl": "https://www.tcgplayer.com/content/article/Pok%C3%A9mon-TCG-Temporal-Forces-Pull-Rates/28c0ad22-00a4-428f-b22d-e7fee9ec50bc/",
+  "sourceNote": "TCGplayer Authentication Center study, read directly from the primary article (Peter Day, updated 2025-02-27): more than 8,000 Temporal Forces booster packs opened, per-tier rates published with 95% confidence intervals — Double Rare 16.83% ±0.79, Ultra Rare 6.67% ±0.53, ACE SPEC 5.00% ±0.46, Illustration Rare 7.72% ±0.56, Special Illustration Rare 1.17% ±0.23, Hyper Rare 0.72% ±0.18. The study validates our uniform-within-tier assumption: every individual card's measured rate fit within the 95% CI for its rarity. Temporal Forces reintroduced the ACE SPEC rarity, which replaces the first Reverse Holo slot rather than a Secret Rare slot, so it adds a hit without lowering the other odds. TCGplayer notes the pull rates are effectively identical to Twilight Masquerade and Stellar Crown by design; the small differences are within the confidence intervals.",
+  "confidence": "high",
+  "slots": [
+    { "rarity": "double_rare", "perPackProbability": 0.1683 },
+    { "rarity": "ultra_rare", "perPackProbability": 0.0667 },
+    { "rarity": "ace_spec_rare", "perPackProbability": 0.05 },
+    { "rarity": "illustration_rare", "perPackProbability": 0.0772 },
+    { "rarity": "special_illustration_rare", "perPackProbability": 0.0117 },
+    { "rarity": "hyper_rare", "perPackProbability": 0.0072 }
+  ],
+  "alternateEstimates": [],
+  "guaranteedSlots": [],
+  "boxGuarantees": [],
+  "showWhenPlaceholder": false
+}

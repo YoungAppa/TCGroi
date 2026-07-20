@@ -1,0 +1,20 @@
+{
+  "game": "pokemon",
+  "setCode": "sv3",
+  "version": 1,
+  "sampleSizePacks": 8000,
+  "sourceUrl": "https://www.tcgplayer.com/content/article/Pok%C3%A9mon-TCG-Obsidian-Flames-Pull-Rates/e2a66999-a7b5-4621-9765-c9a132e04bd2/",
+  "sourceNote": "TCGplayer Authentication Center study, read directly from the primary article (Peter Day, updated 2025-02-27): more than 8,000 Obsidian Flames booster packs opened, per-tier rates with 95% confidence intervals — Double Rare 13.61% ±0.72, Ultra Rare 6.63% ±0.52, Illustration Rare 7.60% ±0.56, Special Illustration Rare 3.13% ±0.37, Hyper Rare 1.92% ±0.29. Obsidian Flames kept the generous early Scarlet & Violet rates, and its small top-rarity pool (only 6 SIRs, 3 HRs) made a specific chase — SIR Charizard ex at 1 in 192 packs — unusually easy to hit for the era. No ACE SPEC tier — that rarity did not return until Temporal Forces (sv5).",
+  "confidence": "high",
+  "slots": [
+    { "rarity": "double_rare", "perPackProbability": 0.1361 },
+    { "rarity": "ultra_rare", "perPackProbability": 0.0663 },
+    { "rarity": "illustration_rare", "perPackProbability": 0.076 },
+    { "rarity": "special_illustration_rare", "perPackProbability": 0.0313 },
+    { "rarity": "hyper_rare", "perPackProbability": 0.0192 }
+  ],
+  "alternateEstimates": [],
+  "guaranteedSlots": [],
+  "boxGuarantees": [],
+  "showWhenPlaceholder": false
+}

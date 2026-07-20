@@ -32,6 +32,12 @@ const POKEMON_RARITY_MAP: Record<string, string> = {
   "ultra rare": "ultra_rare",
   "special illustration rare": "special_illustration_rare",
   "hyper rare": "hyper_rare",
+  // Shiny tiers, live in Paldean Fates (sv4pt5). Their own tiers — see the note
+  // in POKEMON_RARITIES. Distinct from the legacy "rare shiny" string below,
+  // which older sets used for a single ultra-tier shiny and which stays mapped
+  // to ultra_rare.
+  "shiny rare": "shiny_rare",
+  "shiny ultra rare": "shiny_ultra_rare",
   // Older-era rarities, for sets we may ingest later. Mapped to the nearest
   // modern tier so they land somewhere sensible rather than vanishing.
   "rare holo": "rare",

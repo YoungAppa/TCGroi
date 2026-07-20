@@ -1,0 +1,21 @@
+{
+  "game": "pokemon",
+  "setCode": "sv6",
+  "version": 1,
+  "sampleSizePacks": 8000,
+  "sourceUrl": "https://www.tcgplayer.com/content/article/Pok%C3%A9mon-TCG-Twilight-Masquerade-Pull-Rates/f3eea967-e5fb-4108-8655-bb1c89587628/",
+  "sourceNote": "TCGplayer Authentication Center study, read directly from the primary article (Peter Day, updated 2025-02-27): more than 8,000 Twilight Masquerade booster packs opened, per-tier rates published with 95% confidence intervals — Double Rare 16.93% ±0.79, Ultra Rare 6.61% ±0.52, ACE SPEC 5.06% ±0.46, Illustration Rare 7.73% ±0.56, Special Illustration Rare 1.17% ±0.23, Hyper Rare 0.68% ±0.17. The study validates our uniform-within-tier assumption: every individual card's measured rate fit within the 95% CI for its rarity. TCGplayer notes the pull rates are effectively identical to Temporal Forces and Stellar Crown by design; the small differences are within the confidence intervals. Twilight Masquerade has the largest Secret Rare pool of the three (59 cards), so a specific chase card — e.g. SIR Greninja ex at 1 in 941 packs — is the hardest to hit of the trio despite matching per-tier odds.",
+  "confidence": "high",
+  "slots": [
+    { "rarity": "double_rare", "perPackProbability": 0.1693 },
+    { "rarity": "ultra_rare", "perPackProbability": 0.0661 },
+    { "rarity": "ace_spec_rare", "perPackProbability": 0.0506 },
+    { "rarity": "illustration_rare", "perPackProbability": 0.0773 },
+    { "rarity": "special_illustration_rare", "perPackProbability": 0.0117 },
+    { "rarity": "hyper_rare", "perPackProbability": 0.0068 }
+  ],
+  "alternateEstimates": [],
+  "guaranteedSlots": [],
+  "boxGuarantees": [],
+  "showWhenPlaceholder": false
+}

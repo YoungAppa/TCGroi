@@ -43,6 +43,15 @@ describe("normalizePokemonRarity", () => {
     expect(normalizePokemonRarity("ACE SPEC Rare")).toBe("ace_spec_rare");
   });
 
+  it("maps Paldean Fates shiny tiers to their own slugs", () => {
+    // Distinct tiers: a Shiny Rare is a ~$1 baby shiny, a Shiny Ultra Rare a
+    // full-art shiny ex chase. Neither folds into the ultra/special tiers.
+    expect(normalizePokemonRarity("Shiny Rare")).toBe("shiny_rare");
+    expect(normalizePokemonRarity("Shiny Ultra Rare")).toBe("shiny_ultra_rare");
+    // The legacy single-shiny string stays on the old mapping.
+    expect(normalizePokemonRarity("Rare Shiny")).toBe("ultra_rare");
+  });
+
   it("is case- and whitespace-insensitive", () => {
     expect(normalizePokemonRarity("  hYpEr RaRe  ")).toBe("hyper_rare");
   });

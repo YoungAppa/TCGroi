@@ -32,6 +32,16 @@ export const POKEMON_RARITIES = [
   "ultra_rare", // full-art ex / Supporter
   "special_illustration_rare",
   "hyper_rare", // gold
+  /**
+   * Shiny tiers, reintroduced in the special set Paldean Fates (sv4pt5) after
+   * Hidden/Shining Fates. Their own tiers, not folded into ultra/special: a
+   * Shiny Rare is a common-value baby shiny (120 of them, ~$1 each) while a
+   * Shiny Ultra Rare is a full-art shiny ex chase — averaging them together,
+   * or into the normal ex tiers, would badly misstate both. Only special sets
+   * carry them; a pull-rate file names them only when the set actually has them.
+   */
+  "shiny_rare",
+  "shiny_ultra_rare",
 ] as const;
 
 export const ONE_PIECE_RARITIES = [
@@ -93,6 +103,8 @@ export const RARITY_LABELS: Record<string, string> = {
   ultra_rare: "Ultra Rare",
   special_illustration_rare: "Special Illustration Rare",
   hyper_rare: "Hyper Rare",
+  shiny_rare: "Shiny Rare",
+  shiny_ultra_rare: "Shiny Ultra Rare",
   super_rare: "Super Rare",
   leader: "Leader",
   alt_art: "Alternate Art",

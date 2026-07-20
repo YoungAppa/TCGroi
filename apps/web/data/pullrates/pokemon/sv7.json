@@ -1,0 +1,21 @@
+{
+  "game": "pokemon",
+  "setCode": "sv7",
+  "version": 1,
+  "sampleSizePacks": 8000,
+  "sourceUrl": "https://www.tcgplayer.com/content/article/Pok%C3%A9mon-TCG-Stellar-Crown-Pull-Rates/2c0743dd-dbd0-4504-9ff8-be5a72dd04d1/",
+  "sourceNote": "TCGplayer Authentication Center study, read directly from the primary article (Peter Day, updated 2025-02-27): more than 8,000 Stellar Crown booster packs opened, per-tier rates published with 95% confidence intervals — Double Rare 16.90% ±0.79, Ultra Rare 6.75% ±0.53, ACE SPEC 4.94% ±0.46, Illustration Rare 7.79% ±0.57, Special Illustration Rare 1.11% ±0.22, Hyper Rare 0.73% ±0.18. The study validates our uniform-within-tier assumption: every individual card's measured rate fit within the 95% CI for its rarity (one caveat the authors flag — Dachsbun ex appears short-printed at 0.76% vs the ~1.21% Double Rare average). TCGplayer notes the pull rates are effectively identical across Temporal Forces, Twilight Masquerade, and Stellar Crown by design; the small differences are within the confidence intervals. Stellar Crown's smaller Secret Rare pool (33 vs 56-59) makes any specific chase card easier to hit even though the per-tier odds match.",
+  "confidence": "high",
+  "slots": [
+    { "rarity": "double_rare", "perPackProbability": 0.169 },
+    { "rarity": "ultra_rare", "perPackProbability": 0.0675 },
+    { "rarity": "ace_spec_rare", "perPackProbability": 0.0494 },
+    { "rarity": "illustration_rare", "perPackProbability": 0.0779 },
+    { "rarity": "special_illustration_rare", "perPackProbability": 0.0111 },
+    { "rarity": "hyper_rare", "perPackProbability": 0.0073 }
+  ],
+  "alternateEstimates": [],
+  "guaranteedSlots": [],
+  "boxGuarantees": [],
+  "showWhenPlaceholder": false
+}
