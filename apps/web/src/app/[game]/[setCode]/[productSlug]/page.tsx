@@ -49,10 +49,17 @@ export async function generateMetadata({
         ? `, ROI ${formatRoi(roiRetail)} at MSRP`
         : "";
   const title = `${payload.setName} ${payload.productName} — EV ${formatCents(ev.evProductCents)}${roiPart}`;
+  const description = `Expected value breakdown for ${payload.setName} ${payload.productName}: per-rarity EV, chase card odds, and pull-rate citations. Community estimates, not official odds.`;
+  const canonical = `/${payload.gameSlug}/${payload.setCode}/${payload.productSlug}`;
 
   return {
     title,
-    description: `Expected value breakdown for ${payload.setName} ${payload.productName}: per-rarity EV, chase card odds, and pull-rate citations. Community estimates, not official odds.`,
+    description,
+    alternates: { canonical },
+    // Product pages are the shareable unit — carry the EV/ROI headline into the
+    // OG/Twitter card instead of inheriting the generic site-level one.
+    openGraph: { type: "website", title, description, url: canonical },
+    twitter: { card: "summary_large_image", title, description },
   };
 }
 

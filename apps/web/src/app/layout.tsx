@@ -7,13 +7,35 @@ import "./globals.css";
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
+// Same fallback the robots/sitemap routes use; set NEXT_PUBLIC_SITE_URL at deploy.
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://packroi.vercel.app";
+
+const TITLE = "PACKROI — TCG pack & box expected value";
+const DESCRIPTION =
+  "Expected value and ROI for sealed Pokémon and One Piece TCG products, from community pull rates and live market prices. Opening sealed product is almost always -EV; this site shows exactly how much.";
+
 export const metadata: Metadata = {
+  // Resolves relative OG images and per-page canonical URLs against the site
+  // origin — without it, shared links carry no absolute image/URL.
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: "PACKROI — TCG pack & box expected value",
+    default: TITLE,
     template: "%s · PACKROI",
   },
-  description:
-    "Expected value and ROI for sealed Pokémon and One Piece TCG products, from community pull rates and live market prices. Opening sealed product is almost always -EV; this site shows exactly how much.",
+  description: DESCRIPTION,
+  applicationName: "PACKROI",
+  openGraph: {
+    type: "website",
+    siteName: "PACKROI",
+    url: SITE_URL,
+    title: TITLE,
+    description: DESCRIPTION,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: DESCRIPTION,
+  },
 };
 
 export default function RootLayout({
