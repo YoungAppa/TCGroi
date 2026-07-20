@@ -1,0 +1,149 @@
+{
+  "_comment": "One Piece sealed products. packsContained is a physical fact. MSRP left null (English OP MSRP not confidently sourced); EV shows without retail ROI until set. No hand-tracked market yet — a sealed price source would fill it.",
+  "products": [
+    {
+      "setCode": "OP-01",
+      "name": "Booster Box (24 packs)",
+      "slug": "booster-box",
+      "type": "booster_box",
+      "packsContained": 24,
+      "msrpCents": null
+    },
+    {
+      "setCode": "OP-01",
+      "name": "Booster Pack",
+      "slug": "booster-pack",
+      "type": "booster_pack",
+      "packsContained": 1,
+      "msrpCents": null
+    },
+    {
+      "setCode": "OP-02",
+      "name": "Booster Box (24 packs)",
+      "slug": "booster-box",
+      "type": "booster_box",
+      "packsContained": 24,
+      "msrpCents": null
+    },
+    {
+      "setCode": "OP-02",
+      "name": "Booster Pack",
+      "slug": "booster-pack",
+      "type": "booster_pack",
+      "packsContained": 1,
+      "msrpCents": null
+    },
+    {
+      "setCode": "OP-03",
+      "name": "Booster Box (24 packs)",
+      "slug": "booster-box",
+      "type": "booster_box",
+      "packsContained": 24,
+      "msrpCents": null
+    },
+    {
+      "setCode": "OP-03",
+      "name": "Booster Pack",
+      "slug": "booster-pack",
+      "type": "booster_pack",
+      "packsContained": 1,
+      "msrpCents": null
+    },
+    {
+      "setCode": "OP-04",
+      "name": "Booster Box (24 packs)",
+      "slug": "booster-box",
+      "type": "booster_box",
+      "packsContained": 24,
+      "msrpCents": null
+    },
+    {
+      "setCode": "OP-04",
+      "name": "Booster Pack",
+      "slug": "booster-pack",
+      "type": "booster_pack",
+      "packsContained": 1,
+      "msrpCents": null
+    },
+    {
+      "setCode": "OP-05",
+      "name": "Booster Box (24 packs)",
+      "slug": "booster-box",
+      "type": "booster_box",
+      "packsContained": 24,
+      "msrpCents": null
+    },
+    {
+      "setCode": "OP-05",
+      "name": "Booster Pack",
+      "slug": "booster-pack",
+      "type": "booster_pack",
+      "packsContained": 1,
+      "msrpCents": null
+    },
+    {
+      "setCode": "OP-06",
+      "name": "Booster Box (24 packs)",
+      "slug": "booster-box",
+      "type": "booster_box",
+      "packsContained": 24,
+      "msrpCents": null
+    },
+    {
+      "setCode": "OP-06",
+      "name": "Booster Pack",
+      "slug": "booster-pack",
+      "type": "booster_pack",
+      "packsContained": 1,
+      "msrpCents": null
+    },
+    {
+      "setCode": "OP-07",
+      "name": "Booster Box (24 packs)",
+      "slug": "booster-box",
+      "type": "booster_box",
+      "packsContained": 24,
+      "msrpCents": null
+    },
+    {
+      "setCode": "OP-07",
+      "name": "Booster Pack",
+      "slug": "booster-pack",
+      "type": "booster_pack",
+      "packsContained": 1,
+      "msrpCents": null
+    },
+    {
+      "setCode": "OP-08",
+      "name": "Booster Box (24 packs)",
+      "slug": "booster-box",
+      "type": "booster_box",
+      "packsContained": 24,
+      "msrpCents": null
+    },
+    {
+      "setCode": "OP-08",
+      "name": "Booster Pack",
+      "slug": "booster-pack",
+      "type": "booster_pack",
+      "packsContained": 1,
+      "msrpCents": null
+    },
+    {
+      "setCode": "OP-09",
+      "name": "Booster Box (24 packs)",
+      "slug": "booster-box",
+      "type": "booster_box",
+      "packsContained": 24,
+      "msrpCents": null
+    },
+    {
+      "setCode": "OP-09",
+      "name": "Booster Pack",
+      "slug": "booster-pack",
+      "type": "booster_pack",
+      "packsContained": 1,
+      "msrpCents": null
+    }
+  ]
+}

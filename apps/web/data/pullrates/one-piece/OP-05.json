@@ -1,0 +1,39 @@
+{
+  "game": "one-piece",
+  "setCode": "OP-05",
+  "version": 1,
+  "sampleSizePacks": null,
+  "sourceUrl": "https://tcgtalk.com/guides/one-piece-tcg-box-pull-rates",
+  "sourceNote": "Community-aggregated advertised pull rates for a standard 24-pack One Piece booster box, from TCGTalk's box-pull-rate guide (2026): Leader ~1 per 2 packs (~12/box), Super Rare ~1 per 3 packs (~8/box), Parallel/Alternate Art ~2/box (~1 per 12 packs), Secret Rare ~1/box (~1 per 24 packs), Special Rare ~1 per case (~1 per 144 packs), Manga Rare ~1 per 2-6 cases (~1 in 576-1,728 packs). Bandai does not publish official odds, and this source discloses no sample size, so this table is capped at LOW confidence by design. The uniform-within-tier assumption is especially rough for One Piece: the Alternate Art tier spans sub-$5 commons to $100+ chase cards, so per-card odds within a tier are indicative only. Prices are eBay-sold (PriceCharting); cards without a matched price are excluded from their tier average, never counted as $0.",
+  "confidence": "low",
+  "slots": [
+    {
+      "rarity": "leader",
+      "perPackProbability": 0.5
+    },
+    {
+      "rarity": "super_rare",
+      "perPackProbability": 0.333
+    },
+    {
+      "rarity": "alt_art",
+      "perPackProbability": 0.083
+    },
+    {
+      "rarity": "secret_rare",
+      "perPackProbability": 0.042
+    },
+    {
+      "rarity": "special",
+      "perPackProbability": 0.0069
+    },
+    {
+      "rarity": "manga_rare",
+      "perPackProbability": 0.0009
+    }
+  ],
+  "alternateEstimates": [],
+  "guaranteedSlots": [],
+  "boxGuarantees": [],
+  "showWhenPlaceholder": false
+}
