@@ -5,7 +5,7 @@
       "name": "packroi-dev",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev", "-w", "@packroi/web"],
-      "cwd": "C:\\Users\\adamh\\packroi",
+      "cwd": "/Users/appa/Downloads/Store/packroi",
       "port": 3000
     }
   ]
