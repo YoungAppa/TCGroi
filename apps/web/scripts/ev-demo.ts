@@ -79,6 +79,7 @@ async function main() {
     name: c.name,
     number: c.number,
     rarity: c.rarity,
+    treatment: c.treatment,
     externalIds: c.externalIds,
   }));
 

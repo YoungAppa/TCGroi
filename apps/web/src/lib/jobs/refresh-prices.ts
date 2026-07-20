@@ -114,6 +114,7 @@ export async function refreshPrices() {
           name: cards.name,
           number: cards.number,
           rarity: cards.rarity,
+          treatment: cards.treatment,
           externalIds: cards.externalIds,
         })
         .from(cards)
@@ -124,6 +125,7 @@ export async function refreshPrices() {
         name: c.name,
         number: c.number,
         rarity: c.rarity,
+        treatment: c.treatment,
         externalIds: c.externalIds,
       }));
 

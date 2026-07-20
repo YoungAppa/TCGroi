@@ -30,6 +30,13 @@ export interface PriceableCard {
   name: string;
   number: string;
   rarity: string;
+  /**
+   * base / alt_art / manga / wanted_poster / sp / … — the printing variant.
+   * A source like PriceCharting lists each treatment as its own row at wildly
+   * different prices (a base One Piece card at $2, its Manga at $1,600), so a
+   * matcher must key on treatment, not just the collector number.
+   */
+  treatment: string;
   externalIds: Record<string, string>;
 }
 
