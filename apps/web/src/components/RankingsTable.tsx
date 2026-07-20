@@ -55,7 +55,8 @@ export function RankingsTable({
   const { state, setState, withFilter } = useFilterState();
   const [sortKey, setSortKey] = useState<SortKey>("roiMarket");
   const [sortDesc, setSortDesc] = useState(true);
-  const [game, setGame] = useState<string>("all");
+  const [game, setGame] = useState<string>("pokemon");
+  const [lang, setLang] = useState<"en" | "ja">("en");
   // View defaults to icons on a phone (the 8-column list scrolls sideways
   // there), list on desktop — until the user picks one explicitly.
   const [userView, setUserView] = useState<ViewMode | null>(null);
@@ -75,8 +76,11 @@ export function RankingsTable({
 
   const rows: Row[] = useMemo(() => {
     const q = query.trim().toLowerCase();
+    // All catalog data is English today; the Japanese tab is a placeholder
+    // until a Japanese catalog source lands.
+    if (lang !== "en") return [];
     return products
-      .filter((p) => game === "all" || p.gameSlug === game)
+      .filter((p) => p.gameSlug === game)
       .filter((p) => p.pullRates.confidence !== "placeholder")
       .filter((p) => confFilter === "all" || p.pullRates.confidence === confFilter)
       .filter((p) => typeFilter === "all" || p.productType === typeFilter)
@@ -87,23 +91,12 @@ export function RankingsTable({
         // "Worth opening": either denominator's ROI is non-negative.
         return (r.c.roiRetail ?? -1) >= 0 || (r.c.roiMarket ?? -1) >= 0;
       });
-  }, [products, state, availableIds, game, confFilter, typeFilter, query, positiveOnly]);
+  }, [products, state, availableIds, game, lang, confFilter, typeFilter, query, positiveOnly]);
 
   const sorted = useMemo(() => {
     const metric = SORTS[sortKey];
     return [...rows].sort((a, b) => (metric(b) - metric(a)) * (sortDesc ? 1 : -1));
   }, [rows, sortKey, sortDesc]);
-
-  // One section per game so the two games never interleave in a single table.
-  const gameSections = useMemo(() => {
-    const m = new Map<string, { name: string; rows: Row[] }>();
-    for (const r of sorted) {
-      const key = r.payload.gameSlug;
-      if (!m.has(key)) m.set(key, { name: r.payload.gameName, rows: [] });
-      m.get(key)!.rows.push(r);
-    }
-    return [...m.entries()].map(([slug, v]) => ({ slug, ...v }));
-  }, [sorted]);
 
   function clickSort(key: SortKey) {
     if (key === sortKey) setSortDesc((d) => !d);
@@ -114,6 +107,7 @@ export function RankingsTable({
   }
 
   const games = [...new Set(products.map((p) => p.gameSlug))];
+  const gameName = (slug: string) => products.find((p) => p.gameSlug === slug)?.gameName ?? slug;
   const productTypes = [...new Set(products.map((p) => p.productType))];
   const anyManualMarket = rows.some((r) => r.payload.market.isManual);
   // At least one price column must remain — snap the other on if both go off.
@@ -250,6 +244,40 @@ export function RankingsTable({
 
   return (
     <div className="space-y-5">
+      {/* Game tabs + language ---------------------------------------------- */}
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border">
+        <div className="flex items-end gap-1">
+          {games.map((g) => {
+            const on = game === g;
+            return (
+              <button
+                key={g}
+                onClick={() => setGame(g)}
+                aria-pressed={on}
+                className={`-mb-px rounded-t-md border-b-2 px-4 py-2 text-sm font-semibold transition-colors ${
+                  on
+                    ? "border-accent text-foreground"
+                    : "border-transparent text-muted hover:text-foreground"
+                }`}
+              >
+                {gameName(g)}
+              </button>
+            );
+          })}
+        </div>
+        <label className="flex items-center gap-1 pb-1 text-xs text-muted">
+          Language
+          <select
+            value={lang}
+            onChange={(e) => setLang(e.target.value as "en" | "ja")}
+            className="rounded border border-border bg-surface px-2 py-1 text-xs"
+          >
+            <option value="en">English</option>
+            <option value="ja">Japanese</option>
+          </select>
+        </label>
+      </div>
+
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-2">
           <SourceFilter
@@ -264,20 +292,6 @@ export function RankingsTable({
           <ColumnPill label="Market" on={marketOn} onClick={() => setShowMarket((v) => !v)} />
         </div>
         <div className="flex items-center gap-3">
-          {games.length > 1 && (
-            <select
-              value={game}
-              onChange={(e) => setGame(e.target.value)}
-              className="rounded border border-border bg-surface px-2 py-1 text-xs"
-            >
-              <option value="all">All games</option>
-              {games.map((g) => (
-                <option key={g} value={g}>
-                  {g}
-                </option>
-              ))}
-            </select>
-          )}
           {/* List / Icon view toggle */}
           <div className="flex overflow-hidden rounded border border-border text-xs">
             <button
@@ -341,23 +355,21 @@ export function RankingsTable({
         <span className="ml-auto text-muted">{rows.length} shown</span>
       </div>
 
-      {gameSections.map(({ slug, name, rows: sectionRows }) => (
-        <section key={slug} className="space-y-2">
-          <h2 className="flex items-baseline gap-2 text-sm font-semibold uppercase tracking-wide">
-            {name}
-            <span className="text-xs font-normal text-muted">{sectionRows.length} products</span>
-          </h2>
-          {view === "icons" ? renderGrid(sectionRows) : renderList(sectionRows)}
-        </section>
-      ))}
-
-      {gameSections.length === 0 && (
+      {lang === "ja" ? (
+        <div className="rounded-lg border border-border bg-surface p-8 text-center text-sm text-muted">
+          {gameName(game)} <span className="font-medium">Japanese</span> sets are coming soon — the
+          site tracks English sets today. Prices for Japanese product exist, but a Japanese card
+          catalog source is still needed.
+        </div>
+      ) : sorted.length === 0 ? (
         <div className="rounded-lg border border-border bg-surface p-8 text-center text-sm text-muted">
           No products match your search or filters.{" "}
           <button onClick={clearFilters} className="text-accent underline">
             Clear filters
           </button>
         </div>
+      ) : (
+        view === "icons" ? renderGrid(sorted) : renderList(sorted)
       )}
 
       <p className="text-xs text-muted">
