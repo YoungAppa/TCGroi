@@ -7,7 +7,10 @@
       "slug": "booster-box",
       "type": "booster_box",
       "packsContained": 24,
-      "msrpCents": null
+      "msrpCents": null,
+      "marketCents": 165000,
+      "marketAsOf": "2026-07-20",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-20"
     },
     {
       "setCode": "OP-01",
@@ -15,7 +18,10 @@
       "slug": "booster-pack",
       "type": "booster_pack",
       "packsContained": 1,
-      "msrpCents": null
+      "msrpCents": null,
+      "marketCents": 6857,
+      "marketAsOf": "2026-07-20",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-20"
     },
     {
       "setCode": "OP-02",
@@ -23,7 +29,10 @@
       "slug": "booster-box",
       "type": "booster_box",
       "packsContained": 24,
-      "msrpCents": null
+      "msrpCents": null,
+      "marketCents": 58399,
+      "marketAsOf": "2026-07-20",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-20"
     },
     {
       "setCode": "OP-02",
@@ -31,7 +40,10 @@
       "slug": "booster-pack",
       "type": "booster_pack",
       "packsContained": 1,
-      "msrpCents": null
+      "msrpCents": null,
+      "marketCents": 3100,
+      "marketAsOf": "2026-07-20",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-20"
     },
     {
       "setCode": "OP-03",
@@ -39,7 +51,10 @@
       "slug": "booster-box",
       "type": "booster_box",
       "packsContained": 24,
-      "msrpCents": null
+      "msrpCents": null,
+      "marketCents": 54509,
+      "marketAsOf": "2026-07-20",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-20"
     },
     {
       "setCode": "OP-03",
@@ -47,7 +62,10 @@
       "slug": "booster-pack",
       "type": "booster_pack",
       "packsContained": 1,
-      "msrpCents": null
+      "msrpCents": null,
+      "marketCents": 3647,
+      "marketAsOf": "2026-07-20",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-20"
     },
     {
       "setCode": "OP-04",
@@ -55,7 +73,10 @@
       "slug": "booster-box",
       "type": "booster_box",
       "packsContained": 24,
-      "msrpCents": null
+      "msrpCents": null,
+      "marketCents": 49000,
+      "marketAsOf": "2026-07-20",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-20"
     },
     {
       "setCode": "OP-04",
@@ -63,7 +84,10 @@
       "slug": "booster-pack",
       "type": "booster_pack",
       "packsContained": 1,
-      "msrpCents": null
+      "msrpCents": null,
+      "marketCents": 4949,
+      "marketAsOf": "2026-07-20",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-20"
     },
     {
       "setCode": "OP-05",
@@ -71,7 +95,10 @@
       "slug": "booster-box",
       "type": "booster_box",
       "packsContained": 24,
-      "msrpCents": null
+      "msrpCents": null,
+      "marketCents": 111300,
+      "marketAsOf": "2026-07-20",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-20"
     },
     {
       "setCode": "OP-05",
@@ -79,7 +106,10 @@
       "slug": "booster-pack",
       "type": "booster_pack",
       "packsContained": 1,
-      "msrpCents": null
+      "msrpCents": null,
+      "marketCents": 6999,
+      "marketAsOf": "2026-07-20",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-20"
     },
     {
       "setCode": "OP-06",
@@ -87,7 +117,10 @@
       "slug": "booster-box",
       "type": "booster_box",
       "packsContained": 24,
-      "msrpCents": null
+      "msrpCents": null,
+      "marketCents": 35395,
+      "marketAsOf": "2026-07-20",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-20"
     },
     {
       "setCode": "OP-06",
@@ -95,7 +128,10 @@
       "slug": "booster-pack",
       "type": "booster_pack",
       "packsContained": 1,
-      "msrpCents": null
+      "msrpCents": null,
+      "marketCents": 2358,
+      "marketAsOf": "2026-07-20",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-20"
     },
     {
       "setCode": "OP-07",
@@ -103,7 +139,10 @@
       "slug": "booster-box",
       "type": "booster_box",
       "packsContained": 24,
-      "msrpCents": null
+      "msrpCents": null,
+      "marketCents": 26442,
+      "marketAsOf": "2026-07-20",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-20"
     },
     {
       "setCode": "OP-07",
@@ -111,7 +150,10 @@
       "slug": "booster-pack",
       "type": "booster_pack",
       "packsContained": 1,
-      "msrpCents": null
+      "msrpCents": null,
+      "marketCents": 1550,
+      "marketAsOf": "2026-07-20",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-20"
     },
     {
       "setCode": "OP-08",
@@ -119,7 +161,10 @@
       "slug": "booster-box",
       "type": "booster_box",
       "packsContained": 24,
-      "msrpCents": null
+      "msrpCents": null,
+      "marketCents": 23219,
+      "marketAsOf": "2026-07-20",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-20"
     },
     {
       "setCode": "OP-08",
@@ -127,7 +172,10 @@
       "slug": "booster-pack",
       "type": "booster_pack",
       "packsContained": 1,
-      "msrpCents": null
+      "msrpCents": null,
+      "marketCents": 949,
+      "marketAsOf": "2026-07-20",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-20"
     },
     {
       "setCode": "OP-09",
@@ -135,7 +183,10 @@
       "slug": "booster-box",
       "type": "booster_box",
       "packsContained": 24,
-      "msrpCents": null
+      "msrpCents": null,
+      "marketCents": 63998,
+      "marketAsOf": "2026-07-20",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-20"
     },
     {
       "setCode": "OP-09",
@@ -143,7 +194,10 @@
       "slug": "booster-pack",
       "type": "booster_pack",
       "packsContained": 1,
-      "msrpCents": null
+      "msrpCents": null,
+      "marketCents": 1500,
+      "marketAsOf": "2026-07-20",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-20"
     }
   ]
 }

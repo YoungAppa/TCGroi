@@ -8,9 +8,9 @@
       "type": "booster_box",
       "packsContained": 36,
       "msrpCents": 16344,
-      "marketCents": 30953,
-      "marketAsOf": "2026-07-16",
-      "marketSource": "pittpokeresearch.com (TCGplayer-market-derived tracker)"
+      "marketCents": 29100,
+      "marketAsOf": "2026-07-20",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-20"
     },
     {
       "setCode": "sv8",
@@ -19,9 +19,9 @@
       "type": "booster_pack",
       "packsContained": 1,
       "msrpCents": 454,
-      "marketCents": 827,
-      "marketAsOf": "2026-07-16",
-      "marketSource": "pittpokeresearch.com (TCGplayer-market-derived tracker)"
+      "marketCents": 1350,
+      "marketAsOf": "2026-07-20",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-20"
     },
     {
       "setCode": "sv8",
@@ -30,9 +30,9 @@
       "type": "etb",
       "packsContained": 9,
       "msrpCents": 4999,
-      "marketCents": 13335,
-      "marketAsOf": "2026-07-16",
-      "marketSource": "pittpokeresearch.com (TCGplayer-market-derived tracker)"
+      "marketCents": 12625,
+      "marketAsOf": "2026-07-20",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-20"
     },
     {
       "setCode": "sv8pt5",
@@ -41,9 +41,9 @@
       "type": "bundle",
       "packsContained": 6,
       "msrpCents": 2694,
-      "marketCents": 9816,
-      "marketAsOf": "2026-07-16",
-      "marketSource": "pittpokeresearch.com (TCGplayer-market-derived tracker)"
+      "marketCents": 8000,
+      "marketAsOf": "2026-07-20",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-20"
     },
     {
       "setCode": "sv8pt5",
@@ -52,9 +52,9 @@
       "type": "etb",
       "packsContained": 9,
       "msrpCents": 4999,
-      "marketCents": 17012,
-      "marketAsOf": "2026-07-16",
-      "marketSource": "pittpokeresearch.com (TCGplayer-market-derived tracker)"
+      "marketCents": 16050,
+      "marketAsOf": "2026-07-20",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-20"
     },
     {
       "setCode": "sv8pt5",
@@ -62,7 +62,10 @@
       "slug": "booster-pack",
       "type": "booster_pack",
       "packsContained": 1,
-      "msrpCents": 449
+      "msrpCents": 449,
+      "marketCents": 1979,
+      "marketAsOf": "2026-07-20",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-20"
     },
     {
       "setCode": "sv3pt5",
@@ -70,7 +73,10 @@
       "slug": "booster-bundle",
       "type": "bundle",
       "packsContained": 6,
-      "msrpCents": 2694
+      "msrpCents": 2694,
+      "marketCents": 17897,
+      "marketAsOf": "2026-07-20",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-20"
     },
     {
       "setCode": "sv3pt5",
@@ -79,9 +85,9 @@
       "type": "booster_pack",
       "packsContained": 1,
       "msrpCents": 449,
-      "marketCents": 2888,
-      "marketAsOf": "2026-07-16",
-      "marketSource": "pittpokeresearch.com (TCGplayer-market-derived tracker)"
+      "marketCents": 3024,
+      "marketAsOf": "2026-07-20",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-20"
     },
     {
       "setCode": "sv3pt5",
@@ -90,9 +96,9 @@
       "type": "etb",
       "packsContained": 9,
       "msrpCents": null,
-      "marketCents": 17366,
-      "marketAsOf": "2026-07-16",
-      "marketSource": "pittpokeresearch.com (TCGplayer-market-derived tracker); launch MSRP not confidently sourced, so retail ROI is not shown"
+      "marketCents": 57439,
+      "marketAsOf": "2026-07-20",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-20"
     },
     {
       "setCode": "sv3pt5",
@@ -101,12 +107,18 @@
       "type": "case",
       "packsContained": 16,
       "msrpCents": 11999,
-      "marketCents": 100000,
-      "marketAsOf": "2026-07-16",
-      "marketSource": "user-reported (~$1,000), corroborated by Wargamer coverage of $1,000+ retail listings; PriceCharting tracks this product and will replace this figure",
+      "marketCents": 89796,
+      "marketAsOf": "2026-07-20",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-20",
       "promos": [
-        { "externalId": "svp-53", "note": "Mew ex etched foil promo" },
-        { "externalId": "svp-52", "note": "Mewtwo full-art foil promo" }
+        {
+          "externalId": "svp-53",
+          "note": "Mew ex etched foil promo"
+        },
+        {
+          "externalId": "svp-52",
+          "note": "Mewtwo full-art foil promo"
+        }
       ],
       "contentsNote": "Also contains a metal Mew ex card, playmat, deck box, coin and dice, which carry real resale value but are not modelled — EV understates this product's contents."
     },
@@ -124,7 +136,10 @@
       "slug": "booster-pack",
       "type": "booster_pack",
       "packsContained": 1,
-      "msrpCents": 400
+      "msrpCents": 400,
+      "marketCents": 908,
+      "marketAsOf": "2026-07-20",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-20"
     },
     {
       "setCode": "sv5",
@@ -132,7 +147,10 @@
       "slug": "booster-box",
       "type": "booster_box",
       "packsContained": 36,
-      "msrpCents": 16164
+      "msrpCents": 16164,
+      "marketCents": 31799,
+      "marketAsOf": "2026-07-20",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-20"
     },
     {
       "setCode": "sv5",
@@ -148,7 +166,10 @@
       "slug": "booster-pack",
       "type": "booster_pack",
       "packsContained": 1,
-      "msrpCents": 449
+      "msrpCents": 449,
+      "marketCents": 1075,
+      "marketAsOf": "2026-07-20",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-20"
     },
     {
       "setCode": "sv6",
@@ -156,7 +177,10 @@
       "slug": "booster-box",
       "type": "booster_box",
       "packsContained": 36,
-      "msrpCents": 16164
+      "msrpCents": 16164,
+      "marketCents": 34000,
+      "marketAsOf": "2026-07-20",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-20"
     },
     {
       "setCode": "sv6",
@@ -164,7 +188,10 @@
       "slug": "elite-trainer-box",
       "type": "etb",
       "packsContained": 9,
-      "msrpCents": 4999
+      "msrpCents": 4999,
+      "marketCents": 10416,
+      "marketAsOf": "2026-07-20",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-20"
     },
     {
       "setCode": "sv6",
@@ -172,7 +199,10 @@
       "slug": "booster-pack",
       "type": "booster_pack",
       "packsContained": 1,
-      "msrpCents": 449
+      "msrpCents": 449,
+      "marketCents": 1025,
+      "marketAsOf": "2026-07-20",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-20"
     },
     {
       "setCode": "sv7",
@@ -180,7 +210,10 @@
       "slug": "booster-box",
       "type": "booster_box",
       "packsContained": 36,
-      "msrpCents": 16164
+      "msrpCents": 16164,
+      "marketCents": 32262,
+      "marketAsOf": "2026-07-20",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-20"
     },
     {
       "setCode": "sv7",
@@ -188,7 +221,10 @@
       "slug": "elite-trainer-box",
       "type": "etb",
       "packsContained": 9,
-      "msrpCents": 4999
+      "msrpCents": 4999,
+      "marketCents": 15000,
+      "marketAsOf": "2026-07-20",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-20"
     },
     {
       "setCode": "sv7",
@@ -196,7 +232,10 @@
       "slug": "booster-pack",
       "type": "booster_pack",
       "packsContained": 1,
-      "msrpCents": 449
+      "msrpCents": 449,
+      "marketCents": 1022,
+      "marketAsOf": "2026-07-20",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-20"
     },
     {
       "setCode": "sv2",
@@ -204,7 +243,10 @@
       "slug": "booster-box",
       "type": "booster_box",
       "packsContained": 36,
-      "msrpCents": 16164
+      "msrpCents": 16164,
+      "marketCents": 49781,
+      "marketAsOf": "2026-07-20",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-20"
     },
     {
       "setCode": "sv2",
@@ -212,7 +254,10 @@
       "slug": "elite-trainer-box",
       "type": "etb",
       "packsContained": 9,
-      "msrpCents": 4999
+      "msrpCents": 4999,
+      "marketCents": 21500,
+      "marketAsOf": "2026-07-20",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-20"
     },
     {
       "setCode": "sv2",
@@ -220,7 +265,10 @@
       "slug": "booster-pack",
       "type": "booster_pack",
       "packsContained": 1,
-      "msrpCents": 449
+      "msrpCents": 449,
+      "marketCents": 1586,
+      "marketAsOf": "2026-07-20",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-20"
     },
     {
       "setCode": "sv3",
@@ -228,7 +276,10 @@
       "slug": "booster-box",
       "type": "booster_box",
       "packsContained": 36,
-      "msrpCents": 16164
+      "msrpCents": 16164,
+      "marketCents": 38000,
+      "marketAsOf": "2026-07-20",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-20"
     },
     {
       "setCode": "sv3",
@@ -236,7 +287,10 @@
       "slug": "elite-trainer-box",
       "type": "etb",
       "packsContained": 9,
-      "msrpCents": 4999
+      "msrpCents": 4999,
+      "marketCents": 29100,
+      "marketAsOf": "2026-07-20",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-20"
     },
     {
       "setCode": "sv3",
@@ -244,7 +298,10 @@
       "slug": "booster-pack",
       "type": "booster_pack",
       "packsContained": 1,
-      "msrpCents": 449
+      "msrpCents": 449,
+      "marketCents": 1289,
+      "marketAsOf": "2026-07-20",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-20"
     },
     {
       "setCode": "sv4",
@@ -252,7 +309,10 @@
       "slug": "booster-box",
       "type": "booster_box",
       "packsContained": 36,
-      "msrpCents": 16164
+      "msrpCents": 16164,
+      "marketCents": 29000,
+      "marketAsOf": "2026-07-20",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-20"
     },
     {
       "setCode": "sv4",
@@ -268,7 +328,10 @@
       "slug": "booster-pack",
       "type": "booster_pack",
       "packsContained": 1,
-      "msrpCents": 449
+      "msrpCents": 449,
+      "marketCents": 1118,
+      "marketAsOf": "2026-07-20",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-20"
     },
     {
       "setCode": "sv4pt5",
@@ -276,7 +339,10 @@
       "slug": "elite-trainer-box",
       "type": "etb",
       "packsContained": 9,
-      "msrpCents": 4999
+      "msrpCents": 4999,
+      "marketCents": 43607,
+      "marketAsOf": "2026-07-20",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-20"
     },
     {
       "setCode": "sv4pt5",
@@ -284,7 +350,10 @@
       "slug": "booster-bundle",
       "type": "bundle",
       "packsContained": 6,
-      "msrpCents": 2694
+      "msrpCents": 2694,
+      "marketCents": 16500,
+      "marketAsOf": "2026-07-20",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-20"
     },
     {
       "setCode": "sv4pt5",
@@ -292,7 +361,10 @@
       "slug": "booster-pack",
       "type": "booster_pack",
       "packsContained": 1,
-      "msrpCents": 449
+      "msrpCents": 449,
+      "marketCents": 2359,
+      "marketAsOf": "2026-07-20",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-20"
     }
   ]
 }
