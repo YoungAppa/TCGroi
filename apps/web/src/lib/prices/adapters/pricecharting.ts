@@ -188,7 +188,10 @@ export class PriceChartingAdapter implements PriceSourceAdapter {
       const bracket = row.product.match(BRACKET)?.[1]?.toLowerCase();
       const treatment = bracket ? PC_BRACKET_TO_CANON[bracket] : "base";
       if (!treatment) continue; // bracket we don't model (Gold, Championship, …)
-      const key = `${code}|${treatment}`;
+      // Key on console too: the same card code is reprinted across sets
+      // (Extra Booster, Premium, ST decks) at wildly different prices, so a
+      // code-only key can grab a $1,000 reprint for a $0.13 base card.
+      const key = `${row.console}|${code}|${treatment}`;
       if (!index.has(key)) index.set(key, row.cents);
     }
     return index;
@@ -258,13 +261,15 @@ export class PriceChartingAdapter implements PriceSourceAdapter {
     // like OP09-004 / ST01-007, Pokémon numbers never carry that dash.
     const isOnePiece = cards.some((c) => OP_CODE.test(c.number));
     const index = (isOnePiece ? await this.getOpData() : await this.getPkData()).cards;
-    const consoleName = isOnePiece ? null : (PK_CONSOLE_OVERRIDE[set.code] ?? `Pokemon ${set.name}`);
+    const consoleName = isOnePiece
+      ? `One Piece ${set.name}`
+      : (PK_CONSOLE_OVERRIDE[set.code] ?? `Pokemon ${set.name}`);
 
     const capturedAt = new Date();
     const out: PriceSnapshotInput[] = [];
     for (const card of cards) {
       const key = isOnePiece
-        ? `${card.number}|${canonTreatment(card.treatment)}`
+        ? `${consoleName}|${card.number}|${canonTreatment(card.treatment)}`
         : `${consoleName}|${card.number}`;
       const cents = index.get(key);
       if (cents === undefined || cents <= 0) continue;
