@@ -49,7 +49,15 @@ const PC_BRACKET_TO_CANON: Record<string, string> = {
   "alternate art": "alt_art",
   parallel: "alt_art",
   manga: "manga",
+  // The pack manga printing is labelled inconsistently across sets — both
+  // "[Alternate Art Manga]" and "[Manga Alternate Art]" occur (e.g. Sogeking
+  // OP03-122 $762, Shanks OP01-120 $1,695). All are the one manga tier; the
+  // PRB01/foil promo variants stay unmapped so they can't outbid the pack card.
+  "alternate art manga": "manga",
+  "manga alternate art": "manga",
   "wanted poster": "wanted_poster",
+  // Most sets shorten the Wanted Poster bracket to just "[Wanted]".
+  wanted: "wanted_poster",
   "box topper": "box_topper",
   "treasure rare": "treasure_rare",
   sp: "sp",
@@ -175,6 +183,15 @@ export class PriceChartingAdapter implements PriceSourceAdapter {
 
   private buildOpIndex(csv: string): Map<string, number> {
     const index = new Map<string, number>();
+    // Fallback for cross-set reprints: a card can appear in a later set's list
+    // (an OP01-051 in OP-03, an ST01-012 anywhere) but PriceCharting files it
+    // under its ORIGIN set's console, so the console-keyed lookup misses. We
+    // therefore also key on code+treatment alone — but ONLY when that pair
+    // resolves to a single English console. If the same code+treatment spans
+    // two consoles at different prices (the $0.13-base / $1,199-reprint trap
+    // the console key exists to avoid), the pair is ambiguous and we drop it
+    // from the fallback rather than risk grabbing the wrong printing.
+    const byCode = new Map<string, { cents: number; console: string; ambiguous: boolean }>();
     const lines = csv.split("\n");
     for (let i = 1; i < lines.length; i++) {
       const line = lines[i];
@@ -193,6 +210,17 @@ export class PriceChartingAdapter implements PriceSourceAdapter {
       // code-only key can grab a $1,000 reprint for a $0.13 base card.
       const key = `${row.console}|${code}|${treatment}`;
       if (!index.has(key)) index.set(key, row.cents);
+
+      const codeKey = `${code}|${treatment}`;
+      const seen = byCode.get(codeKey);
+      if (!seen) byCode.set(codeKey, { cents: row.cents, console: row.console, ambiguous: false });
+      else if (seen.console !== row.console) seen.ambiguous = true;
+    }
+    // Fold in only the unambiguous code+treatment keys. These are 2-segment
+    // keys (code contains a dash, treatment none) and cannot collide with the
+    // 3-segment console|code|treatment primary keys.
+    for (const [codeKey, v] of byCode) {
+      if (!v.ambiguous) index.set(codeKey, v.cents);
     }
     return index;
   }
@@ -268,10 +296,18 @@ export class PriceChartingAdapter implements PriceSourceAdapter {
     const capturedAt = new Date();
     const out: PriceSnapshotInput[] = [];
     for (const card of cards) {
-      const key = isOnePiece
-        ? `${consoleName}|${card.number}|${canonTreatment(card.treatment)}`
-        : `${consoleName}|${card.number}`;
-      const cents = index.get(key);
+      let cents: number | undefined;
+      if (isOnePiece) {
+        const treatment = canonTreatment(card.treatment);
+        // Console-keyed first (correct printing when the card is native to the
+        // set); fall back to the code+treatment key for cross-set reprints,
+        // which the builder only populates when it is unambiguous.
+        cents =
+          index.get(`${consoleName}|${card.number}|${treatment}`) ??
+          index.get(`${card.number}|${treatment}`);
+      } else {
+        cents = index.get(`${consoleName}|${card.number}`);
+      }
       if (cents === undefined || cents <= 0) continue;
 
       // Resolve back to our card via any of its external ids (the job's
