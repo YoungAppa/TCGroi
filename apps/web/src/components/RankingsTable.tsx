@@ -61,17 +61,29 @@ export function RankingsTable({
   // selection above — hiding a column never changes how EV is computed.
   const [showRetail, setShowRetail] = useState(true);
   const [showMarket, setShowMarket] = useState(true);
+  // Search + filters.
+  const [query, setQuery] = useState("");
+  const [typeFilter, setTypeFilter] = useState<string>("all");
+  const [confFilter, setConfFilter] = useState<string>("all");
+  const [positiveOnly, setPositiveOnly] = useState(false);
 
   const availableIds = useMemo(() => availableSources.map((s) => s.id), [availableSources]);
 
-  const rows: Row[] = useMemo(
-    () =>
-      products
-        .filter((p) => game === "all" || p.gameSlug === game)
-        .filter((p) => p.pullRates.confidence !== "placeholder")
-        .map((payload) => ({ payload, c: computeProduct(payload, state, availableIds) })),
-    [products, state, availableIds, game],
-  );
+  const rows: Row[] = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return products
+      .filter((p) => game === "all" || p.gameSlug === game)
+      .filter((p) => p.pullRates.confidence !== "placeholder")
+      .filter((p) => confFilter === "all" || p.pullRates.confidence === confFilter)
+      .filter((p) => typeFilter === "all" || p.productType === typeFilter)
+      .filter((p) => !q || `${p.setName} ${p.productName}`.toLowerCase().includes(q))
+      .map((payload) => ({ payload, c: computeProduct(payload, state, availableIds) }))
+      .filter((r) => {
+        if (!positiveOnly) return true;
+        // "Worth opening": either denominator's ROI is non-negative.
+        return (r.c.roiRetail ?? -1) >= 0 || (r.c.roiMarket ?? -1) >= 0;
+      });
+  }, [products, state, availableIds, game, confFilter, typeFilter, query, positiveOnly]);
 
   const sorted = useMemo(() => {
     const metric = SORTS[sortKey];
@@ -98,10 +110,19 @@ export function RankingsTable({
   }
 
   const games = [...new Set(products.map((p) => p.gameSlug))];
+  const productTypes = [...new Set(products.map((p) => p.productType))];
   const anyManualMarket = rows.some((r) => r.payload.market.isManual);
   // At least one price column must remain — snap the other on if both go off.
   const retailOn = showRetail || !showMarket;
   const marketOn = showMarket || !showRetail;
+  const filtersActive =
+    query.trim() !== "" || typeFilter !== "all" || confFilter !== "all" || positiveOnly;
+  function clearFilters() {
+    setQuery("");
+    setTypeFilter("all");
+    setConfFilter("all");
+    setPositiveOnly(false);
+  }
 
   function renderGrid(sectionRows: Row[]) {
     return (
@@ -273,6 +294,49 @@ export function RankingsTable({
         </div>
       </div>
 
+      {/* Search + filters */}
+      <div className="flex flex-wrap items-center gap-2 text-xs">
+        <input
+          type="search"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Search set or product…"
+          aria-label="Search products"
+          className="w-52 rounded border border-border bg-surface px-2.5 py-1.5 placeholder:text-muted focus:border-accent focus:outline-none"
+        />
+        <select
+          value={typeFilter}
+          onChange={(e) => setTypeFilter(e.target.value)}
+          className="rounded border border-border bg-surface px-2 py-1.5"
+          aria-label="Filter by product type"
+        >
+          <option value="all">All product types</option>
+          {productTypes.map((t) => (
+            <option key={t} value={t}>
+              {TYPE_LABEL[t]}
+            </option>
+          ))}
+        </select>
+        <select
+          value={confFilter}
+          onChange={(e) => setConfFilter(e.target.value)}
+          className="rounded border border-border bg-surface px-2 py-1.5"
+          aria-label="Filter by data confidence"
+        >
+          <option value="all">Any confidence</option>
+          <option value="high">HIGH data</option>
+          <option value="medium">Medium data</option>
+          <option value="low">Low data</option>
+        </select>
+        <ColumnPill label="Worth opening (+ROI)" on={positiveOnly} onClick={() => setPositiveOnly((v) => !v)} />
+        {filtersActive && (
+          <button onClick={clearFilters} className="text-muted underline hover:text-foreground">
+            clear
+          </button>
+        )}
+        <span className="ml-auto text-muted">{rows.length} shown</span>
+      </div>
+
       {gameSections.map(({ slug, name, rows: sectionRows }) => (
         <section key={slug} className="space-y-2">
           <h2 className="flex items-baseline gap-2 text-sm font-semibold uppercase tracking-wide">
@@ -282,6 +346,15 @@ export function RankingsTable({
           {view === "icons" ? renderGrid(sectionRows) : renderList(sectionRows)}
         </section>
       ))}
+
+      {gameSections.length === 0 && (
+        <div className="rounded-lg border border-border bg-surface p-8 text-center text-sm text-muted">
+          No products match your search or filters.{" "}
+          <button onClick={clearFilters} className="text-accent underline">
+            Clear filters
+          </button>
+        </div>
+      )}
 
       <p className="text-xs text-muted">
         Retail ROI answers &quot;is it worth opening at MSRP&quot;; market ROI answers
