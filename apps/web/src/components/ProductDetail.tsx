@@ -20,6 +20,7 @@ import { computeDisagreements } from "@/lib/pullrates/disagreement";
 import { pullRateFileSchema } from "@/lib/pullrates/schema";
 
 import { ConfidenceBadge, RoiCell } from "./badges";
+import { GradingGuide } from "./GradingGuide";
 import { SourceFilter } from "./SourceFilter";
 import { useFilterState } from "./useFilterState";
 
@@ -310,6 +311,9 @@ export function ProductDetail({
           .
         </p>
       </section>
+
+      {/* ---- grading break-even ---- */}
+      <GradingGuide chase={ev.chase} />
 
       {/* ---- packs-needed calculator ---- */}
       <PacksCalculator ev={ev} roiMarket={roiMarket} />
