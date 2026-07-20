@@ -35,10 +35,21 @@ export async function refreshCatalog() {
 
     const adapters: CatalogAdapter[] = [new PokemonTcgIoAdapter(), new OptcgApiAdapter()];
 
+    // Optional ops scoping (env). Neither is set by the cron — a full run
+    // ingests everything — but a manual run can narrow the work:
+    //   CATALOG_GAMES=pokemon        skip whole adapters (e.g. the flaky One
+    //                                Piece API) before any of their calls.
+    //   CATALOG_SETS=sv2,sv3         ingest only these set codes; pull-rate
+    //                                tables + products still load for all sets.
+    const onlyGames = envSet("CATALOG_GAMES");
+    const onlySets = envSet("CATALOG_SETS");
+
     let setsUpserted = 0;
     let cardsUpserted = 0;
 
     for (const adapter of adapters) {
+      if (onlyGames && !onlyGames.has(adapter.gameSlug)) continue;
+
       const gameId = gameIdBySlug.get(adapter.gameSlug);
       if (!gameId) throw new Error(`game ${adapter.gameSlug} not seeded`);
 
@@ -53,7 +64,9 @@ export async function refreshCatalog() {
           : null; // null = all
 
       const allSets = await adapter.fetchSets();
-      const targetSets = allSets.filter((s) => !wantedCodes || wantedCodes.has(s.code));
+      const targetSets = allSets.filter(
+        (s) => (!wantedCodes || wantedCodes.has(s.code)) && (!onlySets || onlySets.has(s.code)),
+      );
 
       for (const cs of targetSets) {
         const setId = await upsertSet(gameId, cs);
@@ -88,25 +101,57 @@ export async function refreshCatalog() {
       }
     }
 
-    // --- pull-rate files -> pull_rate_tables ---------------------------------
-    let tablesLoaded = 0;
-    for (const { file } of loaded) {
-      const gameId = gameIdBySlug.get(file.game);
-      if (!gameId) continue;
+    const tablesLoaded = await loadPullRateTables(gameIdBySlug, loaded);
+    const productsLoaded = await loadSealedProducts(gameIdBySlug);
 
-      const [setRow] = await getDb()
-        .select({ id: sets.id })
-        .from(sets)
-        .where(and(eq(sets.gameId, gameId), eq(sets.code, file.setCode)));
-      if (!setRow) continue; // set not ingested (e.g. placeholder for a future set)
+    return { setsUpserted, cardsUpserted, tablesLoaded, productsLoaded };
+  });
+}
 
-      await db
-        .insert(pullRateTables)
-        .values({
-          setId: setRow.id,
-          version: file.version,
-          // DB column is NOT NULL; 0 encodes "undisclosed or placeholder" and
-          // the file's null/0 distinction is preserved in confidence + note.
+/**
+ * Load pull-rate files into pull_rate_tables for sets already present in the
+ * DB. Extracted from refreshCatalog so a data-file change can be applied
+ * without re-hitting the catalog APIs — see scripts/load-data.ts. A set with no
+ * ingested row is skipped (e.g. a placeholder for a not-yet-released set).
+ */
+export async function loadPullRateTables(
+  gameIdBySlug: Map<string, string>,
+  preloaded?: Awaited<ReturnType<typeof loadAllPullRates>>,
+): Promise<number> {
+  const db = getDb();
+  const loaded = preloaded ?? (await loadAllPullRates());
+  let tablesLoaded = 0;
+  for (const { file } of loaded) {
+    const gameId = gameIdBySlug.get(file.game);
+    if (!gameId) continue;
+
+    const [setRow] = await db
+      .select({ id: sets.id })
+      .from(sets)
+      .where(and(eq(sets.gameId, gameId), eq(sets.code, file.setCode)));
+    if (!setRow) continue; // set not ingested (e.g. placeholder for a future set)
+
+    await db
+      .insert(pullRateTables)
+      .values({
+        setId: setRow.id,
+        version: file.version,
+        // DB column is NOT NULL; 0 encodes "undisclosed or placeholder" and
+        // the file's null/0 distinction is preserved in confidence + note.
+        sampleSizePacks: file.sampleSizePacks ?? 0,
+        sourceUrl: file.sourceUrl,
+        sourceNote: file.sourceNote,
+        confidence: file.confidence,
+        slots: file.slots,
+        guaranteedSlots: file.guaranteedSlots,
+        boxGuarantees: file.boxGuarantees,
+        alternateEstimates: file.alternateEstimates,
+        showWhenPlaceholder: file.showWhenPlaceholder,
+        isActive: true,
+      })
+      .onConflictDoUpdate({
+        target: [pullRateTables.setId, pullRateTables.version],
+        set: {
           sampleSizePacks: file.sampleSizePacks ?? 0,
           sourceUrl: file.sourceUrl,
           sourceNote: file.sourceNote,
@@ -117,37 +162,27 @@ export async function refreshCatalog() {
           alternateEstimates: file.alternateEstimates,
           showWhenPlaceholder: file.showWhenPlaceholder,
           isActive: true,
-        })
-        .onConflictDoUpdate({
-          target: [pullRateTables.setId, pullRateTables.version],
-          set: {
-            sampleSizePacks: file.sampleSizePacks ?? 0,
-            sourceUrl: file.sourceUrl,
-            sourceNote: file.sourceNote,
-            confidence: file.confidence,
-            slots: file.slots,
-            guaranteedSlots: file.guaranteedSlots,
-            boxGuarantees: file.boxGuarantees,
-            alternateEstimates: file.alternateEstimates,
-            showWhenPlaceholder: file.showWhenPlaceholder,
-            isActive: true,
-          },
-        });
+        },
+      });
 
-      // Exactly one active version per set.
-      await db
-        .update(pullRateTables)
-        .set({ isActive: false })
-        .where(
-          and(eq(pullRateTables.setId, setRow.id), ne(pullRateTables.version, file.version)),
-        );
-      tablesLoaded++;
-    }
+    // Exactly one active version per set.
+    await db
+      .update(pullRateTables)
+      .set({ isActive: false })
+      .where(
+        and(eq(pullRateTables.setId, setRow.id), ne(pullRateTables.version, file.version)),
+      );
+    tablesLoaded++;
+  }
+  return tablesLoaded;
+}
 
-    const productsLoaded = await loadSealedProducts(gameIdBySlug);
-
-    return { setsUpserted, cardsUpserted, tablesLoaded, productsLoaded };
-  });
+/** Parse a comma-separated env var into a Set, or null when unset/empty. */
+function envSet(name: string): Set<string> | null {
+  const raw = process.env[name];
+  if (!raw) return null;
+  const items = raw.split(",").map((s) => s.trim()).filter(Boolean);
+  return items.length > 0 ? new Set(items) : null;
 }
 
 const productFileSchema = z.object({
@@ -176,7 +211,7 @@ const productFileSchema = z.object({
  * Sealed products from data/products/{game}.json. Hand-maintained: catalog
  * APIs index singles only, so products are our data, like pull rates.
  */
-async function loadSealedProducts(gameIdBySlug: Map<string, string>): Promise<number> {
+export async function loadSealedProducts(gameIdBySlug: Map<string, string>): Promise<number> {
   const db = getDb();
   let loaded = 0;
 
