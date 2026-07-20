@@ -68,6 +68,18 @@ const PK_CONSOLE_OVERRIDE: Record<string, string> = {
   sv3pt5: "Pokemon Scarlet & Violet 151",
 };
 
+/** Our sealed product-type -> the exact PriceCharting sealed product-name. */
+const SEALED_LABEL: Record<string, string> = {
+  booster_box: "Booster Box",
+  booster_pack: "Booster Pack",
+  etb: "Elite Trainer Box",
+  bundle: "Booster Bundle",
+  case: "Ultra Premium Collection Box",
+};
+
+/** Everything parsed from one category CSV: card prices and sealed prices. */
+type CategoryData = { cards: Map<string, number>; sealed: Map<string, number> };
+
 const OP_CODE = /\b([A-Z]{1,3}\d{2}-\d{3})\b/;
 const BRACKET = /\[([^\]]+)\]/;
 const PK_NUMBER = /#\s*([A-Za-z0-9]+)\s*$/;
@@ -75,11 +87,11 @@ const PK_NUMBER = /#\s*([A-Za-z0-9]+)\s*$/;
 export class PriceChartingAdapter implements PriceSourceAdapter {
   readonly id = "pricecharting_ebay";
   readonly displayName = "eBay (sold)";
-  readonly supports = { cardsRaw: true, cardsGraded: false, sealed: false };
+  readonly supports = { cardsRaw: true, cardsGraded: false, sealed: true };
 
-  /** Parsed category indexes, built once per run and reused across sets. */
-  private opIndex?: Promise<Map<string, number>>;
-  private pkIndex?: Promise<Map<string, number>>;
+  /** Parsed per-category data (card + sealed indexes), built once per run. */
+  private opData?: Promise<CategoryData>;
+  private pkData?: Promise<CategoryData>;
 
   private token(): string | undefined {
     return getEnv().PRICECHARTING_TOKEN;
@@ -179,12 +191,40 @@ export class PriceChartingAdapter implements PriceSourceAdapter {
     return index;
   }
 
-  private getOpIndex(): Promise<Map<string, number>> {
-    return (this.opIndex ??= this.downloadCsv("one-piece-cards").then((c) => this.buildOpIndex(c)));
+  /**
+   * Sealed products (Booster Box, ETB, …). Same CSV as the cards; we keep the
+   * rows that are NOT singles (no "#123" / "OP07-002") and not bracketed
+   * variants, keyed by console-name + exact product-name.
+   */
+  private buildSealedIndex(csv: string): Map<string, number> {
+    const index = new Map<string, number>();
+    const lines = csv.split("\n");
+    for (let i = 1; i < lines.length; i++) {
+      const line = lines[i];
+      if (line === undefined) continue;
+      const row = PriceChartingAdapter.splitRow(line);
+      if (!row) continue;
+      if (PK_NUMBER.test(row.product) || OP_CODE.test(row.product) || BRACKET.test(row.product)) {
+        continue;
+      }
+      const key = `${row.console}|${row.product.trim()}`;
+      if (!index.has(key)) index.set(key, row.cents);
+    }
+    return index;
   }
 
-  private getPkIndex(): Promise<Map<string, number>> {
-    return (this.pkIndex ??= this.downloadCsv("pokemon-cards").then((c) => this.buildPkIndex(c)));
+  private getOpData(): Promise<CategoryData> {
+    return (this.opData ??= this.downloadCsv("one-piece-cards").then((c) => ({
+      cards: this.buildOpIndex(c),
+      sealed: this.buildSealedIndex(c),
+    })));
+  }
+
+  private getPkData(): Promise<CategoryData> {
+    return (this.pkData ??= this.downloadCsv("pokemon-cards").then((c) => ({
+      cards: this.buildPkIndex(c),
+      sealed: this.buildSealedIndex(c),
+    })));
   }
 
   async fetchCardPrices(
@@ -197,7 +237,7 @@ export class PriceChartingAdapter implements PriceSourceAdapter {
     // Game is unambiguous from the collector-number shape: One Piece codes look
     // like OP09-004 / ST01-007, Pokémon numbers never carry that dash.
     const isOnePiece = cards.some((c) => OP_CODE.test(c.number));
-    const index = isOnePiece ? await this.getOpIndex() : await this.getPkIndex();
+    const index = (isOnePiece ? await this.getOpData() : await this.getPkData()).cards;
     const consoleName = isOnePiece ? null : (PK_CONSOLE_OVERRIDE[set.code] ?? `Pokemon ${set.name}`);
 
     const capturedAt = new Date();
@@ -219,9 +259,25 @@ export class PriceChartingAdapter implements PriceSourceAdapter {
     return out;
   }
 
-  async fetchSealedPrices(): Promise<PriceSnapshotInput[]> {
-    // Sealed products would need each one mapped to a PriceCharting id; that
-    // mapping isn't populated yet, so there's nothing to price here.
-    return [];
+  async fetchSealedPrices(set: CatalogSet): Promise<PriceSnapshotInput[]> {
+    this.assertToken();
+    // Pokémon sets carry a pokemontcg_io external id; One Piece sets (optcgapi)
+    // do not — enough to pick the category and console-name scheme.
+    const isOnePiece = !("pokemontcg_io" in set.externalIds);
+    const data = isOnePiece ? await this.getOpData() : await this.getPkData();
+    const consoleName = isOnePiece
+      ? `One Piece ${set.name}`
+      : (PK_CONSOLE_OVERRIDE[set.code] ?? `Pokemon ${set.name}`);
+
+    const capturedAt = new Date();
+    const out: PriceSnapshotInput[] = [];
+    for (const [type, label] of Object.entries(SEALED_LABEL)) {
+      const cents = data.sealed.get(`${consoleName}|${label}`);
+      if (cents === undefined || cents <= 0) continue;
+      // externalProductId is our product-type; the job resolves it to the set's
+      // sealed product of that type.
+      out.push({ externalProductId: type, sourceId: this.id, priceCents: cents, kind: "sealed", capturedAt });
+    }
+    return out;
   }
 }

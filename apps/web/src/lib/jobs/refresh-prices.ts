@@ -138,6 +138,15 @@ export async function refreshPrices() {
         }
       }
 
+      // Sealed products of this set, keyed by type. An adapter's sealed
+      // snapshot carries only the product-type (all it can tell from a CSV), so
+      // this is how it resolves to our product row.
+      const sealedRows = await db
+        .select({ id: sealedProducts.id, type: sealedProducts.type })
+        .from(sealedProducts)
+        .where(eq(sealedProducts.setId, setRow.id));
+      const sealedIdByType = new Map(sealedRows.map((s) => [s.type as string, s.id]));
+
       for (const adapter of adapters) {
         // Priority order: sealed first (cheapest, highest value per call for
         // quota-bound providers), then cards. Graded runs with cards.
@@ -155,6 +164,7 @@ export async function refreshPrices() {
         snapshotsWritten += await writeSnapshots(
           [...sealed, ...raw, ...graded],
           cardIdByExternal,
+          sealedIdByType,
         );
       }
     }
@@ -166,45 +176,73 @@ export async function refreshPrices() {
 async function writeSnapshots(
   inputs: PriceSnapshotInput[],
   cardIdByExternal: Map<string, string>,
+  sealedIdByExternal: Map<string, string>,
 ): Promise<number> {
   if (inputs.length === 0) return 0;
+
+  // Resolve each snapshot to one of our entities. Cards and sealed products go
+  // to the same two tables but collide on different unique indexes, so they're
+  // written in separate passes.
+  const cardChunk: { cardId: string; sourceId: string; priceCents: number; kind: PriceSnapshotInput["kind"]; capturedAt: Date }[] = [];
+  const sealedChunk: { sealedProductId: string; sourceId: string; priceCents: number; kind: PriceSnapshotInput["kind"]; capturedAt: Date }[] = [];
+  for (const s of inputs) {
+    if (s.externalCardId) {
+      const cardId = cardIdByExternal.get(s.externalCardId);
+      if (cardId) cardChunk.push({ cardId, sourceId: s.sourceId, priceCents: s.priceCents, kind: s.kind, capturedAt: s.capturedAt });
+    } else if (s.externalProductId) {
+      const sealedProductId = sealedIdByExternal.get(s.externalProductId);
+      if (sealedProductId) sealedChunk.push({ sealedProductId, sourceId: s.sourceId, priceCents: s.priceCents, kind: s.kind, capturedAt: s.capturedAt });
+    }
+  }
+
+  return (await writeCardChunks(cardChunk)) + (await writeSealedChunks(sealedChunk));
+}
+
+// Chunked inserts: one round-trip per 500 rows rather than per row. Neon's free
+// tier is latency-bound, not row-bound. The projection upsert is batched too —
+// the per-row version cost ~200s for 510 cards against Neon, and Vercel cron
+// caps at 300s. `excluded` refers to the incoming row on conflict.
+const CHUNK = 500;
+
+async function writeCardChunks(
+  rows: { cardId: string; sourceId: string; priceCents: number; kind: PriceSnapshotInput["kind"]; capturedAt: Date }[],
+): Promise<number> {
   const db = getDb();
   let written = 0;
-
-  // Chunked inserts: one round-trip per 500 rows rather than per row. Neon's
-  // free tier is latency-bound, not row-bound.
-  const CHUNK = 500;
-  const resolved = inputs.flatMap((s) => {
-    if (!s.externalCardId) return []; // sealed mapping lands with PriceCharting
-    const cardId = cardIdByExternal.get(s.externalCardId);
-    if (!cardId) return [];
-    return [{ cardId, sourceId: s.sourceId, priceCents: s.priceCents, kind: s.kind, capturedAt: s.capturedAt }];
-  });
-
-  for (let i = 0; i < resolved.length; i += CHUNK) {
-    const chunk = resolved.slice(i, i + CHUNK);
-
+  for (let i = 0; i < rows.length; i += CHUNK) {
+    const chunk = rows.slice(i, i + CHUNK);
     await db.insert(priceSnapshots).values(chunk);
-
-    // Projection upsert, batched: one statement per chunk, not per row. The
-    // per-row version cost ~200s for 510 cards against Neon (latency-bound);
-    // Vercel cron caps at 300s, so round-trips are the budget that matters.
-    // `excluded` refers to the incoming row on conflict.
     await db
       .insert(latestPrices)
       .values(chunk)
       .onConflictDoUpdate({
         target: [latestPrices.cardId, latestPrices.sourceId, latestPrices.kind],
         targetWhere: sql`${latestPrices.cardId} IS NOT NULL`,
-        set: {
-          priceCents: sql`excluded.price_cents`,
-          capturedAt: sql`excluded.captured_at`,
-          updatedAt: new Date(),
-        },
+        set: { priceCents: sql`excluded.price_cents`, capturedAt: sql`excluded.captured_at`, updatedAt: new Date() },
       });
     written += chunk.length;
   }
+  return written;
+}
 
+async function writeSealedChunks(
+  rows: { sealedProductId: string; sourceId: string; priceCents: number; kind: PriceSnapshotInput["kind"]; capturedAt: Date }[],
+): Promise<number> {
+  const db = getDb();
+  let written = 0;
+  for (let i = 0; i < rows.length; i += CHUNK) {
+    const chunk = rows.slice(i, i + CHUNK);
+    await db.insert(priceSnapshots).values(chunk);
+    await db
+      .insert(latestPrices)
+      .values(chunk)
+      .onConflictDoUpdate({
+        target: [latestPrices.sealedProductId, latestPrices.sourceId, latestPrices.kind],
+        targetWhere: sql`${latestPrices.sealedProductId} IS NOT NULL`,
+        set: { priceCents: sql`excluded.price_cents`, capturedAt: sql`excluded.captured_at`, updatedAt: new Date() },
+      });
+    written += chunk.length;
+  }
   return written;
 }
 
