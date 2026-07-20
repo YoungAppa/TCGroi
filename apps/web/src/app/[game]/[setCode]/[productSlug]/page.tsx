@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { PriceHistory } from "@/components/PriceHistory";
 import { ProductDetail } from "@/components/ProductDetail";
-import { getProduct, getRankings } from "@/lib/data";
+import { getMarketHistory, getProduct, getRankings } from "@/lib/data";
 import { computeProduct } from "@/lib/data/compute";
 import { formatCents, formatRoi } from "@packroi/ev/format";
 import { DEFAULT_FILTER_STATE } from "@packroi/ev/url-state";
@@ -61,6 +62,7 @@ export default async function ProductPage({ params }: { params: Promise<Params> 
   if (!payload) notFound();
 
   const { availableSources } = await getRankings();
+  const history = await getMarketHistory(payload.productId);
 
   return (
     <div className="space-y-4">
@@ -81,6 +83,8 @@ export default async function ProductPage({ params }: { params: Promise<Params> 
       </div>
 
       <ProductDetail payload={payload} availableSources={availableSources} />
+
+      <PriceHistory data={history} />
     </div>
   );
 }

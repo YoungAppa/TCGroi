@@ -1,5 +1,47 @@
+import { sql } from "drizzle-orm";
+
+import { getDb, priceSnapshots } from "@/lib/db";
+
 import { loadRankingsFromDb } from "./db";
 import type { ProductPayload, RankingsPayload } from "./types";
+
+export interface MarketHistoryPoint {
+  /** YYYY-MM-DD. */
+  date: string;
+  cents: number;
+}
+
+/**
+ * Daily market-price history for one sealed product, from the append-only
+ * price_snapshots table (the day's median across sources/runs). Empty until
+ * the cron has written at least one day — the sparkline handles that. Read-only
+ * DB, so it stays inside the ISR page's no-external-fetch guarantee.
+ */
+export async function getMarketHistory(
+  productId: string,
+  days = 120,
+): Promise<MarketHistoryPoint[]> {
+  try {
+    const db = getDb();
+    const rows = await db.execute<{ day: string; cents: number | string }>(sql`
+      select to_char(date(${priceSnapshots.capturedAt}), 'YYYY-MM-DD') as day,
+             round(percentile_cont(0.5) within group (order by ${priceSnapshots.priceCents}))::int as cents
+      from ${priceSnapshots}
+      where ${priceSnapshots.sealedProductId} = ${productId}::uuid
+        and ${priceSnapshots.kind} = 'sealed'
+        and ${priceSnapshots.capturedAt} >= now() - (${days} * interval '1 day')
+      group by date(${priceSnapshots.capturedAt})
+      order by day
+    `);
+    return [...rows].map((r) => ({ date: String(r.day), cents: Number(r.cents) }));
+  } catch (err) {
+    console.error(
+      "[data] market history unavailable:",
+      err instanceof Error ? err.message : err,
+    );
+    return [];
+  }
+}
 
 /**
  * Data access for pages. Server-only, DB-backed (Neon via Drizzle).
