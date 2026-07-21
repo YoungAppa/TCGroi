@@ -52,6 +52,14 @@ export function ProductDetail({
     [payload, state, availableIds],
   );
 
+  // "Bulk / regular cards" completeness row: the balance up to 100% after the
+  // pull-rate hit tiers. Shown only where the hits genuinely don't cover the
+  // pack (standard Pokémon leaves ~60-75% bulk). One Piece packs sum to ~97%
+  // hit-odds — a different slot structure — so the complement there would
+  // misread as "~3% bulk"; hidden until that structure gets its own treatment.
+  const bulkOdds = Math.max(0, 1 - ev.tiers.reduce((s, t) => s + t.perPackProbability, 0));
+  const showBulk = bulkOdds >= 0.15;
+
   const selectedSources = effectiveSources(state, availableIds);
 
   const disagreements = useMemo(() => {
@@ -230,13 +238,34 @@ export function ProductDetail({
                 </td>
               </tr>
             ))}
+            {showBulk && (
+              <tr className="border-b border-border/40 text-muted last:border-0">
+                <td className="py-1.5 pr-3">
+                  <span className="mr-2 inline-block h-2 w-2 rounded-full bg-white/15" />
+                  Bulk / regular cards
+                </td>
+                <td className="tabular py-1.5 pr-3">{formatProbability(bulkOdds)}</td>
+                <td className="tabular py-1.5 pr-3">≈ $0.01</td>
+                <td className="tabular py-1.5 pr-3">—</td>
+                <td className="tabular py-1.5 pr-3">—</td>
+                <td className="tabular py-1.5">—</td>
+              </tr>
+            )}
           </tbody>
         </table>
         </div>
 
         <p className="text-xs text-muted">
           Expected hits per product: {ev.expectedHits.toFixed(2)} (counting every
-          tier the pull-rate table enumerates)
+          tier the pull-rate table enumerates).
+          {showBulk && (
+            <>
+              {" "}The{" "}
+              <span className="text-foreground">Bulk / regular cards</span> row is
+              the rest of a pack — commons, uncommons and plain rares worth about a
+              cent — shown so the odds add up to the whole pack.
+            </>
+          )}
         </p>
       </section>
 
