@@ -275,6 +275,16 @@ export function ProductDetail({
               cent — shown so the odds add up to the whole pack.
             </>
           )}
+          {!showBulk && payload.gameSlug === "one-piece" && (
+            <>
+              {" "}A One Piece pack is 12 cards: on average about{" "}
+              {(ev.expectedHits / payload.packsContained).toFixed(1)} is one of the
+              cards above, and the other ~
+              {Math.max(0, Math.round(12 - ev.expectedHits / payload.packsContained))}{" "}
+              are commons, uncommons and rares worth about a cent. (These odds
+              describe that one notable card, so they don&apos;t sum to 100%.)
+            </>
+          )}
         </p>
       </section>
 
