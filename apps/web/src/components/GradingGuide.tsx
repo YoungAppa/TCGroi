@@ -26,7 +26,7 @@ export function GradingGuide({ chase }: { chase: ChaseLike[] }) {
   if (rows.length === 0) return null;
 
   return (
-    <section className="space-y-2 rounded-lg border border-border bg-surface p-4">
+    <section className="space-y-2 rounded-lg bg-surface p-4">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <h2 className="text-lg font-semibold">Is it worth grading?</h2>
         <span className="text-xs text-muted">PSA US fees, approx · {PSA_FEES_AS_OF}</span>

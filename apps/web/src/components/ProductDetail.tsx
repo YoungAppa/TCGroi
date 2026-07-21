@@ -98,7 +98,7 @@ export function ProductDetail({
 
       {/* ---- the split: EV once, two denominators ---- */}
       <div className="grid gap-3 lg:grid-cols-[1fr_1fr_1fr]">
-        <div className="rounded-lg border border-border bg-surface p-4">
+        <div className="rounded-lg bg-surface p-4">
           <div className="text-xs uppercase tracking-wide text-muted">Expected value</div>
           <div className="tabular mt-1 text-2xl font-semibold">
             {formatCents(ev.evProductCents)}
@@ -110,7 +110,7 @@ export function ProductDetail({
           </div>
         </div>
 
-        <div className="rounded-lg border border-border bg-surface p-4">
+        <div className="rounded-lg bg-surface p-4">
           <div className="text-xs uppercase tracking-wide text-muted">Retail (MSRP)</div>
           <div className="tabular mt-1 flex items-baseline gap-3">
             <span className="text-2xl font-semibold">
@@ -149,7 +149,7 @@ export function ProductDetail({
 
       {/* ---- guaranteed promos sidecar ---- */}
       {promoRows.length > 0 && (
-        <section className="rounded-lg border border-border bg-surface p-4">
+        <section className="rounded-lg bg-surface p-4">
           <h2 className="text-lg font-semibold">Guaranteed promo cards</h2>
           <p className="text-xs text-muted">
             Included in every copy of this product and counted in its EV as fixed
@@ -163,7 +163,7 @@ export function ProductDetail({
                     src={p.imageUrl}
                     alt={p.name}
                     loading="lazy"
-                    className="h-40 w-auto rounded-lg border border-border object-contain"
+                    className="h-40 w-auto rounded-lg object-contain"
                   />
                 )}
                 <div>
@@ -188,7 +188,7 @@ export function ProductDetail({
         <h2 className="text-lg font-semibold">Where the value comes from</h2>
 
         {totalEv > 0 && (
-          <div className="flex h-5 w-full overflow-hidden rounded border border-border">
+          <div className="flex h-5 w-full overflow-hidden rounded bg-surface-raised">
             {ev.tiers.map((t, i) => {
               const pct = (t.evContributionCents / totalEv) * 100;
               if (pct < 0.5) return null;
@@ -307,7 +307,7 @@ export function ProductDetail({
               return (
                 <div
                   key={c.cardId}
-                  className="group flex flex-col overflow-hidden rounded-xl border border-border bg-surface transition hover:border-accent/60 hover:shadow-lg hover:shadow-black/30"
+                  className="group flex flex-col overflow-hidden rounded-xl bg-surface ring-1 ring-white/5 transition hover:shadow-lg hover:shadow-black/30 hover:ring-accent/50"
                 >
                   <div className="relative aspect-[5/7] w-full overflow-hidden bg-surface-raised">
                     {img ? (
@@ -369,7 +369,7 @@ export function ProductDetail({
       <PacksCalculator ev={ev} roiMarket={roiMarket} />
 
       {/* ---- data provenance ---- */}
-      <section className="space-y-2 rounded-lg border border-border bg-surface p-4">
+      <section className="space-y-2 rounded-lg bg-surface p-4">
         <div className="flex flex-wrap items-center gap-2">
           <h2 className="text-lg font-semibold">Pull-rate data</h2>
           <ConfidenceBadge
@@ -441,12 +441,12 @@ function PacksCalculator({
   const p90 = packsForProbability(card.perPackProbability, 0.9);
 
   return (
-    <section className="space-y-2 rounded-lg border border-border bg-surface p-4">
+    <section className="space-y-2 rounded-lg bg-surface p-4">
       <h2 className="text-lg font-semibold">How many packs for…</h2>
       <select
         value={card.cardId}
         onChange={(e) => setCardId(e.target.value)}
-        className="w-full max-w-sm rounded border border-border bg-surface-raised px-2 py-1 text-sm"
+        className="w-full max-w-sm rounded-md bg-surface-raised px-2.5 py-1.5 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-accent/40"
       >
         {ev.chase.map((c) => (
           <option key={c.cardId} value={c.cardId}>
