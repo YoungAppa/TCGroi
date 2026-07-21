@@ -43,9 +43,13 @@ const SORTS: Record<SortKey, (r: Row) => number> = {
   market: (r) => r.payload.market.priceCents ?? -Infinity,
   evPerPack: (r) => r.c.ev.evPackCents,
   pTopBox: headlineProb,
-  // "Popular" has no usage signal in the data, so newest-release stands in for
-  // it — the sets people are actively opening now sit at the top.
-  popular: (r) => (r.payload.releaseDate ? Date.parse(r.payload.releaseDate) : -Infinity),
+  // "Popular" = the average value of a set's top 10 chase cards. The sets with
+  // the big-money hits (151, Prismatic Evolutions, Ascended Heroes) are the ones
+  // people actually chase — the best demand proxy we have without usage data.
+  popular: (r) => {
+    const top = r.c.ev.chase.slice(0, 10);
+    return top.length ? top.reduce((s, ch) => s + ch.valueCents, 0) / top.length : -Infinity;
+  },
 };
 
 /** Named sort options for the dropdown → (metric, descending). */
