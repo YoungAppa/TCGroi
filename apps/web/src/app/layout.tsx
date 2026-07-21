@@ -52,11 +52,19 @@ export default function RootLayout({
             <Link href="/" className="text-lg font-bold tracking-tight">
               PACK<span className="text-accent">ROI</span>
             </Link>
-            <div className="flex gap-4 text-sm text-muted">
-              <Link href="/" className="hover:text-foreground">
+            {/* -my-2 py-2 grows the tap target to ~40px (WCAG 2.5.8) without
+                changing the header's visual height. */}
+            <div className="flex items-center gap-2 text-sm text-muted">
+              <Link
+                href="/"
+                className="-my-2 inline-flex items-center px-2 py-2 hover:text-foreground"
+              >
                 Rankings
               </Link>
-              <Link href="/methodology" className="hover:text-foreground">
+              <Link
+                href="/methodology"
+                className="-my-2 inline-flex items-center px-2 py-2 hover:text-foreground"
+              >
                 Methodology
               </Link>
             </div>
