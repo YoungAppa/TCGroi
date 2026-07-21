@@ -21,7 +21,7 @@ interface ChaseLike {
  * never worth grading, so they're omitted.
  */
 export function GradingGuide({ chase }: { chase: ChaseLike[] }) {
-  const GRADEABLE_MIN = 1000; // $10 raw — below this a $25 fee never pays off
+  const GRADEABLE_MIN = 1000; // $10 raw — the fee ($80+) dwarfs anything cheaper
   const rows = chase.filter((c) => c.valueCents >= GRADEABLE_MIN).slice(0, 12);
   if (rows.length === 0) return null;
 
@@ -52,7 +52,9 @@ export function GradingGuide({ chase }: { chase: ChaseLike[] }) {
           </thead>
           <tbody>
             {rows.map((c) => {
-              const g = gradingCost(c.valueCents);
+              // PSA prices the tier off the DECLARED (graded) value — pass the
+              // PSA 10 price when we have it, else the raw value stands in.
+              const g = gradingCost(c.valueCents, c.psa10Cents ?? undefined);
               const net =
                 c.psa10Cents !== null ? c.psa10Cents - c.valueCents - g.feeCents : null;
               return (
@@ -105,8 +107,10 @@ export function GradingGuide({ chase }: { chase: ChaseLike[] }) {
         won&apos;t 10). <span className="text-foreground">Chance of 10</span> needs
         PSA population data and is still pending. PSA 10 prices are eBay-sold via
         PokemonPriceTracker; a &ldquo;—&rdquo; means we haven&apos;t fetched that
-        card yet. Fees exclude shipping and are the cheapest PSA tier for each
-        card&apos;s value.
+        card yet. Fees exclude shipping and use the cheapest PSA tier for each
+        card&apos;s declared (graded) value. PSA paused its cheaper Value tiers
+        in June 2026 under a grading backlog, so Regular ($79.99) is the current
+        floor — grading a card much under ~$100 rarely makes sense.
       </p>
     </section>
   );

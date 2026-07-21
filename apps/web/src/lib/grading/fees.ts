@@ -9,8 +9,15 @@
  * Fees are PSA's US published per-card rates, cheapest tier that accepts a
  * given declared value, approximate and excluding shipping. They change; this
  * schedule is dated so a stale number is obvious rather than silent.
+ *
+ * As of 2026-06-02 PSA PAUSED all of its cheaper "Value" tiers (Value Bulk
+ * $24.99 / Value $32.99 / Value Plus $49.99 / Value Max $64.99) under an
+ * ~14M-card backlog, so the cheapest service anyone can actually submit to
+ * today is Regular at $79.99. We model that real floor rather than a paused
+ * price you cannot buy. If PSA reopens the Value tiers, add them back below and
+ * bump PSA_FEES_AS_OF — the break-even floor for cheap cards would drop.
  */
-export const PSA_FEES_AS_OF = "2025";
+export const PSA_FEES_AS_OF = "Jul 2026";
 
 interface FeeTier {
   /** Inclusive upper bound on declared value, in cents. */
@@ -19,15 +26,17 @@ interface FeeTier {
   service: string;
 }
 
-/** Ascending by value. The first tier a declared value fits is the cheapest. */
+/**
+ * Ascending by declared value; the first tier a declared value fits is the
+ * cheapest. Value tiers are omitted while PSA has them paused (see file note).
+ */
 export const PSA_FEE_TIERS: readonly FeeTier[] = [
-  { maxValueCents: 49_900, feeCents: 2_499, service: "Value" },
-  { maxValueCents: 99_900, feeCents: 3_999, service: "Value Plus" },
-  { maxValueCents: 149_900, feeCents: 7_499, service: "Regular" },
-  { maxValueCents: 249_900, feeCents: 14_999, service: "Express" },
-  { maxValueCents: 499_900, feeCents: 29_999, service: "Super Express" },
-  { maxValueCents: 999_900, feeCents: 64_999, service: "WalkThrough" },
-  { maxValueCents: Number.POSITIVE_INFINITY, feeCents: 149_999, service: "Premium" },
+  { maxValueCents: 150_000, feeCents: 7_999, service: "Regular" },
+  { maxValueCents: 250_000, feeCents: 14_900, service: "Express" },
+  { maxValueCents: 500_000, feeCents: 34_900, service: "Super Express" },
+  { maxValueCents: 1_000_000, feeCents: 59_900, service: "Walk-Through" },
+  { maxValueCents: 2_500_000, feeCents: 99_900, service: "Premium 1" },
+  { maxValueCents: Number.POSITIVE_INFINITY, feeCents: 149_900, service: "Premium" },
 ];
 
 export interface GradingCost {
@@ -38,14 +47,17 @@ export interface GradingCost {
 }
 
 /**
- * Grading cost for a card, using its raw value to pick the fee tier (you
- * declare roughly what the graded card is worth; raw is the honest floor we
- * have). Break-even is raw + fee: below that, grading loses money even on a
- * perfect 10, before accounting for the risk of a lower grade.
+ * Grading cost for a card. PSA sets the service tier by the DECLARED value —
+ * what the graded card is worth — so pass `declaredValueCents` (the PSA 10
+ * price) when known; without it we fall back to the raw value, which can
+ * under-declare the fee for a card whose graded price crosses a tier line.
+ * Break-even is raw + fee: below that, grading loses money even on a perfect
+ * 10, before accounting for the risk of a lower grade.
  */
-export function gradingCost(rawCents: number): GradingCost {
+export function gradingCost(rawCents: number, declaredValueCents?: number): GradingCost {
+  const declared = declaredValueCents ?? rawCents;
   const tier =
-    PSA_FEE_TIERS.find((t) => rawCents <= t.maxValueCents) ??
+    PSA_FEE_TIERS.find((t) => declared <= t.maxValueCents) ??
     PSA_FEE_TIERS[PSA_FEE_TIERS.length - 1]!;
   return {
     feeCents: tier.feeCents,
