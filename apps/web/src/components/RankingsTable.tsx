@@ -153,6 +153,11 @@ export function RankingsTable({
     );
   }
 
+  // A faint wash behind the market column group. Market ROI is the honest
+  // answer ("worth opening at what it costs today"), so the eye should land
+  // there; the tint is semi-transparent so it survives the row-hover bg.
+  const MARKET_TINT = "bg-foreground/[0.025]";
+
   function renderList(sectionRows: Row[]) {
     return (
       <div className="overflow-x-auto rounded-lg border border-border">
@@ -167,7 +172,10 @@ export function RankingsTable({
                 </th>
               )}
               {marketOn && (
-                <th colSpan={2} className="border-l border-border/60 px-3 py-1">
+                <th
+                  colSpan={2}
+                  className={`border-l border-border/60 px-3 py-1 font-semibold text-foreground ${MARKET_TINT}`}
+                >
                   Current market
                 </th>
               )}
@@ -184,8 +192,8 @@ export function RankingsTable({
               )}
               {marketOn && (
                 <>
-                  <SortHeader label="Price" k="market" cur={sortKey} desc={sortDesc} onClick={clickSort} borderLeft />
-                  <SortHeader label="ROI" k="roiMarket" cur={sortKey} desc={sortDesc} onClick={clickSort} />
+                  <SortHeader label="Price" k="market" cur={sortKey} desc={sortDesc} onClick={clickSort} borderLeft className={MARKET_TINT} />
+                  <SortHeader label="ROI" k="roiMarket" cur={sortKey} desc={sortDesc} onClick={clickSort} className={MARKET_TINT} />
                 </>
               )}
               <SortHeader label="P(top hit)" k="pTopBox" cur={sortKey} desc={sortDesc} onClick={clickSort} borderLeft />
@@ -230,7 +238,7 @@ export function RankingsTable({
                 )}
                 {marketOn && (
                   <>
-                    <td className="tabular border-l border-border/60 px-3 py-2">
+                    <td className={`tabular border-l border-border/60 px-3 py-2 ${MARKET_TINT}`}>
                       {payload.market.priceCents !== null ? formatCents(payload.market.priceCents) : "—"}
                       {payload.market.isManual && (
                         <span
@@ -241,7 +249,7 @@ export function RankingsTable({
                         </span>
                       )}
                     </td>
-                    <td className="tabular px-3 py-2">
+                    <td className={`tabular px-3 py-2 ${MARKET_TINT}`}>
                       <RoiCell roi={c.roiMarket} />
                     </td>
                   </>
@@ -581,6 +589,7 @@ function SortHeader({
   desc,
   onClick,
   borderLeft = false,
+  className = "",
 }: {
   label: string;
   k: SortKey;
@@ -588,10 +597,11 @@ function SortHeader({
   desc: boolean;
   onClick: (k: SortKey) => void;
   borderLeft?: boolean;
+  className?: string;
 }) {
   const active = cur === k;
   return (
-    <th className={`px-3 py-2 font-medium ${borderLeft ? "border-l border-border/60" : ""}`}>
+    <th className={`px-3 py-2 font-medium ${borderLeft ? "border-l border-border/60" : ""} ${className}`}>
       <button
         onClick={() => onClick(k)}
         className={`inline-flex items-center gap-1 uppercase tracking-wide ${
