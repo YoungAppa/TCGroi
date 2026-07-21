@@ -5,6 +5,10 @@
       "schedule": "17 9 * * *"
     },
     {
+      "path": "/api/cron/refresh-graded",
+      "schedule": "37 10 * * *"
+    },
+    {
       "path": "/api/cron/refresh-catalog",
       "schedule": "43 7 * * 1"
     }
