@@ -10,7 +10,7 @@ import { formatCents } from "@packroi/ev/format";
 export function PriceHistory({ data }: { data: MarketHistoryPoint[] }) {
   if (data.length < 2) {
     return (
-      <section className="rounded-lg bg-surface p-4">
+      <section className="rounded-xl border border-border bg-surface p-4">
         <h2 className="text-lg font-semibold">Market price history</h2>
         <p className="mt-1 text-xs text-muted">
           {data.length === 1
@@ -44,7 +44,7 @@ export function PriceHistory({ data }: { data: MarketHistoryPoint[] }) {
   const trendClass = flat ? "text-muted" : up ? "text-emerald-400" : "text-rose-400";
 
   return (
-    <section className="rounded-lg bg-surface p-4">
+    <section className="rounded-xl border border-border bg-surface p-4">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <h2 className="text-lg font-semibold">Market price history</h2>
         <span className="text-xs text-muted">

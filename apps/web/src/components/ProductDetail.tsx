@@ -98,7 +98,7 @@ export function ProductDetail({
 
       {/* ---- the split: EV once, two denominators ---- */}
       <div className="grid gap-3 lg:grid-cols-[1fr_1fr_1fr]">
-        <div className="rounded-lg bg-surface p-4">
+        <div className="rounded-xl border border-border bg-surface p-4">
           <div className="text-xs uppercase tracking-wide text-muted">Expected value</div>
           <div className="tabular mt-1 text-2xl font-semibold">
             {formatCents(ev.evProductCents)}
@@ -110,7 +110,7 @@ export function ProductDetail({
           </div>
         </div>
 
-        <div className="rounded-lg bg-surface p-4">
+        <div className="rounded-xl border border-border bg-surface p-4">
           <div className="text-xs uppercase tracking-wide text-muted">Retail (MSRP)</div>
           <div className="tabular mt-1 flex items-baseline gap-3">
             <span className="text-2xl font-semibold">
@@ -125,31 +125,39 @@ export function ProductDetail({
           </div>
         </div>
 
-        <div className="rounded-lg border border-amber-500/30 bg-surface p-4">
-          <div className="text-xs uppercase tracking-wide text-muted">Current market</div>
-          <div className="tabular mt-1 flex items-baseline gap-3">
-            <span className="text-2xl font-semibold">
-              {payload.market.priceCents !== null
-                ? formatCents(payload.market.priceCents)
-                : "—"}
-            </span>
-            <span className="text-xl">
-              <RoiCell roi={roiMarket} />
-            </span>
-          </div>
-          <div className="mt-1 text-xs text-muted">
-            {payload.market.priceCents === null
-              ? "no tracked market price yet"
-              : payload.market.isManual
-                ? `hand-tracked ${payload.market.asOf ?? ""} — ${payload.market.source ?? ""}`
-                : "live market price"}
+        {/* Current market is the honest verdict — tie it to the home hero with
+            the same foil sheen + accent border so the two pages read as one. */}
+        <div className="relative overflow-hidden rounded-xl border border-accent/30 bg-surface p-4">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 bg-[radial-gradient(120%_150%_at_100%_0%,rgba(234,179,8,0.10),transparent_55%)]"
+          />
+          <div className="relative">
+            <div className="text-xs uppercase tracking-wide text-muted">Current market</div>
+            <div className="tabular mt-1 flex items-baseline gap-3">
+              <span className="text-2xl font-semibold">
+                {payload.market.priceCents !== null
+                  ? formatCents(payload.market.priceCents)
+                  : "—"}
+              </span>
+              <span className="text-xl">
+                <RoiCell roi={roiMarket} />
+              </span>
+            </div>
+            <div className="mt-1 text-xs text-muted">
+              {payload.market.priceCents === null
+                ? "no tracked market price yet"
+                : payload.market.isManual
+                  ? `hand-tracked ${payload.market.asOf ?? ""} — ${payload.market.source ?? ""}`
+                  : "live market price"}
+            </div>
           </div>
         </div>
       </div>
 
       {/* ---- guaranteed promos sidecar ---- */}
       {promoRows.length > 0 && (
-        <section className="rounded-lg bg-surface p-4">
+        <section className="rounded-xl border border-border bg-surface p-4">
           <h2 className="text-lg font-semibold">Guaranteed promo cards</h2>
           <p className="text-xs text-muted">
             Included in every copy of this product and counted in its EV as fixed
@@ -369,7 +377,7 @@ export function ProductDetail({
       <PacksCalculator ev={ev} roiMarket={roiMarket} />
 
       {/* ---- data provenance ---- */}
-      <section className="space-y-2 rounded-lg bg-surface p-4">
+      <section className="space-y-2 rounded-xl border border-border bg-surface p-4">
         <div className="flex flex-wrap items-center gap-2">
           <h2 className="text-lg font-semibold">Pull-rate data</h2>
           <ConfidenceBadge
@@ -441,7 +449,7 @@ function PacksCalculator({
   const p90 = packsForProbability(card.perPackProbability, 0.9);
 
   return (
-    <section className="space-y-2 rounded-lg bg-surface p-4">
+    <section className="space-y-2 rounded-xl border border-border bg-surface p-4">
       <h2 className="text-lg font-semibold">How many packs for…</h2>
       <select
         value={card.cardId}
