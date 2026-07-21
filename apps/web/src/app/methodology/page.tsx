@@ -109,6 +109,36 @@ export default function MethodologyPage() {
       </section>
 
       <section className="space-y-2">
+        <h2 className="text-lg font-semibold">The two games differ</h2>
+        <p>
+          Pokémon and One Piece are built and priced differently, so their
+          numbers are not apples-to-apples:
+        </p>
+        <ul className="list-disc space-y-1 pl-5">
+          <li>
+            <strong>Pokémon.</strong> Pull rates come from TCGplayer&apos;s
+            Authentication Center studies, which disclose their sample (500 to
+            8,500+ packs) — most Pokémon sets here rank HIGH confidence. A pack
+            is ~10 cards and its hit rarities are spread across slots, so the
+            odds sum to well under 100%; the tier table adds a{" "}
+            <em>Bulk / regular cards</em> row for the rest of the pack. Two price
+            sources are available (TCGplayer Market and eBay sold).
+          </li>
+          <li>
+            <strong>One Piece.</strong> Pull rates come from community studies,
+            usually without a disclosed sample, so most One Piece sets rank
+            LOW–MEDIUM. Card facts come from optcgapi.com but its prices are
+            ignored; the single price source is PriceCharting&apos;s eBay-sold
+            data. A pack is 12 cards and its odds describe the roughly one
+            notable card in it (Leader, SR, Alt Art, Manga, …), so they do{" "}
+            <em>not</em> sum to 100% — the other ~11 cards are bulk. The Manga,
+            Wanted Poster, and SP treatments are their own tiers, priced
+            separately from the base card because they run 10–100× the price.
+          </li>
+        </ul>
+      </section>
+
+      <section className="space-y-2">
         <h2 className="text-lg font-semibold">Price data</h2>
         <p>
           Card prices come from up to two sources you can toggle and blend:{" "}
