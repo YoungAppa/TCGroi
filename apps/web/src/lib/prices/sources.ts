@@ -12,6 +12,7 @@ export const PRICE_SOURCE_IDS = [
   "pricecharting_ebay",
   "ebay_direct",
   "cardmarket",
+  "pokeprice_graded",
 ] as const;
 
 export type PriceSourceId = (typeof PRICE_SOURCE_IDS)[number];
@@ -52,6 +53,12 @@ export const PRICE_SOURCES: Record<PriceSourceId, PriceSourceMeta> = {
     id: "cardmarket",
     displayName: "Cardmarket (EU)",
     attribution: "Price data from Cardmarket. Not endorsed by Cardmarket.",
+  },
+  pokeprice_graded: {
+    id: "pokeprice_graded",
+    displayName: "PSA graded (eBay)",
+    attribution:
+      "Graded (PSA 10/9) sale prices from PokemonPriceTracker, derived from eBay sold listings. Not endorsed by PokemonPriceTracker, PSA, or eBay.",
   },
 };
 

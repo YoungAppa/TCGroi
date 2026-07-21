@@ -36,6 +36,13 @@ const serverEnvSchema = z.object({
   // Paid subscription token. Absent => adapter disabled, graded mode hidden.
   PRICECHARTING_TOKEN: z.string().min(1).optional(),
 
+  // --- Optional: pokeprice_ebay (graded) -----------------------------------
+  // PokemonPriceTracker API key. Its edge over PriceCharting is PSA 10 (and 9)
+  // graded sale prices, which the PriceCharting tier here does not expose.
+  // Pokémon only; credit-metered, so graded prices are fetched by a dedicated
+  // budget-aware job (scripts/refresh-graded.ts), not the main price refresh.
+  POKEPRICE_TOKEN: z.string().min(1).optional(),
+
   // --- Tunables -------------------------------------------------------------
   BULK_THRESHOLD_CENTS: z.coerce.number().int().nonnegative().default(50),
 
