@@ -49,8 +49,17 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         <header className="border-b border-border bg-surface">
           <nav className="mx-auto flex max-w-7xl items-center gap-6 px-4 py-3">
-            <Link href="/" className="text-lg font-bold tracking-tight">
-              TCG<span className="text-accent">ROI</span>
+            <Link href="/" className="group flex items-center gap-2">
+              {/* The mark carries the thesis: open the pack, the value goes down. */}
+              <span
+                aria-hidden
+                className="inline-grid h-7 w-7 place-items-center rounded-lg border border-accent/40 bg-accent/10 text-[13px] font-black leading-none text-accent"
+              >
+                ↓
+              </span>
+              <span className="text-lg font-bold tracking-tight">
+                TCG<span className="text-accent">ROI</span>
+              </span>
             </Link>
             {/* -my-2 py-2 grows the tap target to ~40px (WCAG 2.5.8) without
                 changing the header's visual height. */}
