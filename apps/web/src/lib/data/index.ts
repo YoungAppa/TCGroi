@@ -23,13 +23,16 @@ export async function getMarketHistory(
 ): Promise<MarketHistoryPoint[]> {
   try {
     const db = getDb();
+    // Compute the cutoff in JS: `now() - ($n * interval '1 day')` fails because
+    // Postgres can't multiply an untyped bind param by an interval.
+    const cutoffIso = new Date(Date.now() - days * 86_400_000).toISOString();
     const rows = await db.execute<{ day: string; cents: number | string }>(sql`
       select to_char(date(${priceSnapshots.capturedAt}), 'YYYY-MM-DD') as day,
              round(percentile_cont(0.5) within group (order by ${priceSnapshots.priceCents}))::int as cents
       from ${priceSnapshots}
       where ${priceSnapshots.sealedProductId} = ${productId}::uuid
         and ${priceSnapshots.kind} = 'sealed'
-        and ${priceSnapshots.capturedAt} >= now() - (${days} * interval '1 day')
+        and ${priceSnapshots.capturedAt} >= ${cutoffIso}::timestamptz
       group by date(${priceSnapshots.capturedAt})
       order by day
     `);
