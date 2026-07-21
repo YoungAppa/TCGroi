@@ -1,15 +1,18 @@
-# PACKROI
+# TCGROI
 
 Expected value and ROI for sealed TCG products (Pokémon, One Piece), computed
 from community pull rates × live market prices. Free, no accounts. The site's
 recurring finding is its thesis: **opening sealed product is almost always
 −EV, and this site shows exactly how much.**
 
+(The npm workspace packages are still named `@packroi/*` — internal only; the
+product is TCGROI.)
+
 ## Monorepo layout
 
 ```
 apps/web        @packroi/web — Next.js site, DB layer, adapters, cron jobs, data files
-packages/ev     @packroi/ev  — pure EV/ROI math engine (zero deps, zero I/O, 109 tests)
+packages/ev     @packroi/ev  — pure EV/ROI math engine (zero deps, zero I/O, 115 tests)
 ```
 
 ## Quick start
@@ -90,21 +93,52 @@ patterns were caught only by hitting live APIs).
 | `TCGPLAYER_MIRROR_PROVIDER` | `pokemontcg_io` (default, free) or `scrydex` |
 | `TCGPLAYER_MIRROR_API_KEY` | Scrydex API key (when provider=scrydex) |
 | `SCRYDEX_TEAM_ID` | Scrydex team id — both required for scrydex |
-| `PRICECHARTING_TOKEN` | Optional. Enables eBay-sold, graded, sealed prices |
-| `NEXT_PUBLIC_SITE_URL` | Canonical URL for sitemap/robots |
+| `PRICECHARTING_TOKEN` | Optional. eBay-sold card + sealed prices, both games. This tier is ungraded-only — graded prices come from PokemonPriceTracker instead. |
+| `POKEPRICE_TOKEN` | Optional. PokemonPriceTracker — PSA 10/9 graded prices (Pokémon only), used by the `refresh-graded` job for the grading section. Free tier = 100 credits/day. |
+| `POKEMONTCG_IO_KEY` | Optional. Raises the pokemontcg.io rate limit; never required. |
+| `BULK_THRESHOLD_CENTS` | Optional tunable (default 50) — cards under this count at the $0.01 bulk floor. |
+| `AFFILIATE_TCGPLAYER_ID`, `AFFILIATE_EBAY_CAMPAIGN` | Optional affiliate ids. |
+| `NEXT_PUBLIC_SITE_URL` | Canonical origin for sitemap/robots/OG (e.g. https://tcgroi.com). |
 
 After adding a Scrydex key: run `apps/web/scripts/probe-scrydex.ts` FIRST and
-reconcile `extractRawMarket()` with the real shapes. After a PriceCharting
-token: verify the psa9/psa10 field mapping the same way.
+reconcile `extractRawMarket()` with the real shapes. **Never commit a token —
+they live in `.env.local` (gitignored) locally and in Vercel's env at deploy.**
 
 ### Deploy (Vercel)
 
 1. Push to GitHub, import in Vercel.
 2. **Set Root Directory to `apps/web`** in project settings.
-3. Add env vars (table above). `vercel.json` in `apps/web` schedules the
-   crons: prices daily 09:17 UTC, catalog weekly Mon 07:43 UTC.
-4. First deploy: run migrate + seed + both refresh scripts once against the
-   production `DATABASE_URL` (from your machine is fine).
+3. Add env vars (table above), incl. `NEXT_PUBLIC_SITE_URL` and any tokens.
+   `vercel.json` schedules three crons: catalog weekly Mon 07:43, prices daily
+   09:17, graded daily 10:37 (after prices, since it picks candidates from raw
+   prices) — all UTC.
+4. First deploy, run once against the production `DATABASE_URL` (from your
+   machine is fine):
+   ```bash
+   npm run db:migrate
+   npm run db:seed          # games + price-source registry (incl. pokeprice_graded)
+   npx tsx --env-file=apps/web/.env.local apps/web/scripts/refresh-catalog.ts
+   npx tsx --env-file=apps/web/.env.local apps/web/scripts/refresh-prices.ts
+   npx tsx --env-file=apps/web/.env.local apps/web/scripts/refresh-graded.ts   # if POKEPRICE_TOKEN set
+   ```
+
+### Before a public launch — provider terms (NOT legal advice)
+
+These are open items to settle before the site is public and monetised:
+
+- **PriceCharting redistribution.** Its ToS restricts redistributing pricing
+  data to third parties without express written consent. Displaying it on a
+  public site likely needs a redistribution/commercial licence — resolve with
+  PriceCharting directly, or move One Piece + sealed pricing to a differently
+  licensed source. This is the main blocker (PriceCharting is One Piece's only
+  price source).
+- **PokemonPriceTracker commercial use** needs the Business tier ($99/mo); the
+  free/$9.99 tiers are dev-only. Business also unlocks the PSA-population data
+  the grading "Chance of 10" column is waiting on.
+- **pokemontcg.io** requires an attribution credit + link — present in the
+  footer and `/methodology`.
+- Confirm the source-attribution strings in `src/lib/prices/sources.ts` and the
+  fan-content disclaimers against each provider's current terms.
 
 ### Ops
 
@@ -119,6 +153,6 @@ its n), `null` (real estimate, n undisclosed → capped at `low`), `0`
 (placeholder — hidden from rankings). Two ROIs that are never conflated:
 retail (vs MSRP) and market (vs what it actually costs today, hand-tracked
 with provenance until a sealed source replaces it automatically). Known model
-gaps (uniform-within-tier chase odds, graded mode's zero value below PSA 9,
-unmodelled reverse-holo/god-pack slots) are documented in `/methodology`, in
-the code, and in `sourceNote`s — not hidden.
+gaps (uniform-within-tier chase odds, the grading section's still-pending
+PSA-10 grade odds, unmodelled reverse-holo/god-pack slots) are documented in
+`/methodology`, in the code, and in `sourceNote`s — not hidden.
