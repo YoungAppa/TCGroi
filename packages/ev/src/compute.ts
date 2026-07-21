@@ -1,4 +1,4 @@
-import { blendPrices } from "./blend";
+import { blendPrices, median } from "./blend";
 import { groupByRarity, tierValue, type TierValue } from "./tiers";
 import { effectiveCardValue } from "./value";
 import type {
@@ -259,6 +259,9 @@ function buildChaseTable(
       perPackProbability,
       oneInPacks: perPackProbability > 0 ? 1 / perPackProbability : Infinity,
       probPerProduct: probAtLeastOnce(perPackProbability, packs),
+      // Graded price is its own market, independent of the raw source toggle,
+      // so it blends across whatever graded sources exist (currently one).
+      psa10Cents: median(Object.values(card.psa10 ?? {})),
     });
   }
 

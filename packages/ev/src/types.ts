@@ -168,6 +168,8 @@ export interface ChaseCard {
   oneInPacks: number;
   /** Probability of pulling at least one across the whole product. */
   probPerProduct: number;
+  /** Best PSA 10 sale price in cents, or null when we have no graded data. */
+  psa10Cents: number | null;
 }
 
 export interface EvResult {

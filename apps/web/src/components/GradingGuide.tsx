@@ -6,19 +6,19 @@ interface ChaseLike {
   name: string;
   number: string;
   valueCents: number;
+  psa10Cents: number | null;
 }
 
 /**
  * "Is it worth grading?" for a product's chase cards.
  *
- * The finished view answers it directly: PSA 10 sale value vs the raw price plus
- * PSA's fee, weighted by the odds the card actually grades a 10. Two of those
- * three inputs aren't in our data yet — PSA 10 sale prices need a graded price
- * feed (the current PriceCharting tier returns ungraded only) and per-card
- * grade odds need PSA population data — so those columns render a pending "—"
- * and fill in the moment either source lands. The raw price and PSA fee are
- * real today. Cards below a few dollars raw are never worth grading, so they're
- * omitted.
+ * PSA 10 sale value (from PokemonPriceTracker, where we have it) vs the raw
+ * price plus PSA's fee gives the upside if the card grades a 10 — the
+ * "Net if 10" column. It is an upper bound: it assumes a perfect grade. The
+ * missing piece is the ODDS of actually getting a 10 (PSA population data,
+ * Business-tier only), so that column stays pending — this shows the payoff,
+ * not the probability-weighted expectation. Cards below a few dollars raw are
+ * never worth grading, so they're omitted.
  */
 export function GradingGuide({ chase }: { chase: ChaseLike[] }) {
   const GRADEABLE_MIN = 1000; // $10 raw — below this a $25 fee never pays off
@@ -32,28 +32,29 @@ export function GradingGuide({ chase }: { chase: ChaseLike[] }) {
         <span className="text-xs text-muted">PSA US fees, approx · {PSA_FEES_AS_OF}</span>
       </div>
       <p className="text-xs text-muted">
-        What a PSA 10 sells for, the chance the card actually grades a 10, and
-        PSA&apos;s fee — enough to tell whether grading beats just selling the raw
-        card.
+        What a PSA 10 sells for vs the raw price plus PSA&apos;s fee — the upside{" "}
+        <em>if</em> the card grades a 10. The odds of actually getting a 10 are a
+        separate column, still pending.
       </p>
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[30rem] text-sm">
+        <table className="w-full min-w-[32rem] text-sm">
           <thead>
             <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted">
               <th className="py-1.5 pr-3">Card</th>
               <th className="py-1.5 pr-3">Raw</th>
               <th className="py-1.5 pr-3">PSA fee</th>
-              <th className="py-1.5 pr-3">
-                PSA 10 value <span className="text-[10px] normal-case">· soon</span>
-              </th>
+              <th className="py-1.5 pr-3">PSA 10 value</th>
+              <th className="py-1.5 pr-3">Net if 10</th>
               <th className="py-1.5">
-                Chance of PSA 10 <span className="text-[10px] normal-case">· soon</span>
+                Chance of 10 <span className="text-[10px] normal-case">· soon</span>
               </th>
             </tr>
           </thead>
           <tbody>
             {rows.map((c) => {
               const g = gradingCost(c.valueCents);
+              const net =
+                c.psa10Cents !== null ? c.psa10Cents - c.valueCents - g.feeCents : null;
               return (
                 <tr key={c.cardId} className="border-b border-border/40 last:border-0">
                   <td className="py-1.5 pr-3">
@@ -64,15 +65,31 @@ export function GradingGuide({ chase }: { chase: ChaseLike[] }) {
                     {formatCents(g.feeCents)}{" "}
                     <span className="text-[11px]">({g.service})</span>
                   </td>
-                  <td
-                    className="tabular py-1.5 pr-3 text-muted/60"
-                    title="PSA 10 sale price — pending a graded price source"
-                  >
-                    —
+                  <td className="tabular py-1.5 pr-3 font-medium">
+                    {c.psa10Cents !== null ? (
+                      formatCents(c.psa10Cents)
+                    ) : (
+                      <span
+                        className="text-muted/60"
+                        title="PSA 10 sale price — not fetched for this card yet"
+                      >
+                        —
+                      </span>
+                    )}
+                  </td>
+                  <td className="tabular py-1.5 pr-3 font-medium">
+                    {net !== null ? (
+                      <span className={net > 0 ? "text-roi-pos" : "text-roi-neg"}>
+                        {net > 0 ? "+" : ""}
+                        {formatCents(net)}
+                      </span>
+                    ) : (
+                      <span className="text-muted/60">—</span>
+                    )}
                   </td>
                   <td
                     className="tabular py-1.5 text-muted/60"
-                    title="Odds this card grades a PSA 10 — pending PSA population data"
+                    title="Odds this card grades a PSA 10 — pending PSA population data (Business tier)"
                   >
                     —
                   </td>
@@ -83,12 +100,13 @@ export function GradingGuide({ chase }: { chase: ChaseLike[] }) {
         </table>
       </div>
       <p className="text-[11px] text-muted">
-        <span className="text-foreground">PSA 10 value</span> and{" "}
-        <span className="text-foreground">Chance of PSA 10</span> are coming: the
-        first needs a graded price feed (our current source returns ungraded
-        prices only), the second needs PSA population reports. Both fill in
-        automatically once connected — see methodology. Fees exclude shipping and
-        are the cheapest PSA tier for each card&apos;s value.
+        <span className="text-foreground">Net if 10</span> = PSA 10 value − raw −
+        fee, the gain assuming a perfect grade (an upper bound — most cards
+        won&apos;t 10). <span className="text-foreground">Chance of 10</span> needs
+        PSA population data and is still pending. PSA 10 prices are eBay-sold via
+        PokemonPriceTracker; a &ldquo;—&rdquo; means we haven&apos;t fetched that
+        card yet. Fees exclude shipping and are the cheapest PSA tier for each
+        card&apos;s value.
       </p>
     </section>
   );
