@@ -9,11 +9,16 @@ interface ChaseLike {
 }
 
 /**
- * "Is it worth grading?" for a product's chase cards. Honest about its limits:
- * PSA fees and the break-even are real, but we do NOT have graded (PSA 10)
- * sale prices or per-card PSA population odds, so this shows the threshold a
- * perfect 10 must clear — not a predicted profit. Cards below a few dollars
- * raw are never worth grading, so they're omitted.
+ * "Is it worth grading?" for a product's chase cards.
+ *
+ * The finished view answers it directly: PSA 10 sale value vs the raw price plus
+ * PSA's fee, weighted by the odds the card actually grades a 10. Two of those
+ * three inputs aren't in our data yet — PSA 10 sale prices need a graded price
+ * feed (the current PriceCharting tier returns ungraded only) and per-card
+ * grade odds need PSA population data — so those columns render a pending "—"
+ * and fill in the moment either source lands. The raw price and PSA fee are
+ * real today. Cards below a few dollars raw are never worth grading, so they're
+ * omitted.
  */
 export function GradingGuide({ chase }: { chase: ChaseLike[] }) {
   const GRADEABLE_MIN = 1000; // $10 raw — below this a $25 fee never pays off
@@ -27,17 +32,23 @@ export function GradingGuide({ chase }: { chase: ChaseLike[] }) {
         <span className="text-xs text-muted">PSA US fees, approx · {PSA_FEES_AS_OF}</span>
       </div>
       <p className="text-xs text-muted">
-        A graded PSA 10 has to sell for at least the <em>break-even</em> below to
-        beat just selling the raw card — before the risk that it grades lower.
+        What a PSA 10 sells for, the chance the card actually grades a 10, and
+        PSA&apos;s fee — enough to tell whether grading beats just selling the raw
+        card.
       </p>
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[26rem] text-sm">
+        <table className="w-full min-w-[30rem] text-sm">
           <thead>
             <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted">
               <th className="py-1.5 pr-3">Card</th>
               <th className="py-1.5 pr-3">Raw</th>
               <th className="py-1.5 pr-3">PSA fee</th>
-              <th className="py-1.5">Break-even (PSA 10)</th>
+              <th className="py-1.5 pr-3">
+                PSA 10 value <span className="text-[10px] normal-case">· soon</span>
+              </th>
+              <th className="py-1.5">
+                Chance of PSA 10 <span className="text-[10px] normal-case">· soon</span>
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -53,7 +64,18 @@ export function GradingGuide({ chase }: { chase: ChaseLike[] }) {
                     {formatCents(g.feeCents)}{" "}
                     <span className="text-[11px]">({g.service})</span>
                   </td>
-                  <td className="tabular py-1.5 font-medium">{formatCents(g.breakEvenCents)}</td>
+                  <td
+                    className="tabular py-1.5 pr-3 text-muted/60"
+                    title="PSA 10 sale price — pending a graded price source"
+                  >
+                    —
+                  </td>
+                  <td
+                    className="tabular py-1.5 text-muted/60"
+                    title="Odds this card grades a PSA 10 — pending PSA population data"
+                  >
+                    —
+                  </td>
                 </tr>
               );
             })}
@@ -61,9 +83,12 @@ export function GradingGuide({ chase }: { chase: ChaseLike[] }) {
         </table>
       </div>
       <p className="text-[11px] text-muted">
-        Graded (PSA 10/9) sale prices and per-card grade odds aren&apos;t in our
-        data source yet — see methodology. Fees exclude shipping and are the
-        cheapest PSA tier for each card&apos;s value.
+        <span className="text-foreground">PSA 10 value</span> and{" "}
+        <span className="text-foreground">Chance of PSA 10</span> are coming: the
+        first needs a graded price feed (our current source returns ungraded
+        prices only), the second needs PSA population reports. Both fill in
+        automatically once connected — see methodology. Fees exclude shipping and
+        are the cheapest PSA tier for each card&apos;s value.
       </p>
     </section>
   );
