@@ -24,7 +24,7 @@ export default function MethodologyPage() {
         </p>
       </div>
 
-      <section className="space-y-2">
+      <section className="space-y-3 rounded-xl border border-border bg-surface p-6">
         <h2 className="text-lg font-semibold">The math</h2>
         <p>
           For each rarity tier in a set we compute the average market value of
@@ -43,7 +43,7 @@ export default function MethodologyPage() {
         </p>
       </section>
 
-      <section className="space-y-2">
+      <section className="space-y-3 rounded-xl border border-border bg-surface p-6">
         <h2 className="text-lg font-semibold">Pull rates are estimates. All of them.</h2>
         <p>
           Pokémon and One Piece publishers do not publish odds. Every pull rate
@@ -76,7 +76,7 @@ export default function MethodologyPage() {
         </p>
       </section>
 
-      <section className="space-y-2">
+      <section className="space-y-3 rounded-xl border border-border bg-surface p-6">
         <h2 className="text-lg font-semibold">Known assumptions that carry error</h2>
         <ul className="list-disc space-y-1 pl-5">
           <li>
@@ -108,7 +108,7 @@ export default function MethodologyPage() {
         </ul>
       </section>
 
-      <section className="space-y-2">
+      <section className="space-y-3 rounded-xl border border-border bg-surface p-6">
         <h2 className="text-lg font-semibold">The two games differ</h2>
         <p>
           Pokémon and One Piece are built and priced differently, so their
@@ -138,7 +138,7 @@ export default function MethodologyPage() {
         </ul>
       </section>
 
-      <section className="space-y-2">
+      <section className="space-y-3 rounded-xl border border-border bg-surface p-6">
         <h2 className="text-lg font-semibold">Price data</h2>
         <p>
           Card prices come from up to two sources you can toggle and blend:{" "}
@@ -175,7 +175,7 @@ export default function MethodologyPage() {
         </p>
       </section>
 
-      <section className="space-y-2">
+      <section className="space-y-3 rounded-xl border border-border bg-surface p-6">
         <h2 className="text-lg font-semibold">What this site is not</h2>
         <p>
           Not financial advice, not gambling advice, not an inducement to open
