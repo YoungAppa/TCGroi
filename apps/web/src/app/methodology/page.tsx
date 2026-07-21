@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Methodology",
   description:
-    "How PACKROI computes EV and ROI: data sources, the math, confidence levels, and the assumptions that carry real error.",
+    "How TCGROI computes EV and ROI: data sources, the math, confidence levels, and the assumptions that carry real error.",
 };
 
 export const dynamic = "force-static";

@@ -10,7 +10,7 @@ const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"]
 // Same fallback the robots/sitemap routes use; set NEXT_PUBLIC_SITE_URL at deploy.
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://packroi.vercel.app";
 
-const TITLE = "PACKROI — TCG pack & box expected value";
+const TITLE = "TCGROI — TCG pack & box expected value";
 const DESCRIPTION =
   "Expected value and ROI for sealed Pokémon and One Piece TCG products, from community pull rates and live market prices. Opening sealed product is almost always -EV; this site shows exactly how much.";
 
@@ -20,13 +20,13 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
     default: TITLE,
-    template: "%s · PACKROI",
+    template: "%s · TCGROI",
   },
   description: DESCRIPTION,
-  applicationName: "PACKROI",
+  applicationName: "TCGROI",
   openGraph: {
     type: "website",
-    siteName: "PACKROI",
+    siteName: "TCGROI",
     url: SITE_URL,
     title: TITLE,
     description: DESCRIPTION,
@@ -50,7 +50,7 @@ export default function RootLayout({
         <header className="border-b border-border bg-surface">
           <nav className="mx-auto flex max-w-7xl items-center gap-6 px-4 py-3">
             <Link href="/" className="text-lg font-bold tracking-tight">
-              PACK<span className="text-accent">ROI</span>
+              TCG<span className="text-accent">ROI</span>
             </Link>
             {/* -my-2 py-2 grows the tap target to ~40px (WCAG 2.5.8) without
                 changing the header's visual height. */}

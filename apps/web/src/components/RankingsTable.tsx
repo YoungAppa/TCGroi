@@ -14,7 +14,7 @@ import { ConfidenceBadge, RoiCell } from "./badges";
 import { SourceFilter } from "./SourceFilter";
 import { useFilterState } from "./useFilterState";
 
-type SortKey = "roiMarket" | "roiRetail" | "ev" | "market" | "evPerPack" | "pTopBox";
+type SortKey = "roiMarket" | "roiRetail" | "ev" | "market" | "evPerPack" | "pTopBox" | "popular";
 type Row = { payload: ProductPayload; c: ProductComputation };
 type ViewMode = "list" | "icons";
 
@@ -43,7 +43,19 @@ const SORTS: Record<SortKey, (r: Row) => number> = {
   market: (r) => r.payload.market.priceCents ?? -Infinity,
   evPerPack: (r) => r.c.ev.evPackCents,
   pTopBox: headlineProb,
+  // "Popular" has no usage signal in the data, so newest-release stands in for
+  // it — the sets people are actively opening now sit at the top.
+  popular: (r) => (r.payload.releaseDate ? Date.parse(r.payload.releaseDate) : -Infinity),
 };
+
+/** Named sort options for the dropdown → (metric, descending). */
+const SORT_OPTIONS: { value: string; label: string; key: SortKey; desc: boolean }[] = [
+  { value: "popular", label: "Popular", key: "popular", desc: true },
+  { value: "roi-high", label: "Highest ROI", key: "roiMarket", desc: true },
+  { value: "roi-low", label: "Lowest ROI", key: "roiMarket", desc: false },
+  { value: "price-high", label: "Most expensive", key: "market", desc: true },
+  { value: "price-low", label: "Cheapest", key: "market", desc: false },
+];
 
 export function RankingsTable({
   products,
@@ -53,7 +65,7 @@ export function RankingsTable({
   availableSources: { id: string; displayName: string }[];
 }) {
   const { state, setState, withFilter } = useFilterState();
-  const [sortKey, setSortKey] = useState<SortKey>("roiMarket");
+  const [sortKey, setSortKey] = useState<SortKey>("popular");
   const [sortDesc, setSortDesc] = useState(true);
   const [game, setGame] = useState<string>("pokemon");
   const [lang, setLang] = useState<"en" | "ja">("en");
@@ -126,7 +138,12 @@ export function RankingsTable({
     return (
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
         {sectionRows.map((row) => (
-          <IconTile key={row.payload.productId} row={row} withFilter={withFilter} />
+          <IconTile
+            key={row.payload.productId}
+            row={row}
+            withFilter={withFilter}
+            marketFirst={marketOn}
+          />
         ))}
       </div>
     );
@@ -314,6 +331,31 @@ export function RankingsTable({
 
       {/* Search + filters */}
       <div className="flex flex-wrap items-center gap-2 text-xs">
+        <label className="flex items-center gap-1.5 text-muted">
+          Sort
+          <select
+            value={SORT_OPTIONS.find((o) => o.key === sortKey && o.desc === sortDesc)?.value ?? ""}
+            onChange={(e) => {
+              const opt = SORT_OPTIONS.find((o) => o.value === e.target.value);
+              if (opt) {
+                setSortKey(opt.key);
+                setSortDesc(opt.desc);
+              }
+            }}
+            className="rounded-md bg-surface-raised px-2.5 py-1.5 text-foreground focus:outline-none focus:ring-1 focus:ring-accent/40"
+            aria-label="Sort products"
+          >
+            {SORT_OPTIONS.map((o) => (
+              <option key={o.value} value={o.value}>
+                {o.label}
+              </option>
+            ))}
+            {/* When a column header sets a sort the dropdown can't name, show it. */}
+            {!SORT_OPTIONS.some((o) => o.key === sortKey && o.desc === sortDesc) && (
+              <option value="">Custom (column)</option>
+            )}
+          </select>
+        </label>
         <input
           type="search"
           value={query}
@@ -429,9 +471,12 @@ const TYPE_LABEL: Record<ProductPayload["productType"], string> = {
 function IconTile({
   row,
   withFilter,
+  marketFirst,
 }: {
   row: Row;
   withFilter: (path: string) => string;
+  /** Which column the user has active — drives the price + ROI shown. */
+  marketFirst: boolean;
 }) {
   const { payload, c } = row;
   const chase = c.ev.chase
@@ -443,7 +488,14 @@ function IconTile({
     }))
     .filter((ch) => ch.img);
 
-  const roi = c.roiMarket ?? c.roiRetail;
+  // Follow the Retail/Market column toggle: show that column's price + ROI,
+  // falling back to the other when the chosen one has no price.
+  const marketPrice = payload.market.priceCents;
+  const retailPrice = payload.msrpCents;
+  const useMarket = marketFirst ? marketPrice !== null : retailPrice === null;
+  const priceCents = useMarket ? marketPrice : retailPrice;
+  const roi = useMarket ? c.roiMarket : c.roiRetail;
+
   // Set logo when we have one; otherwise the top chase card is the hero.
   const heroImg = payload.imageUrl ?? chase[0]?.img ?? null;
   const heroIsCard = !payload.imageUrl && heroImg !== null;
@@ -451,16 +503,12 @@ function IconTile({
   return (
     <Link
       href={withFilter(`/${payload.gameSlug}/${payload.setCode}/${payload.productSlug}`)}
-      className="group relative flex flex-col overflow-hidden rounded-xl border border-border bg-surface p-3 transition hover:border-accent/60 hover:shadow-lg hover:shadow-black/30"
+      className="group relative flex flex-col overflow-hidden rounded-xl bg-surface p-3 ring-1 ring-white/5 transition hover:shadow-lg hover:shadow-black/30 hover:ring-accent/50"
     >
       <div className="mb-2 flex items-center justify-between gap-2">
         <span className="rounded bg-surface-raised px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted">
           {TYPE_LABEL[payload.productType]}
         </span>
-        <ConfidenceBadge
-          confidence={payload.pullRates.confidence}
-          sampleSizePacks={payload.pullRates.sampleSizePacks}
-        />
       </div>
 
       {/* Hero: set logo or top chase card, overlaid on hover by the chase trio. */}
@@ -502,20 +550,22 @@ function IconTile({
           {payload.productName}
         </div>
         <div className="mt-1.5 flex items-baseline justify-between gap-2">
-          <span className="tabular text-sm font-semibold" title="Expected value">
-            {formatCents(c.ev.evProductCents)}
+          <span className="tabular text-xs text-muted" title="Expected value">
+            EV {formatCents(c.ev.evProductCents)}
           </span>
-          <span className="tabular text-sm">
-            <RoiCell roi={roi} />
+          <span
+            className="flex items-baseline gap-1.5"
+            title={useMarket ? "Current market price" : "Retail (MSRP)"}
+          >
+            <span className="tabular text-sm font-semibold">
+              {priceCents !== null ? formatCents(priceCents) : "—"}
+            </span>
+            <span className="tabular text-sm">
+              <RoiCell roi={roi} />
+            </span>
           </span>
         </div>
       </div>
-
-      {chase.length > 0 && (
-        <div className="mt-1 text-[10px] text-muted opacity-70 transition-opacity group-hover:opacity-0">
-          hover for top {chase.length} chase card{chase.length > 1 ? "s" : ""}
-        </div>
-      )}
     </Link>
   );
 }
