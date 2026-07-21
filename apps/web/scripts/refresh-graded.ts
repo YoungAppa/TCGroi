@@ -64,6 +64,7 @@ async function main() {
     join raw on raw.card_id = c.id
     left join graded on graded.card_id = c.id
     where g.slug = 'pokemon'
+      and s.code <> 'svp'   -- Black Star Promos never match a pack-set search
       and raw.raw_cents >= ${MIN_RAW_CENTS}
       and (graded.graded_at is null or graded.graded_at < ${cutoffIso}::timestamptz)
     order by raw.raw_cents desc
@@ -96,6 +97,21 @@ async function main() {
     if (!g.matched) {
       unmatched++;
       console.log(`  ? ${c.setName} #${c.number} ${c.name} — no confident match, skipped`);
+      await sleep(PER_CALL_MS);
+      continue;
+    }
+
+    // Sanity guard: a PSA 10 is worth at least the raw card. A graded price
+    // below raw is sparse/mismatched eBay data (we saw a $15 "PSA 10" on a $204
+    // card), and storing it would show a misleading negative "Net if 10".
+    const suspect =
+      (g.psa10Cents !== null && g.psa10Cents < c.rawCents) ||
+      (g.psa9Cents !== null && g.psa9Cents < Math.round(c.rawCents * 0.5));
+    if (suspect) {
+      unmatched++;
+      console.log(
+        `  ! ${c.setName} #${c.number} ${c.name}: raw $${(c.rawCents / 100).toFixed(0)} vs PSA10 $${g.psa10Cents ? (g.psa10Cents / 100).toFixed(0) : "—"} — implausible, skipped`,
+      );
       await sleep(PER_CALL_MS);
       continue;
     }
