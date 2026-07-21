@@ -6,7 +6,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
-import { rarityLabel } from "@/lib/catalog/rarities";
+import { rarityDescription, rarityLabel } from "@/lib/catalog/rarities";
 import { computeProduct } from "@/lib/data/compute";
 import type { ProductPayload } from "@/lib/data/types";
 import { blendPrices, packsForProbability } from "@packroi/ev";
@@ -223,7 +223,16 @@ export function ProductDetail({
                   <span
                     className={`mr-2 inline-block h-2 w-2 rounded-full ${BAR_COLORS[i % BAR_COLORS.length]}`}
                   />
-                  {rarityLabel(t.rarity)}
+                  {rarityDescription(t.rarity) ? (
+                    <span
+                      className="cursor-help decoration-muted/50 decoration-dotted underline-offset-2 hover:underline"
+                      title={rarityDescription(t.rarity)}
+                    >
+                      {rarityLabel(t.rarity)}
+                    </span>
+                  ) : (
+                    rarityLabel(t.rarity)
+                  )}
                 </td>
                 <td className="tabular py-1.5 pr-3">
                   {formatProbability(t.perPackProbability)}

@@ -149,6 +149,47 @@ export function rarityLabel(slug: string): string {
 }
 
 /**
+ * One-line plain-English descriptions, surfaced as tooltips so a reader who
+ * doesn't know the rarity vocabulary (what actually is a "Double Rare"?) can
+ * find out without leaving the page. Absent slugs simply have no tooltip.
+ */
+export const RARITY_DESCRIPTIONS: Record<string, string> = {
+  // Pokémon
+  promo: "A promotional card, given out rather than pulled from packs.",
+  double_rare:
+    "The plain-art version of a Pokémon ex (two black stars). The entry-level hit — pulled often, usually only a few dollars.",
+  ace_spec_rare: "A powerful once-per-deck Trainer; one per set.",
+  illustration_rare:
+    "A full-art illustration of a regular, non-ex Pokémon.",
+  ultra_rare: "A full-art ex, or a full-art Trainer/Supporter.",
+  special_illustration_rare:
+    "A full-art alternate illustration of an ex or Trainer — the top chase card.",
+  hyper_rare: "A gold 'rainbow' card.",
+  mega_hyper_rare:
+    "The Mega-era gold chase card — far scarcer than an old Hyper Rare.",
+  mega_attack_rare:
+    "A full-card alternate art of a Mega ex, its attacks printed over the art in katakana.",
+  black_white_rare: "The Black Bolt / White Flare chase rarity.",
+  shiny_rare: "A baby shiny Pokémon (special sets) — usually about a dollar.",
+  shiny_ultra_rare: "A full-art shiny ex chase (special sets).",
+  // One Piece
+  super_rare: "Super Rare (SR) — a foil Character or Event card.",
+  leader: "A Leader card — the centrepiece of a deck.",
+  alt_art: "The alternate-art (★) version of a card.",
+  wanted_poster: "The Wanted Poster treatment — one of the top chases.",
+  box_topper: "A box-topper card, one guaranteed per booster box.",
+  treasure_rare: "Treasure Rare — a premium chase treatment.",
+  secret_rare: "Secret Rare (SEC).",
+  manga_rare:
+    "The manga-art treatment — routinely the most valuable One Piece cards.",
+  special: "An SP card — a special foil treatment.",
+};
+
+export function rarityDescription(slug: string): string | undefined {
+  return RARITY_DESCRIPTIONS[slug];
+}
+
+/**
  * True when `rarity` is a known tier for `gameSlug`. Used by the seed script
  * to reject a pull-rate file that names a tier the game does not have.
  */
