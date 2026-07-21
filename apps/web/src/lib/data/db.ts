@@ -165,10 +165,26 @@ export async function loadRankingsFromDb(): Promise<RankingsPayload> {
     return entry;
   };
 
+  // A One Piece card belongs to a set's pull pool only when its collector-number
+  // prefix matches the set (OP04-064 in OP-04). optcgapi lists cross-set
+  // reprints — an OP01 or ST card under OP-04 — that are NOT pulled from this
+  // set's packs; counting them inflates the tier averages and surfaces a foreign
+  // card as the set's top chase. Pokémon numbers carry no such prefix, so they
+  // always pass. cardById stays complete for guaranteed-promo resolution.
+  const setCodeById = new Map(productRows.map((p) => [p.setId, p.setCode]));
+  const OP_PREFIX = /^([A-Z]{1,3}\d{2})-/;
+  const nativeToSet = (number: string, setId: string): boolean => {
+    const m = number.match(OP_PREFIX);
+    const code = setCodeById.get(setId);
+    if (!m || !code) return true;
+    return m[1]!.toUpperCase() === code.replace(/-/g, "").toUpperCase();
+  };
+
   const cardsBySet = new Map<string, CardPriceData[]>();
   const cardById = new Map<string, (typeof cardRows)[number]>();
   for (const c of cardRows) {
     cardById.set(c.id, c);
+    if (!nativeToSet(c.number, c.setId)) continue; // skip cross-set reprints
     const bucket = cardsBySet.get(c.setId);
     const entry = toCardPriceData(c);
     if (bucket) bucket.push(entry);
