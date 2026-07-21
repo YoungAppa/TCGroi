@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 
-import { formatCents, formatOneIn, formatProbability, formatRoi } from "./format";
+import {
+  formatCents,
+  formatOneIn,
+  formatPerPackChance,
+  formatProbability,
+  formatRoi,
+} from "./format";
 
 describe("formatCents", () => {
   it("formats whole cents", () => {
@@ -43,6 +49,23 @@ describe("formatProbability", () => {
   it("renders certainty and impossibility", () => {
     expect(formatProbability(1)).toBe("100.0%");
     expect(formatProbability(0)).toBe("0.0%");
+  });
+});
+
+describe("formatPerPackChance", () => {
+  it("renders ordinary per-pack odds like formatProbability", () => {
+    expect(formatPerPackChance(0.044)).toBe("4.4%"); // a Double Rare / N
+    expect(formatPerPackChance(0.004)).toBe("0.4%"); // a 1-in-225 SIR
+  });
+
+  it("floors the long tail instead of rounding to a misleading 0.0%", () => {
+    // 1 in 1,111 packs = 0.09% — real, but toFixed(1) would show "0.0%".
+    expect(formatPerPackChance(1 / 1111)).toBe("<0.1%");
+    expect(formatPerPackChance(1 / 5000)).toBe("<0.1%");
+  });
+
+  it("renders a true zero as 0%", () => {
+    expect(formatPerPackChance(0)).toBe("0%");
   });
 });
 

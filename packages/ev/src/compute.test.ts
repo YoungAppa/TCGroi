@@ -426,7 +426,7 @@ describe("computeEv — chase table", () => {
         product: product({ packsContained: 36 }),
         table: table({ slots: [{ rarity: "ultra_rare", perPackProbability: 0.1 }] }),
         cards: [
-          card("low", "ultra_rare", { a: 100 }),
+          card("low", "ultra_rare", { a: 1500 }),
           card("high", "ultra_rare", { a: 9000 }),
           card("mid", "ultra_rare", { a: 2000 }),
         ],
@@ -436,7 +436,8 @@ describe("computeEv — chase table", () => {
     expect(r.chase.map((c) => c.cardId)).toEqual(["high", "mid", "low"]);
   });
 
-  it("caps at ten rows", () => {
+  it("shows every card over $10, not an arbitrary top-N", () => {
+    // 25 cards from $1 to $25; only the 16 at/over $10 are worth chasing.
     const cards = Array.from({ length: 25 }, (_, i) =>
       card(`c${i}`, "ultra_rare", { a: (i + 1) * 100 }),
     );
@@ -448,8 +449,39 @@ describe("computeEv — chase table", () => {
       },
       opts(),
     );
-    expect(r.chase).toHaveLength(10);
+    expect(r.chase).toHaveLength(16);
     expect(r.chase[0]!.cardId).toBe("c24");
+    expect(r.chase.every((c) => c.valueCents >= 1000)).toBe(true);
+  });
+
+  it("caps the list so a pathological set can't render hundreds of tiles", () => {
+    const cards = Array.from({ length: 80 }, (_, i) =>
+      card(`c${i}`, "ultra_rare", { a: 2000 + i }),
+    );
+    const r = computeEv(
+      {
+        product: product({ packsContained: 36 }),
+        table: table({ slots: [{ rarity: "ultra_rare", perPackProbability: 0.1 }] }),
+        cards,
+      },
+      opts(),
+    );
+    expect(r.chase).toHaveLength(60);
+  });
+
+  it("keeps the single best card when nothing clears $10, so the section is never empty", () => {
+    const r = computeEv(
+      {
+        product: product({ packsContained: 36 }),
+        table: table({ slots: [{ rarity: "ultra_rare", perPackProbability: 0.1 }] }),
+        cards: [
+          card("cheap1", "ultra_rare", { a: 300 }),
+          card("cheap2", "ultra_rare", { a: 800 }),
+        ],
+      },
+      opts(),
+    );
+    expect(r.chase.map((c) => c.cardId)).toEqual(["cheap2"]);
   });
 
   it("excludes bulk cards — nobody chases a card worth a cent", () => {

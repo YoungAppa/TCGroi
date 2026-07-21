@@ -212,20 +212,28 @@ export function computeEv(input: EvInput, opts: EvOptions): EvResult {
 }
 
 /**
- * Top cards by value, with the odds of hitting each.
+ * Cards worth showing, with the odds of hitting each.
+ *
+ * "Worth showing" is every card over CHASE_MIN_CENTS, not an arbitrary top-N —
+ * a set with 30 cards over $10 has 30 cards a buyer cares about, and truncating
+ * to 10 hides real value. Capped at CHASE_MAX so a pathological set can't render
+ * hundreds of tiles. If nothing clears the bar (a cheap set), the single
+ * most-valuable card still shows so the section is never empty.
  *
  * Per-card odds assume uniform distribution within a rarity tier:
  * P(this card, per pack) = P(tier, per pack) / (cards in tier). Real sets
  * violate this — short prints exist — but no public dataset quantifies it, so
  * uniform is the honest default and /methodology states it.
  */
+const CHASE_MIN_CENTS = 1000; // $10 — the floor for "a card worth chasing".
+const CHASE_MAX = 60;
+
 function buildChaseTable(
   cards: CardPriceData[],
   table: PullRateTable,
   packs: number,
   opts: EvOptions,
   byRarity: Map<string, CardPriceData[]>,
-  limit = 10,
 ): ChaseCard[] {
   const probByRarity = new Map(table.slots.map((s) => [s.rarity, s.perPackProbability]));
 
@@ -254,7 +262,11 @@ function buildChaseTable(
     });
   }
 
-  return rows.sort((a, b) => b.valueCents - a.valueCents).slice(0, limit);
+  const sorted = rows.sort((a, b) => b.valueCents - a.valueCents);
+  const worthShowing = sorted.filter((r) => r.valueCents >= CHASE_MIN_CENTS);
+  // All cards over the bar (capped); if none clear it, keep the single best so
+  // the section is never empty.
+  return (worthShowing.length > 0 ? worthShowing : sorted.slice(0, 1)).slice(0, CHASE_MAX);
 }
 
 /**

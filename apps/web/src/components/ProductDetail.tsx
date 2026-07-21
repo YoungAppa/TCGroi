@@ -13,6 +13,7 @@ import { blendPrices, packsForProbability } from "@packroi/ev";
 import {
   formatCents,
   formatOneIn,
+  formatPerPackChance,
   formatProbability,
 } from "@packroi/ev/format";
 import { effectiveSources } from "@packroi/ev/url-state";
@@ -289,9 +290,9 @@ export function ProductDetail({
                       <span className="tabular text-muted">{formatOneIn(c.oneInPacks)}</span>
                       <span
                         className="tabular rounded bg-surface-raised px-1.5 py-0.5 font-medium"
-                        title={`Chance of at least one per ${shortType(payload.productType)}`}
+                        title="Chance of pulling this exact card from a single pack"
                       >
-                        {formatProbability(c.probPerProduct)}
+                        {formatPerPackChance(c.perPackProbability)}
                       </span>
                     </div>
                   </div>
@@ -301,8 +302,9 @@ export function ProductDetail({
           </div>
         )}
         <p className="text-xs text-muted">
-          Each tile: card value (top-right), odds per pack, and the chance of at
-          least one per {shortType(payload.productType)} (bottom-right). Per-card
+          Each tile: card value (top-right), then the odds of pulling{" "}
+          <em>that exact card</em> from a single pack — shown as &ldquo;1 in N
+          packs&rdquo; and as a percentage (the same number, two ways). Per-card
           odds assume every card in a tier is equally likely — no public data
           quantifies short prints. See{" "}
           <Link href={withFilter("/methodology")} className="underline">
@@ -425,8 +427,4 @@ function PacksCalculator({
       </p>
     </section>
   );
-}
-
-function shortType(t: string): string {
-  return t === "booster_pack" ? "pack" : t === "booster_box" ? "box" : t.replace("_", " ");
 }
