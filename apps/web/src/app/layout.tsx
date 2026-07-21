@@ -86,9 +86,18 @@ export default function RootLayout({
         <footer className="border-t border-border bg-surface">
           <div className="mx-auto max-w-7xl space-y-1 px-4 py-4 text-xs text-muted">
             <p>
-              Market price data via a third-party TCGplayer mirror
-              (pokemontcg.io). Not endorsed by or affiliated with TCGplayer or
-              The Pokémon Company.
+              Card and price data via the{" "}
+              <a
+                href="https://pokemontcg.io"
+                className="underline"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                pokemontcg.io
+              </a>{" "}
+              API, PriceCharting, and PokemonPriceTracker. Not endorsed by or
+              affiliated with any of them, nor with TCGplayer, eBay, PSA, The
+              Pokémon Company, or Bandai.
             </p>
             <p>
               Not financial or gambling advice. Estimates carry real error —
