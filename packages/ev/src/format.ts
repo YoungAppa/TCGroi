@@ -22,14 +22,16 @@ export function formatProbability(p: number): string {
 }
 
 /**
- * Like formatProbability but honest about the long tail: a specific chase card
- * is often below 0.1% per pack (a 1-in-2,000 pull), which toFixed(1) would
- * round to a misleading "0.0%". Anything positive under 0.1% shows as "<0.1%".
+ * Per-pack odds for a specific chase card, which live in the long tail — a
+ * 1-in-1,528 pull is 0.065%. Shows the real number to ~2 significant figures
+ * (so it matches the "1 in N packs" phrasing) rather than a lossy "0.0%" or a
+ * "<0.1%" floor. Trailing zeros are trimmed: 0.4% not 0.40%.
  */
 export function formatPerPackChance(p: number): string {
   if (p <= 0) return "0%";
   const pct = p * 100;
-  return pct < 0.1 ? "<0.1%" : `${pct.toFixed(1)}%`;
+  const decimals = Math.max(1, 1 - Math.floor(Math.log10(pct)));
+  return `${parseFloat(pct.toFixed(decimals))}%`;
 }
 
 /**

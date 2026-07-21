@@ -53,15 +53,19 @@ describe("formatProbability", () => {
 });
 
 describe("formatPerPackChance", () => {
-  it("renders ordinary per-pack odds like formatProbability", () => {
+  it("renders ordinary per-pack odds to a sensible precision", () => {
     expect(formatPerPackChance(0.044)).toBe("4.4%"); // a Double Rare / N
     expect(formatPerPackChance(0.004)).toBe("0.4%"); // a 1-in-225 SIR
   });
 
-  it("floors the long tail instead of rounding to a misleading 0.0%", () => {
-    // 1 in 1,111 packs = 0.09% — real, but toFixed(1) would show "0.0%".
-    expect(formatPerPackChance(1 / 1111)).toBe("<0.1%");
-    expect(formatPerPackChance(1 / 5000)).toBe("<0.1%");
+  it("shows the real long-tail odds, not a '<0.1%' floor or a lossy 0.0%", () => {
+    expect(formatPerPackChance(1 / 1528)).toBe("0.065%"); // the SIR the user flagged
+    expect(formatPerPackChance(1 / 1053)).toBe("0.095%"); // the Mega Hyper Rare
+    expect(formatPerPackChance(1 / 5000)).toBe("0.02%");
+  });
+
+  it("trims trailing zeros (0.4%, not 0.40%)", () => {
+    expect(formatPerPackChance(0.001)).toBe("0.1%");
   });
 
   it("renders a true zero as 0%", () => {
