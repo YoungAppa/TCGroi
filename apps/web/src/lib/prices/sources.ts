@@ -23,10 +23,18 @@ export interface PriceSourceMeta {
   /**
    * Shown wherever this source's numbers appear.
    *
-   * TODO(attribution): each provider's terms dictate exact wording, and the
-   * mirror provider behind tcgplayer_market is not chosen yet. Verify these
-   * strings against the live ToS before public launch — they are placeholders
-   * with the right shape, not vetted legal text.
+   * Provider terms, checked 2026-07-21 (NOT legal advice — confirm before a
+   * public, monetised launch):
+   *   - pokemontcg.io (behind tcgplayer_market): attribution REQUIRED, and it
+   *     must include a credit + link back to the API. The link is rendered in
+   *     the footer/methodology, not in this bare string.
+   *   - PriceCharting: their ToS restricts redistributing pricing data to third
+   *     parties without express written consent — displaying it on a public
+   *     site likely needs their sign-off or a redistribution licence. THIS IS A
+   *     LAUNCH BLOCKER to resolve with PriceCharting directly.
+   *   - PokemonPriceTracker: commercial use needs the Business tier (the $9.99
+   *     tier is dev-only).
+   * See the launch note surfaced to the user for the open items.
    */
   attribution: string;
 }
@@ -36,7 +44,7 @@ export const PRICE_SOURCES: Record<PriceSourceId, PriceSourceMeta> = {
     id: "tcgplayer_market",
     displayName: "TCGplayer Market",
     attribution:
-      "Market price data via a third-party TCGplayer mirror. Not endorsed by or affiliated with TCGplayer.",
+      "Market prices from TCGplayer, via the pokemontcg.io API. Not endorsed by or affiliated with TCGplayer or pokemontcg.io.",
   },
   pricecharting_ebay: {
     id: "pricecharting_ebay",

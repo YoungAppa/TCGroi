@@ -160,9 +160,18 @@ export default function MethodologyPage() {
           price job accumulates.
         </p>
         <p className="text-muted">
-          This product uses pokemontcg.io and PriceCharting data but is not
-          endorsed by or affiliated with them, TCGplayer, eBay, The Pokémon
-          Company, or Bandai.
+          Card and price data via the{" "}
+          <a
+            href="https://pokemontcg.io"
+            className="underline"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            pokemontcg.io
+          </a>{" "}
+          API, PriceCharting, and PokemonPriceTracker. This product is not
+          endorsed by or affiliated with any of them, nor with TCGplayer, eBay,
+          PSA, The Pokémon Company, or Bandai.
         </p>
       </section>
 
