@@ -71,13 +71,12 @@ export default function RootLayout({
           </nav>
         </header>
 
-        {/* The honest banner is not decoration; it is the site's thesis. */}
+        {/* Sitewide honesty note. The −EV thesis leads large on the home hero;
+            what must ride along on every page is this disclaimer. */}
         <div className="border-b border-border bg-surface-raised">
           <p className="mx-auto max-w-7xl px-4 py-2 text-xs text-muted">
-            Opening sealed product is almost always{" "}
-            <span className="font-semibold text-roi-neg">−EV</span>. This site
-            exists to show you exactly how much. Pull rates are community
-            estimates, never official odds.
+            Pull rates are community estimates, not official odds — every EV
+            here is a projection, not a promise.
           </p>
         </div>
 
