@@ -30,32 +30,36 @@ export function SourceFilter({
     let next: string[];
     if (isOn) {
       next = selected.filter((s) => s !== id);
-      // Deselecting the last source would mean "price nothing" — snap back to
-      // all, which is what an empty selection already means.
-      if (next.length === 0) next = [];
+      // At least one source must stay on — deselecting the last is a no-op, not
+      // a silent "reselect everything" (which read as a bug).
+      if (next.length === 0) return;
     } else {
       next = [...selected, id];
-      // Selecting everything is the default — keep the URL canonical.
-      if (next.length === availableIds.length) next = [];
     }
-    onChange({ ...state, sources: next });
+    // Everything selected is the default — store [] so the URL stays canonical.
+    onChange({ ...state, sources: next.length === availableIds.length ? [] : next });
   }
+
+  // The single remaining source can't be turned off; signal that on its pill.
+  const lastOn = selected.length === 1;
 
   return (
     <div className="flex flex-wrap items-center gap-2">
       <span className="text-xs uppercase tracking-wide text-muted">Sources</span>
       {available.map((s) => {
         const on = selected.includes(s.id);
+        const locked = on && lastOn;
         return (
           <button
             key={s.id}
             onClick={() => toggle(s.id)}
             aria-pressed={on}
-            className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
+            title={locked ? "At least one price source stays on" : undefined}
+            className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
               on
-                ? "border-accent bg-accent/15 text-accent"
-                : "border-border bg-surface text-muted hover:text-foreground"
-            }`}
+                ? "bg-accent/15 text-accent"
+                : "text-muted hover:bg-surface-raised hover:text-foreground"
+            } ${locked ? "cursor-default" : ""}`}
           >
             {s.displayName}
           </button>
@@ -70,7 +74,7 @@ export function SourceFilter({
             onChange={(e) =>
               onChange({ ...state, blend: e.target.value as BlendStrategy })
             }
-            className="rounded border border-border bg-surface px-1 py-0.5 text-xs"
+            className="rounded-md bg-surface-raised px-1.5 py-0.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-accent/40"
           >
             <option value="median">median</option>
             <option value="mean">mean</option>

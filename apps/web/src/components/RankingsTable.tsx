@@ -265,12 +265,12 @@ export function RankingsTable({
             );
           })}
         </div>
-        <label className="flex items-center gap-1 pb-1 text-xs text-muted">
+        <label className="flex items-center gap-1.5 pb-1 text-xs text-muted">
           Language
           <select
             value={lang}
             onChange={(e) => setLang(e.target.value as "en" | "ja")}
-            className="rounded border border-border bg-surface px-2 py-1 text-xs"
+            className="rounded-md bg-surface-raised px-2.5 py-1 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-accent/40"
           >
             <option value="en">English</option>
             <option value="ja">Japanese</option>
@@ -292,19 +292,19 @@ export function RankingsTable({
           <ColumnPill label="Market" on={marketOn} onClick={() => setShowMarket((v) => !v)} />
         </div>
         <div className="flex items-center gap-3">
-          {/* List / Icon view toggle */}
-          <div className="flex overflow-hidden rounded border border-border text-xs">
+          {/* List / Icon view toggle — a calm segmented control */}
+          <div className="flex gap-0.5 rounded-md bg-surface-raised p-0.5 text-xs">
             <button
               onClick={() => setUserView("list")}
               aria-pressed={view === "list"}
-              className={`px-2.5 py-1 ${view === "list" ? "bg-surface-raised text-foreground" : "text-muted hover:text-foreground"}`}
+              className={`rounded px-2.5 py-1 transition-colors ${view === "list" ? "bg-surface text-foreground" : "text-muted hover:text-foreground"}`}
             >
               ▤ List
             </button>
             <button
               onClick={() => setUserView("icons")}
               aria-pressed={view === "icons"}
-              className={`border-l border-border px-2.5 py-1 ${view === "icons" ? "bg-surface-raised text-foreground" : "text-muted hover:text-foreground"}`}
+              className={`rounded px-2.5 py-1 transition-colors ${view === "icons" ? "bg-surface text-foreground" : "text-muted hover:text-foreground"}`}
             >
               ▦ Icons
             </button>
@@ -320,12 +320,12 @@ export function RankingsTable({
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search set or product…"
           aria-label="Search products"
-          className="w-52 rounded border border-border bg-surface px-2.5 py-1.5 placeholder:text-muted focus:border-accent focus:outline-none"
+          className="w-52 rounded-md bg-surface-raised px-3 py-1.5 text-foreground placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-accent/40"
         />
         <select
           value={typeFilter}
           onChange={(e) => setTypeFilter(e.target.value)}
-          className="rounded border border-border bg-surface px-2 py-1.5"
+          className="rounded-md bg-surface-raised px-2.5 py-1.5 text-foreground focus:outline-none focus:ring-1 focus:ring-accent/40"
           aria-label="Filter by product type"
         >
           <option value="all">All product types</option>
@@ -338,7 +338,7 @@ export function RankingsTable({
         <select
           value={confFilter}
           onChange={(e) => setConfFilter(e.target.value)}
-          className="rounded border border-border bg-surface px-2 py-1.5"
+          className="rounded-md bg-surface-raised px-2.5 py-1.5 text-foreground focus:outline-none focus:ring-1 focus:ring-accent/40"
           aria-label="Filter by data confidence"
         >
           <option value="all">Any confidence</option>
@@ -400,10 +400,10 @@ function ColumnPill({ label, on, onClick }: { label: string; on: boolean; onClic
     <button
       onClick={onClick}
       aria-pressed={on}
-      className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
+      className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
         on
-          ? "border-accent bg-accent/15 text-accent"
-          : "border-border bg-surface text-muted hover:text-foreground"
+          ? "bg-accent/15 text-accent"
+          : "text-muted hover:bg-surface-raised hover:text-foreground"
       }`}
     >
       {label}

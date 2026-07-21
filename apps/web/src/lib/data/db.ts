@@ -109,7 +109,11 @@ export async function loadRankingsFromDb(): Promise<RankingsPayload> {
 
   for (const p of cardPriceRows) {
     if (!p.cardId) continue;
-    sourcesWithData.add(p.sourceId);
+    // Only RAW sources are toggleable in the rankings — they price the cards
+    // that make up EV. A graded-only source (psa10/psa9) feeds the grading
+    // section, not the raw blend, so it must not appear as a Sources pill
+    // (selecting it alone would leave every card unpriced).
+    if (p.kind === "raw") sourcesWithData.add(p.sourceId);
     const bucket =
       p.kind === "raw"
         ? rawByCard
