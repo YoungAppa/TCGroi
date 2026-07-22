@@ -45,43 +45,66 @@ export class TcgplayerMarketAdapter implements PriceSourceAdapter {
   readonly displayName = "TCGplayer Market";
   readonly supports = { cardsRaw: true, cardsGraded: false, sealed: false };
 
-  private provider(): MirrorProvider | undefined {
+  /**
+   * Routing is PER GAME, not global. Pokémon follows TCGPLAYER_MIRROR_PROVIDER
+   * (default: the free pokemontcg_io mirror). One Piece has exactly one
+   * licensed mirror — Scrydex — so it activates whenever the Scrydex
+   * credentials exist, WITHOUT flipping the Pokémon provider: moving Pokémon's
+   * ~8k daily card fetches onto the credit-metered Scrydex plan should be an
+   * explicit choice (set TCGPLAYER_MIRROR_PROVIDER=scrydex), never a side
+   * effect of enabling One Piece.
+   */
+  private provider(game: string): MirrorProvider | undefined {
+    if (game === "one-piece") {
+      return scrydexPriceProvider.enabled() ? scrydexPriceProvider : undefined;
+    }
     return PROVIDERS[getEnv().TCGPLAYER_MIRROR_PROVIDER];
   }
 
   enabled(): boolean {
-    const p = this.provider();
-    return p !== undefined && p.enabled();
+    const pokemon = PROVIDERS[getEnv().TCGPLAYER_MIRROR_PROVIDER];
+    return (pokemon !== undefined && pokemon.enabled()) || scrydexPriceProvider.enabled();
   }
 
   /** Which provider is live, for /admin and the methodology attribution. */
   activeProviderName(): string | null {
-    return this.provider()?.displayName ?? null;
+    const parts: string[] = [];
+    const pokemon = PROVIDERS[getEnv().TCGPLAYER_MIRROR_PROVIDER];
+    if (pokemon?.enabled()) parts.push(`${pokemon.displayName} (Pokémon)`);
+    if (scrydexPriceProvider.enabled()) parts.push("Scrydex (One Piece)");
+    return parts.length > 0 ? parts.join(" + ") : null;
   }
 
   async fetchCardPrices(
     set: CatalogSet,
     cards: PriceableCard[],
   ): Promise<PriceSnapshotInput[]> {
-    const p = this.provider();
+    const game = gameOf(set);
+    const p = this.provider(game);
     if (!p) {
-      throw new PriceSourceError(
-        `unknown mirror provider "${getEnv().TCGPLAYER_MIRROR_PROVIDER}"`,
-        this.id,
-      );
+      // One Piece without Scrydex creds is a known gap (PriceCharting still
+      // covers OP), not a config fault. A bad Pokémon provider name IS one.
+      if (game === "pokemon") {
+        throw new PriceSourceError(
+          `unknown mirror provider "${getEnv().TCGPLAYER_MIRROR_PROVIDER}"`,
+          this.id,
+        );
+      }
+      return [];
     }
 
-    // A Pokémon-only mirror asked for One Piece prices returns nothing rather
-    // than throwing: an unsupported game is a known gap, not a fault, and the
-    // EV engine already treats a missing price as unknown.
-    if (!p.supportsGame(gameOf(set))) return [];
+    // A mirror asked for a game it can't price returns nothing rather than
+    // throwing: an unsupported game is a known gap, not a fault, and the EV
+    // engine already treats a missing price as unknown.
+    if (!p.enabled() || !p.supportsGame(game)) return [];
 
     return p.fetchCardPrices(set, cards);
   }
 
   async fetchSealedPrices(set: CatalogSet): Promise<PriceSnapshotInput[]> {
-    const p = this.provider();
-    if (!p || !p.supportsGame(gameOf(set))) return [];
+    const game = gameOf(set);
+    const p = this.provider(game);
+    if (!p || !p.enabled() || !p.supportsGame(game)) return [];
     return p.fetchSealedPrices(set);
   }
 }

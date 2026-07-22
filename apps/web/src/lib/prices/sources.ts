@@ -44,7 +44,7 @@ export const PRICE_SOURCES: Record<PriceSourceId, PriceSourceMeta> = {
     id: "tcgplayer_market",
     displayName: "TCGplayer Market",
     attribution:
-      "Market prices from TCGplayer, via the pokemontcg.io API. Not endorsed by or affiliated with TCGplayer or pokemontcg.io.",
+      "Market prices from TCGplayer, via the pokemontcg.io API (Pokémon) and the Scrydex API (One Piece). Not endorsed by or affiliated with TCGplayer, pokemontcg.io, or Scrydex.",
   },
   pricecharting_ebay: {
     id: "pricecharting_ebay",

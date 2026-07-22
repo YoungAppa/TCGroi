@@ -90,9 +90,9 @@ patterns were caught only by hitting live APIs).
 | `DATABASE_URL` | Postgres (Neon). Required. |
 | `ADMIN_SECRET` | /admin + manual cron trigger. Required. |
 | `CRON_SECRET` | Set by Vercel for scheduled cron calls. |
-| `TCGPLAYER_MIRROR_PROVIDER` | `pokemontcg_io` (default, free) or `scrydex` |
-| `TCGPLAYER_MIRROR_API_KEY` | Scrydex API key (when provider=scrydex) |
-| `SCRYDEX_TEAM_ID` | Scrydex team id — both required for scrydex |
+| `TCGPLAYER_MIRROR_PROVIDER` | Pokémon mirror: `pokemontcg_io` (default, free) or `scrydex`. One Piece always uses Scrydex when its creds exist — per-game routing, so enabling OP never moves Pokémon onto the credit-metered plan. |
+| `TCGPLAYER_MIRROR_API_KEY` | Scrydex API key. Starter ($29) = raw prices only — graded prices + PSA population need the Growth plan ($99). |
+| `SCRYDEX_TEAM_ID` | Scrydex team id — both required for Scrydex. |
 | `PRICECHARTING_TOKEN` | Optional. eBay-sold card + sealed prices, both games. This tier is ungraded-only — graded prices come from PokemonPriceTracker instead. |
 | `POKEPRICE_TOKEN` | Optional. PokemonPriceTracker — PSA 10/9 graded prices (Pokémon only), used by the `refresh-graded` job for the grading section. Free tier = 100 credits/day. |
 | `POKEMONTCG_IO_KEY` | Optional. Raises the pokemontcg.io rate limit; never required. |
@@ -129,9 +129,10 @@ These are open items to settle before the site is public and monetised:
 - **PriceCharting redistribution.** Its ToS restricts redistributing pricing
   data to third parties without express written consent. Displaying it on a
   public site likely needs a redistribution/commercial licence — resolve with
-  PriceCharting directly, or move One Piece + sealed pricing to a differently
-  licensed source. This is the main blocker (PriceCharting is One Piece's only
-  price source).
+  PriceCharting directly, or drop the source. Since 2026-07-22 One Piece cards
+  also have Scrydex (licensed) via `tcgplayer_market`, so PriceCharting is no
+  longer OP's only card source — but it still solely covers SEALED prices and
+  the eBay-sold blend leg.
 - **PokemonPriceTracker commercial use** needs the Business tier ($99/mo); the
   free/$9.99 tiers are dev-only. Business also unlocks the PSA-population data
   the grading "Chance of 10" column is waiting on.
