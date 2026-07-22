@@ -4,7 +4,7 @@
    are not configured for next/image yet; plain img is deliberate here. */
 
 import Link from "next/link";
-import { useMemo, useState, useSyncExternalStore } from "react";
+import { useMemo, useState } from "react";
 
 import { computeProduct, type ProductComputation } from "@/lib/data/compute";
 import type { ProductPayload } from "@/lib/data/types";
@@ -73,11 +73,10 @@ export function RankingsTable({
   const [sortDesc, setSortDesc] = useState(true);
   const [game, setGame] = useState<string>("pokemon");
   const [lang, setLang] = useState<"en" | "ja">("en");
-  // View defaults to icons on a phone (the 8-column list scrolls sideways
-  // there), list on desktop — until the user picks one explicitly.
+  // Icons is the default view everywhere (product photos sell the page);
+  // List remains a click away for the data-dense comparison.
   const [userView, setUserView] = useState<ViewMode | null>(null);
-  const isNarrow = useIsNarrow();
-  const view: ViewMode = userView ?? (isNarrow ? "icons" : "list");
+  const view: ViewMode = userView ?? "icons";
   // Which price-column groups the List view shows. Independent of the EV source
   // selection above — hiding a column never changes how EV is computed.
   const [showRetail, setShowRetail] = useState(true);
@@ -142,7 +141,7 @@ export function RankingsTable({
 
   function renderGrid(sectionRows: Row[]) {
     return (
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+      <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-4">
         {sectionRows.map((row) => (
           <IconTile
             key={row.payload.productId}
@@ -446,19 +445,6 @@ export function RankingsTable({
   );
 }
 
-/** True on phone-width viewports. SSR-safe (assumes desktop on the server). */
-function useIsNarrow(): boolean {
-  return useSyncExternalStore(
-    (onChange) => {
-      const mq = window.matchMedia("(max-width: 639px)");
-      mq.addEventListener("change", onChange);
-      return () => mq.removeEventListener("change", onChange);
-    },
-    () => window.matchMedia("(max-width: 639px)").matches,
-    () => false,
-  );
-}
-
 function ColumnPill({ label, on, onClick }: { label: string; on: boolean; onClick: () => void }) {
   return (
     <button
@@ -534,13 +520,13 @@ function IconTile({
       </div>
 
       {/* Hero: set logo or top chase card, overlaid on hover by the chase trio. */}
-      <div className="relative flex h-28 items-center justify-center rounded-lg bg-surface-raised/40">
+      <div className="relative flex h-40 items-center justify-center rounded-lg bg-surface-raised/40">
         {heroImg ? (
           <img
             src={heroImg}
             alt={payload.setName}
             loading="lazy"
-            className={`${heroIsCard ? "h-full" : "max-h-20 max-w-[85%]"} w-auto object-contain transition-opacity duration-200 group-hover:opacity-0`}
+            className={`${heroIsCard ? "h-full" : "max-h-36 max-w-[90%]"} w-auto object-contain transition-opacity duration-200 group-hover:opacity-0`}
           />
         ) : (
           <span className="px-2 text-center text-sm font-semibold text-muted transition-opacity group-hover:opacity-0">

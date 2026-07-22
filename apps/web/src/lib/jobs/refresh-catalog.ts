@@ -134,23 +134,25 @@ export async function refreshCatalog() {
 }
 
 /**
- * Fill sealed_products.image_url with Scrydex product photos (One Piece). The
+ * Fill sealed_products.image_url with Scrydex product photos, both games. The
  * price provider already matches Scrydex sealed SKUs to our product types;
- * this reuses that to store the box/pack image, falling back to the set logo
- * in the UI where absent. No-op without Scrydex credentials.
+ * this reuses that to store the box/pack/ETB/UPC image, falling back to the
+ * set logo in the UI where absent. Only sets that actually have sealed
+ * products are queried; a per-set failure (e.g. an expansion Scrydex doesn't
+ * carry) skips that set rather than aborting the job. No-op without creds.
  */
 export async function refreshSealedImages(gameIdBySlug: Map<string, string>): Promise<number> {
   const db = getDb();
-  const opGameId = gameIdBySlug.get("one-piece");
-  if (!opGameId || !new ScrydexCatalogAdapter().enabled()) return 0;
+  if (!new ScrydexCatalogAdapter().enabled()) return 0;
 
-  const opSets = await db
-    .select({ id: sets.id, code: sets.code, externalIds: sets.externalIds })
+  // Only sets with sealed products — svp and other promo sets have none.
+  const setRows = await db
+    .selectDistinct({ id: sets.id, code: sets.code, externalIds: sets.externalIds })
     .from(sets)
-    .where(eq(sets.gameId, opGameId));
+    .innerJoin(sealedProducts, eq(sealedProducts.setId, sets.id));
 
   let updated = 0;
-  for (const s of opSets) {
+  for (const s of setRows) {
     const catalogSet: CatalogSet = {
       code: s.code,
       name: s.code,
@@ -159,14 +161,20 @@ export async function refreshSealedImages(gameIdBySlug: Map<string, string>): Pr
       expectedCardCount: null,
       externalIds: s.externalIds,
     };
-    const images = await fetchScrydexSealedImages(catalogSet);
-    for (const [type, url] of images) {
-      const rows = await db
-        .update(sealedProducts)
-        .set({ imageUrl: url, updatedAt: new Date() })
-        .where(and(eq(sealedProducts.setId, s.id), eq(sealedProducts.type, type as never)))
-        .returning({ id: sealedProducts.id });
-      updated += rows.length;
+    try {
+      const images = await fetchScrydexSealedImages(catalogSet);
+      for (const [type, url] of images) {
+        const rows = await db
+          .update(sealedProducts)
+          .set({ imageUrl: url, updatedAt: new Date() })
+          .where(and(eq(sealedProducts.setId, s.id), eq(sealedProducts.type, type as never)))
+          .returning({ id: sealedProducts.id });
+        updated += rows.length;
+      }
+    } catch (err) {
+      console.warn(
+        `[sealed-images] ${s.code}: ${err instanceof Error ? err.message : String(err)} — skipped`,
+      );
     }
   }
   return updated;

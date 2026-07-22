@@ -146,23 +146,34 @@ const GAME_PATH: Record<string, string> = {
 /** NM first — our "raw card" price means near-mint, like every other source. */
 const CONDITION_ORDER = ["NM", "LP", "MP", "HP", "DM", "U"] as const;
 
-/** Scrydex sealed `type` -> our sealed_products.type. Only the two OP products
- *  we model; other Scrydex sealed types (starter decks, cases) are ignored. */
-const SEALED_TYPE_MAP: Record<string, string> = {
-  "booster box": "booster_box",
-  "booster pack": "booster_pack",
-};
-
 /**
- * A Scrydex expansion lists many sealed SKUs per type — the plain box plus a
- * Case, a Sleeved pack, a Dash Pack, wave/edition variants. Our catalog has one
- * "booster_box" and one "booster_pack" per set, so any name carrying an extra
- * qualifier is a different product and must not price our row. Rejecting is the
- * safe error: a missing sealed price falls back to PriceCharting, a wrong one
- * (a $48 sleeved pack as the $13 pack) corrupts market ROI.
+ * Scrydex sealed `type` -> our sealed_products.type, with per-type name rules.
+ *
+ * A Scrydex expansion lists many SKUs per type — the plain box plus a Case, a
+ * Sleeved pack, wave/edition variants, Pokémon Center exclusives. Our catalog
+ * has ONE product per (set, type), so a name carrying an extra qualifier is a
+ * different product and must not match. Rejecting is the safe error: a missing
+ * sealed price/image falls back (PriceCharting / set logo), a wrong one (a $48
+ * sleeved pack as the $13 pack) corrupts market ROI. Rules are per-type because
+ * one global decoy list can't work — "Bundle" is a decoy on a Booster Pack but
+ * IS the Booster Bundle product; "Ultra-Premium" is a decoy nowhere but on the
+ * Collection type it's the one name we want.
  */
-const SEALED_DECOY =
-  /sleeved|\bcase\b|display|double|dash|gift|starter|half|premium|volume|collection|anniversary|memorial|wave|edition|bundle|tin/i;
+const SEALED_TYPES: Record<
+  string,
+  { our: string; nameMust?: RegExp; nameMustNot: RegExp }
+> = {
+  "booster box": { our: "booster_box", nameMustNot: /\bcase\b|sleeved|wave|edition/i },
+  "booster pack": {
+    our: "booster_pack",
+    nameMustNot: /sleeved|\bcase\b|bundle|set of|blister|art|dash|double/i,
+  },
+  "elite trainer box": { our: "etb", nameMustNot: /\bcase\b|exclusive/i },
+  "booster bundle": { our: "bundle", nameMustNot: /\bcase\b|display/i },
+  // Our "case" product type is the Ultra-Premium Collection; the Collection
+  // type also carries poster/ex/binder collections, which must not match.
+  collection: { our: "case", nameMust: /ultra.?premium/i, nameMustNot: /\bcase\b/i },
+};
 
 /** One sealed (unopened) price in dollars from an item's price entries. */
 function sealedRawDollars(item: z.infer<typeof sealedItemSchema>): number | null {
@@ -356,14 +367,15 @@ async function bestSealedByType(
     );
     const rows = res.data ?? [];
     for (const item of rows) {
-      const ourType = item.type ? SEALED_TYPE_MAP[item.type.toLowerCase()] : undefined;
-      if (!ourType) continue;
-      if (item.name && SEALED_DECOY.test(item.name)) continue;
+      const rule = item.type ? SEALED_TYPES[item.type.toLowerCase()] : undefined;
+      if (!rule) continue;
       const name = item.name ?? "";
-      const prev = best.get(ourType);
+      if (rule.nameMustNot.test(name)) continue;
+      if (rule.nameMust && !rule.nameMust.test(name)) continue;
+      const prev = best.get(rule.our);
       if (!prev || name.length < prev.name.length) {
         const dollars = sealedRawDollars(item);
-        best.set(ourType, {
+        best.set(rule.our, {
           name,
           cents: dollars === null ? null : toCents(dollars),
           imageUrl: sealedImageUrl(item),
