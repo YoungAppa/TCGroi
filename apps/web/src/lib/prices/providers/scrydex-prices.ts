@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { fetchJson } from "@/lib/catalog/http";
+import { SCRYDEX_TREATMENT_VARIANTS } from "@/lib/catalog/scrydex-variants";
 import type { CatalogSet } from "@/lib/catalog/types";
 import { getEnv } from "@/lib/env";
 
@@ -30,11 +31,12 @@ import {
  *   - Prices hang off data[].variants[].prices[]: entries carry
  *     { type: "raw", condition: "NM"|"LP"|"MP"|"HP"|"DM"|"U", market, low, .. }.
  *   - One Piece treatments are VARIANTS of one card (normal / altArt /
- *     mangaAltArt / wantedPoster / treasureRare / specialAltArt / ...), while
- *     our catalog stores each treatment as its own card row keyed
- *     (number, treatment) with external id "OP04-083:manga". The variant map
- *     below bridges the two; unmapped variants (championship stamps, best-of
- *     reprints, ...) are deliberately skipped, never guessed.
+ *     mangaAltArt / wantedPoster / treasureRare / specialAltArt / ...). Scrydex
+ *     is ALSO the One Piece catalog source (providers/scrydex.ts), so each of
+ *     our card rows was created from one of these variants via the SAME shared
+ *     map (scrydex-variants.ts). Matching is therefore self-consistent: a row
+ *     labelled "manga" always reads the mangaAltArt price — no name-guessing,
+ *     which is what once let a $4,000 Shanks manga read as $96.
  *   - Graded prices + pop_reports exist in the API but are Growth-plan-gated
  *     ($99) — on Starter every price entry is type "raw". Wire graded/pop when
  *     the plan supports it.
@@ -129,15 +131,6 @@ const GAME_PATH: Record<string, string> = {
  * variant ("normal", or "foil" for foil-native rarities), so only "base" is
  * priced here.
  */
-
-/**
- * Foil-native tiers: SR/SEC cards ARE foils, so Scrydex gives them no
- * "normal" variant — their base printing lives under "foil" (verified live:
- * OP04-083 SR has foil/altArt/manga...; OP04-118 SEC has foil/altArt).
- * Leaders and below DO get a "normal" variant, and for those "foil" is a
- * separate, pricier printing that must never stand in for the base row.
- */
-const FOIL_NATIVE_RARITIES = new Set(["super_rare", "secret_rare"]);
 
 /** NM first — our "raw card" price means near-mint, like every other source. */
 const CONDITION_ORDER = ["NM", "LP", "MP", "HP", "DM", "U"] as const;
@@ -262,29 +255,37 @@ export const scrydexPriceProvider = {
           continue;
         }
 
-        // One Piece: price the BASE card only (see the note above). Its
-        // printing is "normal", or "foil" for a foil-native SR/SEC whose base
-        // IS a foil. The foil fallback is gated on rarity so a common's
-        // separate, pricier foil can never stand in for its base row.
-        const match = opByNumberTreatment.get(`${card.id}|base`);
-        if (!match) continue;
-
+        // One Piece: price each printing the catalog carries, matched by the
+        // SAME variant map the Scrydex catalog adapter used to create the rows.
+        // Because both sides read one taxonomy, a card labelled "manga" always
+        // gets the mangaAltArt price — no cross-source name-guessing, so the
+        // earlier base-only guard is no longer needed.
         const variantsByName = new Map<string, z.infer<typeof variantSchema>>();
         for (const v of card.variants ?? []) if (v.name) variantsByName.set(v.name, v);
 
-        let dollars = rawDollars(variantsByName.get("normal")?.prices);
-        if (dollars === null && FOIL_NATIVE_RARITIES.has(match.rarity)) {
-          dollars = rawDollars(variantsByName.get("foil")?.prices);
-        }
-        if (dollars === null) continue;
+        const emit = (treatment: string, dollars: number | null) => {
+          if (dollars === null) return;
+          const match = opByNumberTreatment.get(`${card.id}|${treatment}`);
+          if (!match) return;
+          out.push({
+            externalCardId: match.externalIds["scrydex"] ?? `${card.id}:${treatment}`,
+            sourceId: "tcgplayer_market",
+            priceCents: toCents(dollars),
+            kind: "raw",
+            capturedAt,
+          });
+        };
 
-        out.push({
-          externalCardId: match.externalIds["optcgapi"] ?? `${card.id}:base`,
-          sourceId: "tcgplayer_market",
-          priceCents: toCents(dollars),
-          kind: "raw",
-          capturedAt,
-        });
+        // Base printing: normal, else foil (foil-native SR/SEC/TR).
+        emit(
+          "base",
+          rawDollars(variantsByName.get("normal")?.prices) ??
+            rawDollars(variantsByName.get("foil")?.prices),
+        );
+        // Mapped treatment tiers.
+        for (const [variantName, { treatment }] of Object.entries(SCRYDEX_TREATMENT_VARIANTS)) {
+          emit(treatment, rawDollars(variantsByName.get(variantName)?.prices));
+        }
       }
 
       const total = res.total_count;

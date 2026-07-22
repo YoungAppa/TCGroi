@@ -6,6 +6,7 @@ import { z } from "zod";
 
 import { OptcgApiAdapter } from "@/lib/catalog/providers/optcgapi";
 import { PokemonTcgIoAdapter } from "@/lib/catalog/providers/pokemontcgio";
+import { ScrydexCatalogAdapter } from "@/lib/catalog/providers/scrydex";
 import type { CatalogAdapter, CatalogSet } from "@/lib/catalog/types";
 import { cards, games, getDb, pullRateTables, sealedProducts, sets } from "@/lib/db";
 import { loadAllPullRates } from "@/lib/pullrates/load";
@@ -33,7 +34,15 @@ export async function refreshCatalog() {
     const gameRows = await db.select().from(games);
     const gameIdBySlug = new Map(gameRows.map((g) => [g.slug, g.id]));
 
-    const adapters: CatalogAdapter[] = [new PokemonTcgIoAdapter(), new OptcgApiAdapter()];
+    // One Piece catalog comes from Scrydex (licensed, per-printing variants)
+    // when its credentials exist, falling back to optcgapi otherwise — so the
+    // app still ingests OP with no Scrydex key, just with optcgapi's coarser,
+    // sometimes-mislabelled printings.
+    const scrydexCatalog = new ScrydexCatalogAdapter();
+    const oneP: CatalogAdapter = scrydexCatalog.enabled()
+      ? scrydexCatalog
+      : new OptcgApiAdapter();
+    const adapters: CatalogAdapter[] = [new PokemonTcgIoAdapter(), oneP];
 
     // Optional ops scoping (env). Neither is set by the cron — a full run
     // ingests everything — but a manual run can narrow the work:
@@ -97,6 +106,20 @@ export async function refreshCatalog() {
               },
             });
           cardsUpserted++;
+        }
+
+        // When Scrydex is the source of truth for a One Piece set, drop rows a
+        // prior source (optcgapi) left that Scrydex does not produce — the
+        // mislabelled/duplicate printings the migration exists to fix. Gated on
+        // a non-empty fetch so a failed page can never wipe a set's cards; the
+        // upsert above merged 'scrydex' into every row Scrydex still produces,
+        // so anything without that key is stale. Cascades to its prices.
+        if (adapter.providerId === "scrydex" && fetched.length > 0) {
+          await db
+            .delete(cards)
+            .where(
+              and(eq(cards.setId, setId), sql`NOT jsonb_exists(${cards.externalIds}, 'scrydex')`),
+            );
         }
       }
     }

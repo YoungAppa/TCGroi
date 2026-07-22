@@ -89,23 +89,23 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe("scrydexPriceProvider — One Piece base-only pricing", () => {
-  it("prices the base card from 'normal' and does NOT price alt/manga treatments", async () => {
-    // Scrydex's alt/manga variant names are unreliable (they invert across
-    // cards), so only the base card is trusted; PriceCharting prices the rest.
+describe("scrydexPriceProvider — One Piece native variant matching", () => {
+  it("prices base + each mapped treatment from its own variant, self-consistently", async () => {
+    // Catalog and price share one variant map, so mangaAltArt always lands on
+    // the 'manga' row — the $4,000 Shanks manga can no longer read as $96.
     vi.stubGlobal(
       "fetch",
       vi.fn(async () =>
         respond(
           envelope([
             {
-              id: "OP04-083",
-              name: "Sabo",
-              number: "83",
+              id: "OP01-120",
+              name: "Shanks",
               variants: [
-                { name: "normal", prices: [rawEntry("NM", 1.5)] },
-                { name: "mangaAltArt", prices: [rawEntry("NM", 693.5)] },
-                { name: "altArt", prices: [rawEntry("NM", 18.61)] },
+                { name: "foil", prices: [rawEntry("NM", 10.11)] }, // SEC base is foil
+                { name: "altArt", prices: [rawEntry("NM", 110.88)] },
+                { name: "mangaAltArt", prices: [rawEntry("NM", 3999.74)] },
+                { name: "premiumAltArt", prices: [rawEntry("NM", 26.35)] }, // not a modelled tier
               ],
             },
           ]),
@@ -114,31 +114,36 @@ describe("scrydexPriceProvider — One Piece base-only pricing", () => {
     );
 
     const out = await scrydexPriceProvider.fetchCardPrices(opSet(), [
-      opCard("OP04-083", "base"),
-      opCard("OP04-083", "manga"),
-      opCard("OP04-083", "alt_art"),
+      opCard("OP01-120", "base"),
+      opCard("OP01-120", "alt_art"),
+      opCard("OP01-120", "manga"),
     ]);
 
-    // Only the base row is priced — the manga/alt rows are left to PriceCharting.
-    expect(out).toHaveLength(1);
-    expect(out[0]!.externalCardId).toBe("OP04-083:base");
-    expect(out[0]!.priceCents).toBe(150);
-    expect(out[0]!.sourceId).toBe("tcgplayer_market");
-    expect(out[0]!.kind).toBe("raw");
+    const byId = new Map(out.map((s) => [s.externalCardId, s]));
+    expect(byId.get("OP01-120:base")?.priceCents).toBe(1011); // foil = base for SEC
+    expect(byId.get("OP01-120:alt_art")?.priceCents).toBe(11088);
+    expect(byId.get("OP01-120:manga")?.priceCents).toBe(399974);
+    // premiumAltArt has no catalog row → not priced.
+    expect(out).toHaveLength(3);
+    for (const s of out) {
+      expect(s.sourceId).toBe("tcgplayer_market");
+      expect(s.kind).toBe("raw");
+    }
   });
 
-  it("prices an SR/SEC base row from 'foil' when no 'normal' variant exists", async () => {
+  it("prices base from 'normal' when present, ignoring a separate foil parallel", async () => {
     vi.stubGlobal(
       "fetch",
       vi.fn(async () =>
         respond(
           envelope([
             {
-              // Real shape: OP04-083 Sabo SR — foil IS the base printing.
-              id: "OP04-083",
+              id: "OP04-024",
+              // A rare with both a normal (base) and a pricier foil — base must
+              // take the normal, never the foil.
               variants: [
-                { name: "foil", prices: [rawEntry("NM", 0.79)] },
-                { name: "altArt", prices: [rawEntry("NM", 18.61)] },
+                { name: "normal", prices: [rawEntry("NM", 0.2)] },
+                { name: "foil", prices: [rawEntry("NM", 5.0)] },
               ],
             },
           ]),
@@ -146,36 +151,33 @@ describe("scrydexPriceProvider — One Piece base-only pricing", () => {
       ),
     );
 
-    const sr = { ...opCard("OP04-083", "base"), rarity: "super_rare" };
-    const alt = { ...opCard("OP04-083", "alt_art"), rarity: "alt_art" };
-    const out = await scrydexPriceProvider.fetchCardPrices(opSet(), [sr, alt]);
-
-    // Base prices from foil; the alt_art row is not Scrydex-priced (base-only).
+    const out = await scrydexPriceProvider.fetchCardPrices(opSet(), [opCard("OP04-024", "base")]);
     expect(out).toHaveLength(1);
-    expect(out[0]!.externalCardId).toBe("OP04-083:base");
-    expect(out[0]!.priceCents).toBe(79);
+    expect(out[0]!.priceCents).toBe(20); // the $0.20 normal, not the $5 foil
   });
 
-  it("never lets a common's separate foil printing stand in for its base row", async () => {
+  it("skips a variant whose catalog row we don't carry", async () => {
     vi.stubGlobal(
       "fetch",
       vi.fn(async () =>
         respond(
           envelope([
             {
-              // A common whose "normal" is unpriced but which has a foil
-              // printing: the base row must stay unpriced, not take the foil.
-              id: "OP04-002",
-              variants: [{ name: "foil", prices: [rawEntry("NM", 0.22)] }],
+              id: "OP04-083",
+              variants: [
+                { name: "normal", prices: [rawEntry("NM", 1.5)] },
+                { name: "mangaAltArt", prices: [rawEntry("NM", 693.5)] },
+              ],
             },
           ]),
         ),
       ),
     );
 
-    const common = { ...opCard("OP04-002", "base"), rarity: "common" };
-    const out = await scrydexPriceProvider.fetchCardPrices(opSet(), [common]);
-    expect(out).toHaveLength(0);
+    // Catalog carries only the base row — the manga price has nowhere to land.
+    const out = await scrydexPriceProvider.fetchCardPrices(opSet(), [opCard("OP04-083", "base")]);
+    expect(out).toHaveLength(1);
+    expect(out[0]!.externalCardId).toBe("OP04-083:base");
   });
 
   it("prefers the NM condition and falls back to low when market is absent", async () => {
