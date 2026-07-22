@@ -43,7 +43,10 @@ const PROVIDERS: Record<string, MirrorProvider | undefined> = {
 export class TcgplayerMarketAdapter implements PriceSourceAdapter {
   readonly id = "tcgplayer_market";
   readonly displayName = "TCGplayer Market";
-  readonly supports = { cardsRaw: true, cardsGraded: false, sealed: false };
+  // sealed: the Scrydex provider prices One Piece sealed products; the
+  // pokemontcg_io provider returns nothing for sealed, so flipping this on is
+  // safe for Pokémon (a no-op) and lights up OP box/pack market prices.
+  readonly supports = { cardsRaw: true, cardsGraded: false, sealed: true };
 
   /**
    * Routing is PER GAME, not global. Pokémon follows TCGPLAYER_MIRROR_PROVIDER

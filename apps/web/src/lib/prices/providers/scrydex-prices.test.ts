@@ -271,6 +271,54 @@ describe("scrydexPriceProvider — Pokémon id parity", () => {
   });
 });
 
+describe("scrydexPriceProvider — sealed products", () => {
+  function sealedEnvelope(items: unknown[]) {
+    return { data: items, page: 1, page_size: 100, total_count: items.length };
+  }
+
+  it("maps the plain booster box/pack, rejecting sleeved/case/dash decoys", async () => {
+    const fetchMock = vi.fn(async (..._args: unknown[]) =>
+      respond(
+        sealedEnvelope([
+          { id: "s1", type: "Booster Pack", name: "Kingdoms of Intrigue Booster Pack", variants: [{ name: "u", prices: [{ type: "raw", condition: "U", market: 13.69 }] }] },
+          { id: "s2", type: "Booster Pack", name: "Kingdoms of Intrigue Sleeved Booster Pack", variants: [{ name: "u", prices: [{ type: "raw", condition: "U", market: 48.91 }] }] },
+          { id: "s3", type: "Booster Box", name: "Kingdoms of Intrigue Booster Box", variants: [{ name: "u", prices: [{ type: "raw", condition: "U", market: 504.36 }] }] },
+          { id: "s4", type: "Booster Box", name: "Kingdoms of Intrigue Booster Box Case", variants: [{ name: "u", prices: [{ type: "raw", condition: "U", market: 3000 }] }] },
+          { id: "s5", type: null, name: "Kingdoms of Intrigue Dash Pack", variants: [{ name: "u", prices: [{ type: "raw", condition: "U", market: 4.77 }] }] },
+        ]),
+      ),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    const out = await scrydexPriceProvider.fetchSealedPrices(opSet());
+    expect(String(fetchMock.mock.calls[0]![0])).toContain("/onepiece/v1/expansions/OP04/sealed");
+    const byType = new Map(out.map((s) => [s.externalProductId, s]));
+    expect(byType.size).toBe(2);
+    expect(byType.get("booster_pack")?.priceCents).toBe(1369); // not the $48.91 sleeved
+    expect(byType.get("booster_box")?.priceCents).toBe(50436); // not the $3000 case
+    for (const s of out) {
+      expect(s.kind).toBe("sealed");
+      expect(s.sourceId).toBe("tcgplayer_market");
+    }
+  });
+
+  it("rejects wave/edition boxes rather than guess which one is ours", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () =>
+        respond(
+          sealedEnvelope([
+            { id: "b1", type: "Booster Box", name: "Romance Dawn Booster Box (Wave 1 - Blue Bottom)", prices: [{ type: "raw", condition: "U", market: 1650 }] },
+            { id: "b2", type: "Booster Box", name: "Romance Dawn Booster Box (Wave 2 - White Bottom)", prices: [{ type: "raw", condition: "U", market: 1400 }] },
+          ]),
+        ),
+      ),
+    );
+    const out = await scrydexPriceProvider.fetchSealedPrices(opSet("OP-01"));
+    expect(out).toHaveLength(0);
+  });
+});
+
 describe("scrydexPriceProvider — pagination", () => {
   it("follows total_count across pages", async () => {
     const page1 = envelope(

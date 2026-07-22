@@ -81,6 +81,25 @@ const cardsResponse = z
   })
   .passthrough();
 
+const sealedItemSchema = z
+  .object({
+    id: z.string(),
+    name: z.string().nullish(),
+    type: z.string().nullish(), // "Booster Box" | "Booster Pack" | "Other" | null
+    prices: z.array(priceEntry).nullish(),
+    variants: z.array(variantSchema).nullish(),
+  })
+  .passthrough();
+
+const sealedResponse = z
+  .object({
+    data: z.array(sealedItemSchema).nullish(),
+    page: z.number().nullish(),
+    page_size: z.number().nullish(),
+    total_count: z.number().nullish(),
+  })
+  .passthrough();
+
 function credentials(): { key: string; teamId: string } | null {
   const env = getEnv();
   const key = env.TCGPLAYER_MIRROR_API_KEY;
@@ -125,6 +144,39 @@ const FOIL_NATIVE_RARITIES = new Set(["super_rare", "secret_rare"]);
 
 /** NM first — our "raw card" price means near-mint, like every other source. */
 const CONDITION_ORDER = ["NM", "LP", "MP", "HP", "DM", "U"] as const;
+
+/** Scrydex sealed `type` -> our sealed_products.type. Only the two OP products
+ *  we model; other Scrydex sealed types (starter decks, cases) are ignored. */
+const SEALED_TYPE_MAP: Record<string, string> = {
+  "booster box": "booster_box",
+  "booster pack": "booster_pack",
+};
+
+/**
+ * A Scrydex expansion lists many sealed SKUs per type — the plain box plus a
+ * Case, a Sleeved pack, a Dash Pack, wave/edition variants. Our catalog has one
+ * "booster_box" and one "booster_pack" per set, so any name carrying an extra
+ * qualifier is a different product and must not price our row. Rejecting is the
+ * safe error: a missing sealed price falls back to PriceCharting, a wrong one
+ * (a $48 sleeved pack as the $13 pack) corrupts market ROI.
+ */
+const SEALED_DECOY =
+  /sleeved|\bcase\b|display|double|dash|gift|starter|half|premium|volume|collection|anniversary|memorial|wave|edition|bundle|tin/i;
+
+/** One sealed (unopened) price in dollars from an item's price entries. */
+function sealedRawDollars(item: z.infer<typeof sealedItemSchema>): number | null {
+  const pools: z.infer<typeof priceEntry>[][] = [];
+  if (item.prices?.length) pools.push(item.prices);
+  for (const v of item.variants ?? []) if (v.prices?.length) pools.push(v.prices);
+  for (const pool of pools) {
+    for (const p of pool) {
+      if ((p.type ?? "raw").toLowerCase() !== "raw") continue;
+      const val = p.market ?? p.low ?? p.mid;
+      if (typeof val === "number" && val > 0) return val;
+    }
+  }
+  return null;
+}
 
 /**
  * One raw price (dollars) from a variant's price list: best available
@@ -267,12 +319,58 @@ export const scrydexPriceProvider = {
     return out;
   },
 
-  async fetchSealedPrices(): Promise<PriceSnapshotInput[]> {
-    // Scrydex has a sealed endpoint (verified live: /pokemon/v1/sealed with
-    // condition "U" prices) — a follow-up that could retire the hand-tracked
-    // market prices. Needs product-name matching, which deserves its own
-    // probe-then-wire pass.
-    return [];
+  async fetchSealedPrices(set: CatalogSet): Promise<PriceSnapshotInput[]> {
+    const creds = credentials();
+    if (!creds) return [];
+
+    const game = gameOf(set);
+    const path = GAME_PATH[game];
+    if (!path) return [];
+
+    const expansionId =
+      game === "pokemon"
+        ? (set.externalIds["pokemontcg_io"] ?? set.code)
+        : set.code.replace(/-/g, "");
+    const headers = { "X-Api-Key": creds.key, "X-Team-ID": creds.teamId };
+
+    // Best (plainest-named) qualifying SKU per our product type. Shortest name
+    // wins: "Kingdoms of Intrigue Booster Box" beats any longer edition string.
+    const best = new Map<string, { name: string; cents: number }>();
+    for (let page = 1; ; page++) {
+      const res = await fetchJson(
+        `${BASE}/${path}/v1/expansions/${encodeURIComponent(expansionId)}/sealed?include=prices&page=${page}&page_size=${PAGE_SIZE}`,
+        sealedResponse,
+        { provider: "scrydex", headers },
+      );
+
+      const rows = res.data ?? [];
+      for (const item of rows) {
+        const ourType = item.type ? SEALED_TYPE_MAP[item.type.toLowerCase()] : undefined;
+        if (!ourType) continue;
+        if (item.name && SEALED_DECOY.test(item.name)) continue;
+        const dollars = sealedRawDollars(item);
+        if (dollars === null) continue;
+
+        const prev = best.get(ourType);
+        const name = item.name ?? "";
+        if (!prev || name.length < prev.name.length) {
+          best.set(ourType, { name, cents: toCents(dollars) });
+        }
+      }
+
+      const total = res.total_count;
+      const size = res.page_size ?? PAGE_SIZE;
+      if (rows.length === 0 || total == null || page * size >= total) break;
+    }
+
+    const capturedAt = new Date();
+    return [...best].map(([ourType, v]) => ({
+      externalProductId: ourType,
+      sourceId: "tcgplayer_market",
+      priceCents: v.cents,
+      kind: "sealed" as const,
+      capturedAt,
+    }));
   },
 };
 
