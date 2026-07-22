@@ -12,11 +12,13 @@ import { getDb, games, priceSources } from "@/lib/db";
 import { RARITY_VOCAB } from "@/lib/catalog/rarities";
 import { ALL_PRICE_SOURCES } from "@/lib/prices/sources";
 
-const GAMES: { slug: "pokemon" | "one-piece"; displayName: string }[] = [
+const GAMES: { slug: "pokemon" | "one-piece" | "mtg"; displayName: string }[] = [
   { slug: "pokemon", displayName: "Pokémon TCG" },
   { slug: "one-piece", displayName: "One Piece TCG" },
-  // Magic lands here when its catalog adapter + pull-rate files exist. The
-  // schema, EV engine, and UI need no change for it.
+  // Magic is searchable inventory today (Scryfall catalog + prices, built by
+  // scripts/build-magic-catalog.ts). Pull-rate files can land later to give it
+  // EV/ranking; the schema, EV engine, and UI need no change for either.
+  { slug: "mtg", displayName: "Magic: The Gathering" },
 ];
 
 async function main() {
