@@ -103,6 +103,90 @@ async function getMagicGameId(db: ReturnType<typeof getDb>): Promise<string> {
   return row!.id;
 }
 
+interface PendingCard {
+  name: string;
+  number: string;
+  rarity: string;
+  image: string | null;
+  scryfallId: string;
+  cents: number;
+}
+
+/**
+ * Write a whole set's cards + prices in bulk. Per-card round-trips (insert card,
+ * then insert price) turn a 400-card set into 800 sequential DB hops — minutes
+ * per big set. Batching collapses that to two statements per ~500-card chunk.
+ */
+async function writeSetCards(
+  db: ReturnType<typeof getDb>,
+  setId: string,
+  pending: PendingCard[],
+  capturedAt: Date,
+): Promise<number> {
+  // A set can list the same collector number twice across price variants; a
+  // single INSERT can't touch one conflict row twice, so keep the dearer one.
+  const byNumber = new Map<string, PendingCard>();
+  for (const p of pending) {
+    const ex = byNumber.get(p.number);
+    if (!ex || p.cents > ex.cents) byNumber.set(p.number, p);
+  }
+  const rows = [...byNumber.values()];
+  let stored = 0;
+  const CHUNK = 500;
+  for (let i = 0; i < rows.length; i += CHUNK) {
+    const chunk = rows.slice(i, i + CHUNK);
+    const inserted = await db
+      .insert(cards)
+      .values(
+        chunk.map((p) => ({
+          setId,
+          name: p.name,
+          number: p.number,
+          rarity: p.rarity,
+          treatment: "base",
+          imageUrl: p.image,
+          externalIds: { scryfall: p.scryfallId },
+        })),
+      )
+      .onConflictDoUpdate({
+        target: [cards.setId, cards.number, cards.treatment],
+        set: {
+          name: sql`excluded.name`,
+          rarity: sql`excluded.rarity`,
+          imageUrl: sql`excluded.image_url`,
+          externalIds: sql`${cards.externalIds} || excluded.external_ids`,
+          updatedAt: new Date(),
+        },
+      })
+      .returning({ id: cards.id, number: cards.number });
+
+    const idByNumber = new Map(inserted.map((r) => [r.number, r.id]));
+    const priceRows = chunk
+      .map((p) => ({ cardId: idByNumber.get(p.number), cents: p.cents }))
+      .filter((r): r is { cardId: string; cents: number } => typeof r.cardId === "string");
+    if (priceRows.length > 0) {
+      await db
+        .insert(latestPrices)
+        .values(
+          priceRows.map((r) => ({
+            cardId: r.cardId,
+            sourceId: "tcgplayer_market",
+            priceCents: r.cents,
+            kind: "raw" as const,
+            capturedAt,
+          })),
+        )
+        .onConflictDoUpdate({
+          target: [latestPrices.cardId, latestPrices.sourceId, latestPrices.kind],
+          targetWhere: sql`${latestPrices.cardId} IS NOT NULL`,
+          set: { priceCents: sql`excluded.price_cents`, capturedAt, updatedAt: new Date() },
+        });
+    }
+    stored += chunk.length;
+  }
+  return stored;
+}
+
 async function main() {
   const db = getDb();
   const floorCents = Number(arg("--floor") ?? "100"); // $1
@@ -144,11 +228,11 @@ async function main() {
         .returning({ id: sets.id });
       const setId = setRow!.id;
 
-      let setCards = 0;
       // Every print (variant) of the set. We must page through all of them, not
       // stop early on price: `order=usd` sorts by the NON-foil price, so a
       // foil-only chase card (null usd, high usd_foil) sorts to the very bottom.
       // The floor is applied per card on max(usd, foil, etched) instead.
+      const pending: PendingCard[] = [];
       let url: string | null =
         `${BASE}/cards/search?q=${encodeURIComponent(`e:${s.code} game:paper`)}&unique=prints&order=set`;
       while (url) {
@@ -164,45 +248,21 @@ async function main() {
         for (const c of res.data) {
           const cents = bestPriceCents(c);
           if (cents === null || cents < floorCents) continue; // bulk / unpriced → skip
-          const img = cardImage(c);
-          const [cardRow] = await db
-            .insert(cards)
-            .values({
-              setId,
-              name: c.name,
-              number: c.collector_number,
-              rarity: c.rarity,
-              treatment: "base",
-              imageUrl: img,
-              externalIds: { scryfall: c.id },
-            })
-            .onConflictDoUpdate({
-              target: [cards.setId, cards.number, cards.treatment],
-              set: {
-                name: c.name,
-                rarity: c.rarity,
-                imageUrl: img,
-                externalIds: sql`${cards.externalIds} || ${JSON.stringify({ scryfall: c.id })}::jsonb`,
-                updatedAt: new Date(),
-              },
-            })
-            .returning({ id: cards.id });
-
-          await db
-            .insert(latestPrices)
-            .values({ cardId: cardRow!.id, sourceId: "tcgplayer_market", priceCents: cents, kind: "raw", capturedAt })
-            .onConflictDoUpdate({
-              target: [latestPrices.cardId, latestPrices.sourceId, latestPrices.kind],
-              targetWhere: sql`${latestPrices.cardId} IS NOT NULL`,
-              set: { priceCents: cents, capturedAt, updatedAt: new Date() },
-            });
-          setCards++;
-          cardsStored++;
+          pending.push({
+            name: c.name,
+            number: c.collector_number,
+            rarity: c.rarity,
+            image: cardImage(c),
+            scryfallId: c.id,
+            cents,
+          });
         }
         url = res.has_more ? (res.next_page ?? null) : null;
         if (url) await sleep(REQUEST_GAP_MS);
       }
 
+      const setCards = await writeSetCards(db, setId, pending, capturedAt);
+      cardsStored += setCards;
       setsDone++;
       if (setsDone % 25 === 0 || setCards > 40) {
         console.log(`  [${setsDone}/${todo.length}] ${s.code} ${s.name}: ${setCards} cards ≥ floor`);
