@@ -55,7 +55,7 @@ function saveList<T>(key: string, list: T[]) {
   }
 }
 
-type GameFilter = "all" | "one-piece" | "pokemon";
+type GameFilter = "all" | "one-piece" | "pokemon" | "mtg";
 type SortKey = "value-desc" | "value-asc" | "gain-desc" | "name" | "set";
 type Tab = "collection" | "wishlist";
 
@@ -220,13 +220,13 @@ export default function CollectionPage() {
         </div>
         <div className="flex items-center gap-2 pb-1 text-xs">
           <div className="flex gap-0.5 rounded-md bg-surface-raised p-0.5">
-            {(["all", "one-piece", "pokemon"] as GameFilter[]).map((g) => (
+            {(["all", "one-piece", "pokemon", "mtg"] as GameFilter[]).map((g) => (
               <button
                 key={g}
                 onClick={() => setGame(g)}
                 className={`rounded px-2.5 py-1 transition-colors ${game === g ? "bg-surface text-foreground" : "text-muted hover:text-foreground"}`}
               >
-                {g === "all" ? "All" : g === "one-piece" ? "One Piece" : "Pokémon"}
+                {g === "all" ? "All" : g === "one-piece" ? "One Piece" : g === "pokemon" ? "Pokémon" : "Magic"}
               </button>
             ))}
           </div>
