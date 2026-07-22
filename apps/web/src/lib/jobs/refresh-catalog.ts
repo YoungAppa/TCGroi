@@ -8,6 +8,7 @@ import { OptcgApiAdapter } from "@/lib/catalog/providers/optcgapi";
 import { PokemonTcgIoAdapter } from "@/lib/catalog/providers/pokemontcgio";
 import { ScrydexCatalogAdapter } from "@/lib/catalog/providers/scrydex";
 import type { CatalogAdapter, CatalogSet } from "@/lib/catalog/types";
+import { fetchScrydexSealedImages } from "@/lib/prices/providers/scrydex-prices";
 import { cards, games, getDb, pullRateTables, sealedProducts, sets } from "@/lib/db";
 import { loadAllPullRates } from "@/lib/pullrates/load";
 
@@ -126,9 +127,49 @@ export async function refreshCatalog() {
 
     const tablesLoaded = await loadPullRateTables(gameIdBySlug, loaded);
     const productsLoaded = await loadSealedProducts(gameIdBySlug);
+    const sealedImages = await refreshSealedImages(gameIdBySlug);
 
-    return { setsUpserted, cardsUpserted, tablesLoaded, productsLoaded };
+    return { setsUpserted, cardsUpserted, tablesLoaded, productsLoaded, sealedImages };
   });
+}
+
+/**
+ * Fill sealed_products.image_url with Scrydex product photos (One Piece). The
+ * price provider already matches Scrydex sealed SKUs to our product types;
+ * this reuses that to store the box/pack image, falling back to the set logo
+ * in the UI where absent. No-op without Scrydex credentials.
+ */
+export async function refreshSealedImages(gameIdBySlug: Map<string, string>): Promise<number> {
+  const db = getDb();
+  const opGameId = gameIdBySlug.get("one-piece");
+  if (!opGameId || !new ScrydexCatalogAdapter().enabled()) return 0;
+
+  const opSets = await db
+    .select({ id: sets.id, code: sets.code, externalIds: sets.externalIds })
+    .from(sets)
+    .where(eq(sets.gameId, opGameId));
+
+  let updated = 0;
+  for (const s of opSets) {
+    const catalogSet: CatalogSet = {
+      code: s.code,
+      name: s.code,
+      releaseDate: null,
+      language: "EN",
+      expectedCardCount: null,
+      externalIds: s.externalIds,
+    };
+    const images = await fetchScrydexSealedImages(catalogSet);
+    for (const [type, url] of images) {
+      const rows = await db
+        .update(sealedProducts)
+        .set({ imageUrl: url, updatedAt: new Date() })
+        .where(and(eq(sealedProducts.setId, s.id), eq(sealedProducts.type, type as never)))
+        .returning({ id: sealedProducts.id });
+      updated += rows.length;
+    }
+  }
+  return updated;
 }
 
 /**

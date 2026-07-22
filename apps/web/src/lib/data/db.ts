@@ -38,6 +38,7 @@ export async function loadRankingsFromDb(): Promise<RankingsPayload> {
       manualMarketSource: sealedProducts.manualMarketSource,
       contentsNote: sealedProducts.contentsNote,
       guaranteedCardIds: sealedProducts.guaranteedCardIds,
+      productImageUrl: sealedProducts.imageUrl,
       setId: sets.id,
       setCode: sets.code,
       setName: sets.name,
@@ -238,7 +239,8 @@ export async function loadRankingsFromDb(): Promise<RankingsPayload> {
       productSlug: p.productSlug,
       productType: p.productType,
       packsContained: p.packsContained,
-      imageUrl: p.logoUrl,
+      // Prefer the actual box/pack photo; fall back to the set logo.
+      imageUrl: p.productImageUrl ?? p.logoUrl,
       msrpCents: p.msrpCents,
       market,
       sealed,

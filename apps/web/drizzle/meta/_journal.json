@@ -22,6 +22,13 @@
       "when": 1784242012483,
       "tag": "0002_lyrical_obadiah_stane",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1784721204196,
+      "tag": "0003_fat_black_widow",
+      "breakpoints": true
     }
   ]
 }

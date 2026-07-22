@@ -146,6 +146,9 @@ export const sealedProducts = pgTable(
     name: text("name").notNull(),
     /** URL segment: /{game}/{setCode}/{slug}. Unique within a set. */
     slug: text("slug").notNull(),
+    /** Product (box/pack) photo from the catalog source; falls back to the set
+     *  logo where absent. */
+    imageUrl: text("image_url"),
     /** Packs inside. EV(product) = EV(pack) * packsContained + extras. */
     packsContained: integer("packs_contained").notNull(),
     msrpCents: integer("msrp_cents"),

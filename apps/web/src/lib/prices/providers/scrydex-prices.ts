@@ -83,15 +83,26 @@ const cardsResponse = z
   })
   .passthrough();
 
+const sealedImageSchema = z
+  .object({ large: z.string().nullish(), medium: z.string().nullish(), small: z.string().nullish() })
+  .passthrough();
+
 const sealedItemSchema = z
   .object({
     id: z.string(),
     name: z.string().nullish(),
     type: z.string().nullish(), // "Booster Box" | "Booster Pack" | "Other" | null
+    images: z.array(sealedImageSchema).nullish(),
     prices: z.array(priceEntry).nullish(),
     variants: z.array(variantSchema).nullish(),
   })
   .passthrough();
+
+/** Best available product photo for a sealed item, or null. */
+function sealedImageUrl(item: z.infer<typeof sealedItemSchema>): string | null {
+  const img = item.images?.[0];
+  return img?.large ?? img?.medium ?? img?.small ?? null;
+}
 
 const sealedResponse = z
   .object({
@@ -304,52 +315,82 @@ export const scrydexPriceProvider = {
     const path = GAME_PATH[game];
     if (!path) return [];
 
-    const expansionId =
-      game === "pokemon"
-        ? (set.externalIds["pokemontcg_io"] ?? set.code)
-        : set.code.replace(/-/g, "");
-    const headers = { "X-Api-Key": creds.key, "X-Team-ID": creds.teamId };
-
-    // Best (plainest-named) qualifying SKU per our product type. Shortest name
-    // wins: "Kingdoms of Intrigue Booster Box" beats any longer edition string.
-    const best = new Map<string, { name: string; cents: number }>();
-    for (let page = 1; ; page++) {
-      const res = await fetchJson(
-        `${BASE}/${path}/v1/expansions/${encodeURIComponent(expansionId)}/sealed?include=prices&page=${page}&page_size=${PAGE_SIZE}`,
-        sealedResponse,
-        { provider: "scrydex", headers },
-      );
-
-      const rows = res.data ?? [];
-      for (const item of rows) {
-        const ourType = item.type ? SEALED_TYPE_MAP[item.type.toLowerCase()] : undefined;
-        if (!ourType) continue;
-        if (item.name && SEALED_DECOY.test(item.name)) continue;
-        const dollars = sealedRawDollars(item);
-        if (dollars === null) continue;
-
-        const prev = best.get(ourType);
-        const name = item.name ?? "";
-        if (!prev || name.length < prev.name.length) {
-          best.set(ourType, { name, cents: toCents(dollars) });
-        }
-      }
-
-      const total = res.total_count;
-      const size = res.page_size ?? PAGE_SIZE;
-      if (rows.length === 0 || total == null || page * size >= total) break;
-    }
-
     const capturedAt = new Date();
-    return [...best].map(([ourType, v]) => ({
-      externalProductId: ourType,
-      sourceId: "tcgplayer_market",
-      priceCents: v.cents,
-      kind: "sealed" as const,
-      capturedAt,
-    }));
+    return [...(await bestSealedByType(set, creds))]
+      .filter(([, v]) => v.cents !== null)
+      .map(([ourType, v]) => ({
+        externalProductId: ourType,
+        sourceId: "tcgplayer_market",
+        priceCents: v.cents!,
+        kind: "sealed" as const,
+        capturedAt,
+      }));
   },
 };
+
+/**
+ * The plainest-named qualifying sealed SKU per our product type — its price AND
+ * image. Shortest name wins ("Kingdoms of Intrigue Booster Box" beats any
+ * longer edition string); decoys (Case, Sleeved, Dash Pack, wave/edition) are
+ * rejected. Shared by fetchSealedPrices (prices) and fetchScrydexSealedImages
+ * (catalog photos) so both point at the same box.
+ */
+async function bestSealedByType(
+  set: CatalogSet,
+  creds: { key: string; teamId: string },
+): Promise<Map<string, { name: string; cents: number | null; imageUrl: string | null }>> {
+  const game = gameOf(set);
+  const path = GAME_PATH[game];
+  const best = new Map<string, { name: string; cents: number | null; imageUrl: string | null }>();
+  if (!path) return best;
+
+  const expansionId =
+    game === "pokemon" ? (set.externalIds["pokemontcg_io"] ?? set.code) : set.code.replace(/-/g, "");
+  const headers = { "X-Api-Key": creds.key, "X-Team-ID": creds.teamId };
+
+  for (let page = 1; ; page++) {
+    const res = await fetchJson(
+      `${BASE}/${path}/v1/expansions/${encodeURIComponent(expansionId)}/sealed?include=prices&page=${page}&page_size=${PAGE_SIZE}`,
+      sealedResponse,
+      { provider: "scrydex", headers },
+    );
+    const rows = res.data ?? [];
+    for (const item of rows) {
+      const ourType = item.type ? SEALED_TYPE_MAP[item.type.toLowerCase()] : undefined;
+      if (!ourType) continue;
+      if (item.name && SEALED_DECOY.test(item.name)) continue;
+      const name = item.name ?? "";
+      const prev = best.get(ourType);
+      if (!prev || name.length < prev.name.length) {
+        const dollars = sealedRawDollars(item);
+        best.set(ourType, {
+          name,
+          cents: dollars === null ? null : toCents(dollars),
+          imageUrl: sealedImageUrl(item),
+        });
+      }
+    }
+    const total = res.total_count;
+    const size = res.page_size ?? PAGE_SIZE;
+    if (rows.length === 0 || total == null || page * size >= total) break;
+  }
+  return best;
+}
+
+/**
+ * Product photos for a set's sealed products, keyed by our product type
+ * (booster_box / booster_pack). Catalog data — called from refresh-catalog to
+ * fill sealed_products.image_url. Returns an empty map without credentials.
+ */
+export async function fetchScrydexSealedImages(set: CatalogSet): Promise<Map<string, string>> {
+  const creds = credentials();
+  if (!creds) return new Map();
+  const out = new Map<string, string>();
+  for (const [ourType, v] of await bestSealedByType(set, creds)) {
+    if (v.imageUrl) out.set(ourType, v.imageUrl);
+  }
+  return out;
+}
 
 function gameOf(set: CatalogSet): string {
   if (set.externalIds["pokemontcg_io"]) return "pokemon";
