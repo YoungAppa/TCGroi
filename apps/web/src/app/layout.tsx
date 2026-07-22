@@ -71,6 +71,12 @@ export default function RootLayout({
                 Rankings
               </Link>
               <Link
+                href="/collection"
+                className="-my-2 inline-flex items-center px-2 py-2 hover:text-foreground"
+              >
+                Collection
+              </Link>
+              <Link
                 href="/methodology"
                 className="-my-2 inline-flex items-center px-2 py-2 hover:text-foreground"
               >
