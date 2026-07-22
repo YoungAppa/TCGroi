@@ -1,0 +1,1 @@
+ALTER TYPE "public"."set_language" ADD VALUE 'ZH';

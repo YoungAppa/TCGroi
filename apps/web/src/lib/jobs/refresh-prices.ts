@@ -66,7 +66,7 @@ export async function refreshPrices() {
       code: string;
       name: string;
       release_date: string | null;
-      language: "EN" | "JP";
+      language: "EN" | "JP" | "ZH";
       external_ids: Record<string, string>;
       slug: string;
     }>(sql`

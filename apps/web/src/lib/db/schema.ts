@@ -21,7 +21,7 @@ import {
 /** Game-agnostic by construction: adding MTG later is a data change, not code. */
 export const gameSlug = pgEnum("game_slug", ["pokemon", "one-piece", "mtg"]);
 
-export const setLanguage = pgEnum("set_language", ["EN", "JP"]);
+export const setLanguage = pgEnum("set_language", ["EN", "JP", "ZH"]);
 
 export const sealedProductType = pgEnum("sealed_product_type", [
   "booster_pack",

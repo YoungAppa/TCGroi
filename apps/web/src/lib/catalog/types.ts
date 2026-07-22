@@ -11,7 +11,7 @@ export interface CatalogSet {
   name: string;
   /** ISO date, or null when the provider doesn't say. */
   releaseDate: string | null;
-  language: "EN" | "JP";
+  language: "EN" | "JP" | "ZH";
   /** Cards the provider claims exist, for a post-ingest sanity check. */
   expectedCardCount: number | null;
   /** Set logo image, where the provider has one. Used as product imagery. */

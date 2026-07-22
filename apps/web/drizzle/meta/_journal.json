@@ -29,6 +29,13 @@
       "when": 1784721204196,
       "tag": "0003_fat_black_widow",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1784738954791,
+      "tag": "0004_wakeful_blacklash",
+      "breakpoints": true
     }
   ]
 }
