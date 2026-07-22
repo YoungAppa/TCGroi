@@ -220,7 +220,10 @@ export function RankingsTable({
                       />
                     )}
                     <span>
-                      <span className="font-medium">{payload.setName}</span>{" "}
+                      <span className="font-medium">{payload.setName}</span>
+                      {payload.gameSlug === "one-piece" && (
+                        <span className="tabular text-muted"> ({payload.setCode})</span>
+                      )}{" "}
                       <span className="text-muted">{payload.productName}</span>
                     </span>
                   </Link>
@@ -557,6 +560,9 @@ function IconTile({
       <div className="mt-2.5 min-w-0">
         <div className="truncate text-sm font-medium" title={payload.setName}>
           {payload.setName}
+          {payload.gameSlug === "one-piece" && (
+            <span className="tabular font-normal text-muted"> ({payload.setCode})</span>
+          )}
         </div>
         <div className="truncate text-xs text-muted" title={payload.productName}>
           {payload.productName}
