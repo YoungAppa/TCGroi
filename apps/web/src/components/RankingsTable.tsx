@@ -124,7 +124,9 @@ export function RankingsTable({
 
   const games = [...new Set(products.map((p) => p.gameSlug))];
   const gameName = (slug: string) => products.find((p) => p.gameSlug === slug)?.gameName ?? slug;
-  const productTypes = [...new Set(products.map((p) => p.productType))];
+  // Product-type options are game-specific: One Piece has no ETBs or UPCs, so
+  // the filter must only offer the types the selected game actually has.
+  const productTypes = [...new Set(products.filter((p) => p.gameSlug === game).map((p) => p.productType))];
   const anyManualMarket = rows.some((r) => r.payload.market.isManual);
   // At least one price column must remain — snap the other on if both go off.
   const retailOn = showRetail || !showMarket;
@@ -284,7 +286,12 @@ export function RankingsTable({
             return (
               <button
                 key={g}
-                onClick={() => setGame(g)}
+                onClick={() => {
+                  setGame(g);
+                  // A type filter from the other game (e.g. ETB) would hide
+                  // everything here — reset it when the game changes.
+                  setTypeFilter("all");
+                }}
                 aria-pressed={on}
                 className={`-mb-px rounded-t-md border-b-2 px-4 py-2 text-sm font-semibold transition-colors ${
                   on
