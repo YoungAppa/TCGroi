@@ -128,8 +128,9 @@ export default function MethodologyPage() {
             <strong>One Piece.</strong> Pull rates come from community studies,
             usually without a disclosed sample, so most One Piece sets rank
             LOW–MEDIUM. Card facts come from optcgapi.com but its prices are
-            ignored; the single price source is PriceCharting&apos;s eBay-sold
-            data. A pack is 12 cards and its odds describe the roughly one
+            ignored; prices come from two sources you can blend — TCGplayer
+            Market (via the licensed Scrydex API) and eBay sold (PriceCharting).
+            A pack is 12 cards and its odds describe the roughly one
             notable card in it (Leader, SR, Alt Art, Manga, …), so they do{" "}
             <em>not</em> sum to 100% — the other ~11 cards are bulk. The Manga,
             Wanted Poster, and SP treatments are their own tiers, priced
@@ -141,23 +142,24 @@ export default function MethodologyPage() {
       <section className="space-y-3 rounded-xl border border-border bg-surface p-6">
         <h2 className="text-lg font-semibold">Price data</h2>
         <p>
-          Card prices come from up to two sources you can toggle and blend:{" "}
-          <strong>TCGplayer Market</strong> (via the pokemontcg.io mirror,
-          Pokémon only) and <strong>eBay sold</strong> (via PriceCharting, both
-          games). With more than one selected the number shown is a blend —
-          median by default. Everything refreshes on a schedule and is read from
-          our database; no external price API is ever called while you load a
-          page.
+          Card prices come from two sources you can toggle and blend:{" "}
+          <strong>TCGplayer Market</strong> and <strong>eBay sold</strong>. For
+          Pokémon, TCGplayer Market comes via the free pokemontcg.io mirror; for
+          One Piece it comes via the licensed Scrydex API. eBay sold is
+          PriceCharting for both games. With more than one selected the number
+          shown is a blend — median by default. Everything refreshes on a
+          schedule and is read from our database; no external price API is ever
+          called while you load a page.
         </p>
         <p className="text-muted">
           One Piece card facts come from optcgapi.com, whose scraped prices we
-          deliberately ignore; One Piece prices come from PriceCharting&apos;s
-          eBay-sold data instead — so One Piece now ranks with real EV.{" "}
-          <strong>Sealed</strong> box / ETB / pack prices are also live from
-          PriceCharting; a figure marked with an asterisk is a hand-tracked
-          fallback for the few products without a live match. Each product page
-          also charts its market price over time from the daily snapshots the
-          price job accumulates.
+          deliberately ignore; its prices come from Scrydex (TCGplayer Market)
+          and PriceCharting (eBay sold) instead — so One Piece ranks with real,
+          two-source EV. <strong>Sealed</strong> box / pack prices are live too
+          (Scrydex for One Piece, PriceCharting for Pokémon); a figure marked
+          with an asterisk is a hand-tracked fallback for the few products
+          without a live match. Each product page also charts its market price
+          over time from the daily snapshots the price job accumulates.
         </p>
         <p className="text-muted">
           Card and price data via the{" "}
@@ -169,9 +171,9 @@ export default function MethodologyPage() {
           >
             pokemontcg.io
           </a>{" "}
-          API, PriceCharting, and PokemonPriceTracker. This product is not
-          endorsed by or affiliated with any of them, nor with TCGplayer, eBay,
-          PSA, The Pokémon Company, or Bandai.
+          API, Scrydex, PriceCharting, and PokemonPriceTracker. This product is
+          not endorsed by or affiliated with any of them, nor with TCGplayer,
+          eBay, PSA, The Pokémon Company, or Bandai.
         </p>
       </section>
 

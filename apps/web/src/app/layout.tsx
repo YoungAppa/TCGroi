@@ -103,9 +103,9 @@ export default function RootLayout({
               >
                 pokemontcg.io
               </a>{" "}
-              API, PriceCharting, and PokemonPriceTracker. Not endorsed by or
-              affiliated with any of them, nor with TCGplayer, eBay, PSA, The
-              Pokémon Company, or Bandai.
+              API, Scrydex, PriceCharting, and PokemonPriceTracker. Not endorsed
+              by or affiliated with any of them, nor with TCGplayer, eBay, PSA,
+              The Pokémon Company, or Bandai.
             </p>
             <p>
               Not financial or gambling advice. Estimates carry real error —
