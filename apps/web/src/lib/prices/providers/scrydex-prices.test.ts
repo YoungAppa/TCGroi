@@ -89,8 +89,10 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe("scrydexPriceProvider — One Piece variant→treatment matching", () => {
-  it("prices each treatment row from its own variant, skipping unmapped printings", async () => {
+describe("scrydexPriceProvider — One Piece base-only pricing", () => {
+  it("prices the base card from 'normal' and does NOT price alt/manga treatments", async () => {
+    // Scrydex's alt/manga variant names are unreliable (they invert across
+    // cards), so only the base card is trusted; PriceCharting prices the rest.
     vi.stubGlobal(
       "fetch",
       vi.fn(async () =>
@@ -103,9 +105,7 @@ describe("scrydexPriceProvider — One Piece variant→treatment matching", () =
               variants: [
                 { name: "normal", prices: [rawEntry("NM", 1.5)] },
                 { name: "mangaAltArt", prices: [rawEntry("NM", 693.5)] },
-                // A printing our catalog does not model — must be skipped, not
-                // guessed onto some row.
-                { name: "championshipStamp", prices: [rawEntry("NM", 93.39)] },
+                { name: "altArt", prices: [rawEntry("NM", 18.61)] },
               ],
             },
           ]),
@@ -116,16 +116,15 @@ describe("scrydexPriceProvider — One Piece variant→treatment matching", () =
     const out = await scrydexPriceProvider.fetchCardPrices(opSet(), [
       opCard("OP04-083", "base"),
       opCard("OP04-083", "manga"),
+      opCard("OP04-083", "alt_art"),
     ]);
 
-    expect(out).toHaveLength(2);
-    const byId = new Map(out.map((s) => [s.externalCardId, s]));
-    expect(byId.get("OP04-083:base")?.priceCents).toBe(150);
-    expect(byId.get("OP04-083:manga")?.priceCents).toBe(69350);
-    for (const s of out) {
-      expect(s.sourceId).toBe("tcgplayer_market");
-      expect(s.kind).toBe("raw");
-    }
+    // Only the base row is priced — the manga/alt rows are left to PriceCharting.
+    expect(out).toHaveLength(1);
+    expect(out[0]!.externalCardId).toBe("OP04-083:base");
+    expect(out[0]!.priceCents).toBe(150);
+    expect(out[0]!.sourceId).toBe("tcgplayer_market");
+    expect(out[0]!.kind).toBe("raw");
   });
 
   it("prices an SR/SEC base row from 'foil' when no 'normal' variant exists", async () => {
@@ -151,9 +150,10 @@ describe("scrydexPriceProvider — One Piece variant→treatment matching", () =
     const alt = { ...opCard("OP04-083", "alt_art"), rarity: "alt_art" };
     const out = await scrydexPriceProvider.fetchCardPrices(opSet(), [sr, alt]);
 
-    const byId = new Map(out.map((s) => [s.externalCardId, s]));
-    expect(byId.get("OP04-083:base")?.priceCents).toBe(79);
-    expect(byId.get("OP04-083:alt_art")?.priceCents).toBe(1861);
+    // Base prices from foil; the alt_art row is not Scrydex-priced (base-only).
+    expect(out).toHaveLength(1);
+    expect(out[0]!.externalCardId).toBe("OP04-083:base");
+    expect(out[0]!.priceCents).toBe(79);
   });
 
   it("never lets a common's separate foil printing stand in for its base row", async () => {
@@ -176,31 +176,6 @@ describe("scrydexPriceProvider — One Piece variant→treatment matching", () =
     const common = { ...opCard("OP04-002", "base"), rarity: "common" };
     const out = await scrydexPriceProvider.fetchCardPrices(opSet(), [common]);
     expect(out).toHaveLength(0);
-  });
-
-  it("prefers textured manga over nonTextured for the single manga row", async () => {
-    vi.stubGlobal(
-      "fetch",
-      vi.fn(async () =>
-        respond(
-          envelope([
-            {
-              id: "OP04-083",
-              variants: [
-                { name: "nonTexturedMangaAltArt", prices: [rawEntry("NM", 100)] },
-                { name: "mangaAltArt", prices: [rawEntry("NM", 693.5)] },
-              ],
-            },
-          ]),
-        ),
-      ),
-    );
-
-    const out = await scrydexPriceProvider.fetchCardPrices(opSet(), [
-      opCard("OP04-083", "manga"),
-    ]);
-    expect(out).toHaveLength(1);
-    expect(out[0]!.priceCents).toBe(69350);
   });
 
   it("prefers the NM condition and falls back to low when market is absent", async () => {

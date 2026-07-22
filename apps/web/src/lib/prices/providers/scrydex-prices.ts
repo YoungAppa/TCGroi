@@ -114,24 +114,21 @@ const GAME_PATH: Record<string, string> = {
 };
 
 /**
- * Scrydex variant name -> our treatment vocabulary, in PRIORITY order: when
- * two variants map to the same treatment (textured vs non-textured manga), the
- * earlier entry wins. Names observed live across OP04/OP09. Anything absent
- * here (winnerStamp, bestSelectionVol3AltArt, ...) is a printing our catalog
- * does not model — skipped, because guessing a variant onto the wrong row is
- * how a $2 base card gets a $1,600 manga price.
+ * Scrydex prices only the BASE One Piece card, deliberately.
+ *
+ * Both optcgapi (our catalog) and Scrydex enumerate a card's special printings,
+ * but with inconsistent names: Scrydex's "altArt" is the $18 regular alt on
+ * OP04-083 Sabo yet the $936 premium on OP05-074 Kid, and "mangaAltArt" inverts
+ * with it. The cross-source divergence audit caught alt/manga prices landing on
+ * the wrong treatment for the highest-value chase cards — a $936 price on a $7
+ * row is exactly the error that would corrupt the chase table and EV. Since we
+ * cannot tell a good name-match from a bad one for those printings, we don't
+ * ship them: PriceCharting prices the alt/manga/wanted/treasure/sp treatments
+ * via explicitly-labelled consoles with a validated matcher, so those rows keep
+ * a correct source. Only "base" — the plain card — has an unambiguous Scrydex
+ * variant ("normal", or "foil" for foil-native rarities), so only "base" is
+ * priced here.
  */
-const VARIANT_TREATMENTS: readonly { variant: string; treatment: string }[] = [
-  { variant: "normal", treatment: "base" },
-  { variant: "altArt", treatment: "alt_art" },
-  { variant: "mangaAltArt", treatment: "manga" },
-  { variant: "nonTexturedMangaAltArt", treatment: "manga" },
-  { variant: "wantedPoster", treatment: "wanted_poster" },
-  { variant: "treasureRare", treatment: "treasure" },
-  { variant: "specialAltArt", treatment: "sp" },
-  { variant: "parallel", treatment: "parallel" },
-  { variant: "boxTopper", treatment: "box_topper" },
-];
 
 /**
  * Foil-native tiers: SR/SEC cards ARE foils, so Scrydex gives them no
@@ -265,50 +262,29 @@ export const scrydexPriceProvider = {
           continue;
         }
 
-        // One Piece: walk the treatment map in priority order so e.g. textured
-        // manga beats non-textured for the single "manga" row.
+        // One Piece: price the BASE card only (see the note above). Its
+        // printing is "normal", or "foil" for a foil-native SR/SEC whose base
+        // IS a foil. The foil fallback is gated on rarity so a common's
+        // separate, pricier foil can never stand in for its base row.
+        const match = opByNumberTreatment.get(`${card.id}|base`);
+        if (!match) continue;
+
         const variantsByName = new Map<string, z.infer<typeof variantSchema>>();
         for (const v of card.variants ?? []) if (v.name) variantsByName.set(v.name, v);
 
-        const priced = new Set<string>();
-        for (const { variant, treatment } of VARIANT_TREATMENTS) {
-          if (priced.has(treatment)) continue;
-          const v = variantsByName.get(variant);
-          if (!v) continue;
-          const match = opByNumberTreatment.get(`${card.id}|${treatment}`);
-          if (!match) continue;
-          const dollars = rawDollars(v.prices);
-          if (dollars === null) continue;
-          priced.add(treatment);
-          out.push({
-            externalCardId: match.externalIds["optcgapi"] ?? `${card.id}:${treatment}`,
-            sourceId: "tcgplayer_market",
-            priceCents: toCents(dollars),
-            kind: "raw",
-            capturedAt,
-          });
+        let dollars = rawDollars(variantsByName.get("normal")?.prices);
+        if (dollars === null && FOIL_NATIVE_RARITIES.has(match.rarity)) {
+          dollars = rawDollars(variantsByName.get("foil")?.prices);
         }
+        if (dollars === null) continue;
 
-        // Foil-native fallback: an SR/SEC base row prices from "foil" when no
-        // "normal" variant exists — that IS its base printing. Gated on the
-        // row's rarity so a common's separate (pricier) foil printing can
-        // never stand in for its base row.
-        if (!priced.has("base") && !variantsByName.has("normal")) {
-          const match = opByNumberTreatment.get(`${card.id}|base`);
-          const foil = variantsByName.get("foil");
-          if (match && foil && FOIL_NATIVE_RARITIES.has(match.rarity)) {
-            const dollars = rawDollars(foil.prices);
-            if (dollars !== null) {
-              out.push({
-                externalCardId: match.externalIds["optcgapi"] ?? `${card.id}:base`,
-                sourceId: "tcgplayer_market",
-                priceCents: toCents(dollars),
-                kind: "raw",
-                capturedAt,
-              });
-            }
-          }
-        }
+        out.push({
+          externalCardId: match.externalIds["optcgapi"] ?? `${card.id}:base`,
+          sourceId: "tcgplayer_market",
+          priceCents: toCents(dollars),
+          kind: "raw",
+          capturedAt,
+        });
       }
 
       const total = res.total_count;
