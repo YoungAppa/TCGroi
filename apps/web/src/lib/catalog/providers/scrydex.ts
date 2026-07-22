@@ -40,6 +40,16 @@ const SET_NAMES: Record<string, string> = {
   "OP-07": "500 Years in the Future",
   "OP-08": "Two Legends",
   "OP-09": "Emperors in the New World",
+  "OP-10": "Royal Blood",
+  "OP-11": "A Fist of Divine Speed",
+  "OP-12": "Legacy of the Master",
+  "OP-13": "Carrying On His Will",
+  "OP-14": "The Azure Sea's Seven",
+  "OP-15": "Adventure on Kami's Island",
+  "OP-16": "The Time of Battle",
+  // EB (Extra Booster) and PRB (Premium Booster) lines are deliberately absent:
+  // different pack structures with no community pull-rate study, so they can't
+  // rank honestly yet. Add when rates exist.
 };
 
 const imageSchema = z

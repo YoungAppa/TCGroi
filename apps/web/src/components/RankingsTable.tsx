@@ -14,7 +14,15 @@ import { ConfidenceBadge, RoiCell } from "./badges";
 import { SourceFilter } from "./SourceFilter";
 import { useFilterState } from "./useFilterState";
 
-type SortKey = "roiMarket" | "roiRetail" | "ev" | "market" | "evPerPack" | "pTopBox" | "popular";
+type SortKey =
+  | "roiMarket"
+  | "roiRetail"
+  | "ev"
+  | "market"
+  | "evPerPack"
+  | "pTopBox"
+  | "popular"
+  | "released";
 type Row = { payload: ProductPayload; c: ProductComputation };
 type ViewMode = "list" | "icons";
 
@@ -50,11 +58,16 @@ const SORTS: Record<SortKey, (r: Row) => number> = {
     const top = r.c.ev.chase.slice(0, 10);
     return top.length ? top.reduce((s, ch) => s + ch.valueCents, 0) / top.length : -Infinity;
   },
+  // Release date as an epoch ms; undated sets sink to the bottom either way.
+  released: (r) =>
+    r.payload.releaseDate ? Date.parse(r.payload.releaseDate) : Number.NEGATIVE_INFINITY,
 };
 
 /** Named sort options for the dropdown → (metric, descending). */
 const SORT_OPTIONS: { value: string; label: string; key: SortKey; desc: boolean }[] = [
   { value: "popular", label: "Popular", key: "popular", desc: true },
+  { value: "newest", label: "Newest released", key: "released", desc: true },
+  { value: "oldest", label: "Oldest released", key: "released", desc: false },
   { value: "roi-high", label: "Highest ROI", key: "roiMarket", desc: true },
   { value: "roi-low", label: "Lowest ROI", key: "roiMarket", desc: false },
   { value: "price-high", label: "Most expensive", key: "market", desc: true },

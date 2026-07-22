@@ -198,6 +198,118 @@
       "marketCents": 1500,
       "marketAsOf": "2026-07-20",
       "marketSource": "PriceCharting (eBay sold), 2026-07-20"
+    },
+    {
+      "setCode": "OP-10",
+      "name": "Booster Box (24 packs)",
+      "slug": "booster-box",
+      "type": "booster_box",
+      "packsContained": 24,
+      "msrpCents": 11976
+    },
+    {
+      "setCode": "OP-10",
+      "name": "Booster Pack",
+      "slug": "booster-pack",
+      "type": "booster_pack",
+      "packsContained": 1,
+      "msrpCents": 499
+    },
+    {
+      "setCode": "OP-11",
+      "name": "Booster Box (24 packs)",
+      "slug": "booster-box",
+      "type": "booster_box",
+      "packsContained": 24,
+      "msrpCents": 11976
+    },
+    {
+      "setCode": "OP-11",
+      "name": "Booster Pack",
+      "slug": "booster-pack",
+      "type": "booster_pack",
+      "packsContained": 1,
+      "msrpCents": 499
+    },
+    {
+      "setCode": "OP-12",
+      "name": "Booster Box (24 packs)",
+      "slug": "booster-box",
+      "type": "booster_box",
+      "packsContained": 24,
+      "msrpCents": 11976
+    },
+    {
+      "setCode": "OP-12",
+      "name": "Booster Pack",
+      "slug": "booster-pack",
+      "type": "booster_pack",
+      "packsContained": 1,
+      "msrpCents": 499
+    },
+    {
+      "setCode": "OP-13",
+      "name": "Booster Box (24 packs)",
+      "slug": "booster-box",
+      "type": "booster_box",
+      "packsContained": 24,
+      "msrpCents": 11976
+    },
+    {
+      "setCode": "OP-13",
+      "name": "Booster Pack",
+      "slug": "booster-pack",
+      "type": "booster_pack",
+      "packsContained": 1,
+      "msrpCents": 499
+    },
+    {
+      "setCode": "OP-14",
+      "name": "Booster Box (24 packs)",
+      "slug": "booster-box",
+      "type": "booster_box",
+      "packsContained": 24,
+      "msrpCents": 11976
+    },
+    {
+      "setCode": "OP-14",
+      "name": "Booster Pack",
+      "slug": "booster-pack",
+      "type": "booster_pack",
+      "packsContained": 1,
+      "msrpCents": 499
+    },
+    {
+      "setCode": "OP-15",
+      "name": "Booster Box (24 packs)",
+      "slug": "booster-box",
+      "type": "booster_box",
+      "packsContained": 24,
+      "msrpCents": 11976
+    },
+    {
+      "setCode": "OP-15",
+      "name": "Booster Pack",
+      "slug": "booster-pack",
+      "type": "booster_pack",
+      "packsContained": 1,
+      "msrpCents": 499
+    },
+    {
+      "setCode": "OP-16",
+      "name": "Booster Box (24 packs)",
+      "slug": "booster-box",
+      "type": "booster_box",
+      "packsContained": 24,
+      "msrpCents": 11976
+    },
+    {
+      "setCode": "OP-16",
+      "name": "Booster Pack",
+      "slug": "booster-pack",
+      "type": "booster_pack",
+      "packsContained": 1,
+      "msrpCents": 499
     }
   ]
 }
