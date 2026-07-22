@@ -17,7 +17,7 @@
  *   npx tsx --env-file=.env.local scripts/audit-price-divergence.ts --game pokemon
  *   npx tsx --env-file=.env.local scripts/audit-price-divergence.ts --ratio 5 --floor 500
  */
-import { and, eq, inArray, sql } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 
 import { cards, games, getDb, latestPrices, sets } from "@/lib/db";
 

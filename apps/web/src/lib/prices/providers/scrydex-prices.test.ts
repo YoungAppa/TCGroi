@@ -206,7 +206,7 @@ describe("scrydexPriceProvider — One Piece base-only pricing", () => {
   });
 
   it("derives the expansion id from the set code without hyphens", async () => {
-    const fetchMock = vi.fn(async (..._args: unknown[]) => respond(envelope([])));
+    const fetchMock = vi.fn<(url: string) => Promise<Response>>(async () => respond(envelope([])));
     vi.stubGlobal("fetch", fetchMock);
 
     await scrydexPriceProvider.fetchCardPrices(opSet("OP-04"), [opCard("OP04-001", "base")]);
@@ -252,7 +252,7 @@ describe("scrydexPriceProvider — sealed products", () => {
   }
 
   it("maps the plain booster box/pack, rejecting sleeved/case/dash decoys", async () => {
-    const fetchMock = vi.fn(async (..._args: unknown[]) =>
+    const fetchMock = vi.fn<(url: string) => Promise<Response>>(async () =>
       respond(
         sealedEnvelope([
           { id: "s1", type: "Booster Pack", name: "Kingdoms of Intrigue Booster Pack", variants: [{ name: "u", prices: [{ type: "raw", condition: "U", market: 13.69 }] }] },
