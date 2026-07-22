@@ -127,7 +127,7 @@ export async function refreshCatalog() {
 
     const tablesLoaded = await loadPullRateTables(gameIdBySlug, loaded);
     const productsLoaded = await loadSealedProducts(gameIdBySlug);
-    const sealedImages = await refreshSealedImages(gameIdBySlug);
+    const sealedImages = await refreshSealedImages();
 
     return { setsUpserted, cardsUpserted, tablesLoaded, productsLoaded, sealedImages };
   });
@@ -141,7 +141,7 @@ export async function refreshCatalog() {
  * products are queried; a per-set failure (e.g. an expansion Scrydex doesn't
  * carry) skips that set rather than aborting the job. No-op without creds.
  */
-export async function refreshSealedImages(gameIdBySlug: Map<string, string>): Promise<number> {
+export async function refreshSealedImages(): Promise<number> {
   const db = getDb();
   if (!new ScrydexCatalogAdapter().enabled()) return 0;
 
