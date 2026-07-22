@@ -90,6 +90,66 @@ export async function valueCards(cardIds: string[]): Promise<Map<string, number>
   return pricesFor([...new Set(cardIds)]);
 }
 
+export interface HistoryPoint {
+  date: string;
+  cents: number;
+}
+
+/** Daily raw-price history for one card (median across sources/runs). */
+export async function getCardHistory(cardId: string, days = 180): Promise<HistoryPoint[]> {
+  try {
+    const db = getDb();
+    const cutoffIso = new Date(Date.now() - days * 86_400_000).toISOString();
+    const rows = await db.execute<{ day: string; cents: number | string }>(sql`
+      select to_char(date(${latestPrices.capturedAt}), 'YYYY-MM-DD') as day,
+             round(percentile_cont(0.5) within group (order by ps.price_cents))::int as cents
+      from price_snapshots ps
+      where ps.card_id = ${cardId}::uuid and ps.kind = 'raw'
+        and ps.captured_at >= ${cutoffIso}::timestamptz
+      group by date(ps.captured_at)
+      order by day
+    `);
+    return [...rows].map((r) => ({ date: String(r.day), cents: Number(r.cents) }));
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Portfolio value over time for a set of holdings: for each day, sum(median
+ * price that day × qty) over the cards that were priced that day. Thin until
+ * the daily job accumulates snapshots; grows automatically.
+ */
+export async function getCollectionHistory(
+  holdings: { cardId: string; qty: number }[],
+  days = 180,
+): Promise<HistoryPoint[]> {
+  const qtyById = new Map(holdings.map((h) => [h.cardId, h.qty]));
+  const ids = [...qtyById.keys()];
+  if (ids.length === 0) return [];
+  try {
+    const db = getDb();
+    const cutoffIso = new Date(Date.now() - days * 86_400_000).toISOString();
+    const rows = await db.execute<{ card_id: string; day: string; cents: number | string }>(sql`
+      select ps.card_id,
+             to_char(date(ps.captured_at), 'YYYY-MM-DD') as day,
+             round(percentile_cont(0.5) within group (order by ps.price_cents))::int as cents
+      from price_snapshots ps
+      where ps.card_id in (${sql.join(ids.map((id) => sql`${id}::uuid`), sql`, `)})
+        and ps.kind = 'raw' and ps.captured_at >= ${cutoffIso}::timestamptz
+      group by ps.card_id, date(ps.captured_at)
+    `);
+    const byDay = new Map<string, number>();
+    for (const r of rows) {
+      const qty = qtyById.get(String(r.card_id)) ?? 0;
+      byDay.set(String(r.day), (byDay.get(String(r.day)) ?? 0) + Number(r.cents) * qty);
+    }
+    return [...byDay.entries()].map(([date, cents]) => ({ date, cents })).sort((a, b) => a.date.localeCompare(b.date));
+  } catch {
+    return [];
+  }
+}
+
 const TREATMENT_LABELS: Record<string, string> = {
   alt_art: "Alt Art",
   manga: "Manga",

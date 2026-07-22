@@ -18,7 +18,7 @@
  *   npx tsx --env-file=.env.local scripts/build-inventory-catalog.ts
  *   npx tsx --env-file=.env.local scripts/build-inventory-catalog.ts --floor 100   # cents
  */
-import { and, eq, sql } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { z } from "zod";
 
 import { fetchJson } from "@/lib/catalog/http";
