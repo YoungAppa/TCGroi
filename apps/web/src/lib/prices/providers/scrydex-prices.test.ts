@@ -128,6 +128,56 @@ describe("scrydexPriceProvider — One Piece variant→treatment matching", () =
     }
   });
 
+  it("prices an SR/SEC base row from 'foil' when no 'normal' variant exists", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () =>
+        respond(
+          envelope([
+            {
+              // Real shape: OP04-083 Sabo SR — foil IS the base printing.
+              id: "OP04-083",
+              variants: [
+                { name: "foil", prices: [rawEntry("NM", 0.79)] },
+                { name: "altArt", prices: [rawEntry("NM", 18.61)] },
+              ],
+            },
+          ]),
+        ),
+      ),
+    );
+
+    const sr = { ...opCard("OP04-083", "base"), rarity: "super_rare" };
+    const alt = { ...opCard("OP04-083", "alt_art"), rarity: "alt_art" };
+    const out = await scrydexPriceProvider.fetchCardPrices(opSet(), [sr, alt]);
+
+    const byId = new Map(out.map((s) => [s.externalCardId, s]));
+    expect(byId.get("OP04-083:base")?.priceCents).toBe(79);
+    expect(byId.get("OP04-083:alt_art")?.priceCents).toBe(1861);
+  });
+
+  it("never lets a common's separate foil printing stand in for its base row", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () =>
+        respond(
+          envelope([
+            {
+              // A common whose "normal" is unpriced but which has a foil
+              // printing: the base row must stay unpriced, not take the foil.
+              id: "OP04-002",
+              variants: [{ name: "foil", prices: [rawEntry("NM", 0.22)] }],
+            },
+          ]),
+        ),
+      ),
+    );
+
+    const common = { ...opCard("OP04-002", "base"), rarity: "common" };
+    const out = await scrydexPriceProvider.fetchCardPrices(opSet(), [common]);
+    expect(out).toHaveLength(0);
+  });
+
   it("prefers textured manga over nonTextured for the single manga row", async () => {
     vi.stubGlobal(
       "fetch",

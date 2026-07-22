@@ -114,6 +114,15 @@ const VARIANT_TREATMENTS: readonly { variant: string; treatment: string }[] = [
   { variant: "boxTopper", treatment: "box_topper" },
 ];
 
+/**
+ * Foil-native tiers: SR/SEC cards ARE foils, so Scrydex gives them no
+ * "normal" variant — their base printing lives under "foil" (verified live:
+ * OP04-083 SR has foil/altArt/manga...; OP04-118 SEC has foil/altArt).
+ * Leaders and below DO get a "normal" variant, and for those "foil" is a
+ * separate, pricier printing that must never stand in for the base row.
+ */
+const FOIL_NATIVE_RARITIES = new Set(["super_rare", "secret_rare"]);
+
 /** NM first — our "raw card" price means near-mint, like every other source. */
 const CONDITION_ORDER = ["NM", "LP", "MP", "HP", "DM", "U"] as const;
 
@@ -226,6 +235,27 @@ export const scrydexPriceProvider = {
             kind: "raw",
             capturedAt,
           });
+        }
+
+        // Foil-native fallback: an SR/SEC base row prices from "foil" when no
+        // "normal" variant exists — that IS its base printing. Gated on the
+        // row's rarity so a common's separate (pricier) foil printing can
+        // never stand in for its base row.
+        if (!priced.has("base") && !variantsByName.has("normal")) {
+          const match = opByNumberTreatment.get(`${card.id}|base`);
+          const foil = variantsByName.get("foil");
+          if (match && foil && FOIL_NATIVE_RARITIES.has(match.rarity)) {
+            const dollars = rawDollars(foil.prices);
+            if (dollars !== null) {
+              out.push({
+                externalCardId: match.externalIds["optcgapi"] ?? `${card.id}:base`,
+                sourceId: "tcgplayer_market",
+                priceCents: toCents(dollars),
+                kind: "raw",
+                capturedAt,
+              });
+            }
+          }
         }
       }
 
