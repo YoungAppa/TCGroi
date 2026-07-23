@@ -17,12 +17,12 @@
  *   npx tsx --env-file=.env.local scripts/build-magic-catalog.ts --floor 100   # cents
  *   npx tsx --env-file=.env.local scripts/build-magic-catalog.ts --limit 20    # first N sets
  */
-import { sql } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { z } from "zod";
 
 import { fetchJson } from "@/lib/catalog/http";
 import { MTG_RARITIES } from "@/lib/catalog/rarities";
-import { cards, games, getDb, latestPrices, sets } from "@/lib/db";
+import { cards, games, getDb, latestPrices, pullRateTables, sets } from "@/lib/db";
 
 const BASE = "https://api.scryfall.com";
 // Scryfall asks for ~50-100ms between requests; be a good citizen.
@@ -192,10 +192,21 @@ async function main() {
   const floorCents = Number(arg("--floor") ?? "100"); // $1
   const gameId = await getMagicGameId(db);
 
+  // Ranked sets (ingest-magic-ranked.ts) carry a pull-rate table and a carefully
+  // treatment-filtered card list for EV. Never touch them here — a broad
+  // inventory re-ingest would re-add the special-treatment prints and wreck the
+  // tier averages.
+  const rankedRows = await db
+    .select({ code: sets.code })
+    .from(pullRateTables)
+    .innerJoin(sets, eq(pullRateTables.setId, sets.id))
+    .where(eq(sets.gameId, gameId));
+  const ranked = new Set(rankedRows.map((r) => r.code));
+
   const allSets = (await fetchJson(`${BASE}/sets`, setsResponse, { provider: "scryfall", headers: SCRYFALL_HEADERS, retries: 3 })).data;
   const limit = arg("--limit") ? Number(arg("--limit")) : undefined;
   const todo = allSets
-    .filter((s) => !s.digital && !SKIP_SET_TYPES.has(s.set_type) && (s.card_count ?? 0) > 0)
+    .filter((s) => !s.digital && !SKIP_SET_TYPES.has(s.set_type) && (s.card_count ?? 0) > 0 && !ranked.has(s.code))
     // Newest first so a partial run still gets the cards people are most likely to hold.
     .sort((a, b) => (b.released_at ?? "").localeCompare(a.released_at ?? ""))
     .slice(0, limit);
