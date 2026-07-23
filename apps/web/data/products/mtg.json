@@ -1,0 +1,41 @@
+{
+  "_comment": "Magic: The Gathering sealed products. packsContained is a physical fact (Play Booster boxes are 30 packs for 2025+ sets, 36 for earlier 2024 sets like Bloomburrow). WotC sets no official box MSRP, so msrpCents is the suggested per-pack price times the pack count (standard Play Booster SRP ~$4.99; Final Fantasy premium ~$6.99) — a retail-ROI reference, while marketCents is the current street price with provenance that drives the market ROI. Pack EV is modelled from the disclosed Play Booster collation (see data/pullrates/mtg), which is closer to official than the Pokémon/One Piece community estimates but still capped at LOW confidence because special treatments are folded into flat rarity tiers.",
+  "products": [
+    {
+      "setCode": "fin",
+      "name": "Play Booster Box (30 packs)",
+      "slug": "play-booster-box",
+      "type": "booster_box",
+      "packsContained": 30,
+      "msrpCents": 20970,
+      "marketCents": 22999,
+      "marketAsOf": "2026-07-23",
+      "marketSource": "Walmart listing (Final Fantasy Play Booster Display, 30 packs), 2026-07-23",
+      "contentsNote": "30 Play Boosters, 14 cards each. Universes Beyond premium set."
+    },
+    {
+      "setCode": "blb",
+      "name": "Play Booster Box (36 packs)",
+      "slug": "play-booster-box",
+      "type": "booster_box",
+      "packsContained": 36,
+      "msrpCents": 17964,
+      "marketCents": 14299,
+      "marketAsOf": "2026-02-10",
+      "marketSource": "Amazon (via camelcamelcamel 2026 low), 2026-02-10",
+      "contentsNote": "36 Play Boosters, 14 cards each (earlier Play Booster box configuration)."
+    },
+    {
+      "setCode": "eoe",
+      "name": "Play Booster Box (30 packs)",
+      "slug": "play-booster-box",
+      "type": "booster_box",
+      "packsContained": 30,
+      "msrpCents": 14970,
+      "marketCents": 15990,
+      "marketAsOf": "2026-07-23",
+      "marketSource": "Walmart listing (Edge of Eternities Play Booster Display, 30 packs), 2026-07-23",
+      "contentsNote": "30 Play Boosters, 14 cards each."
+    }
+  ]
+}

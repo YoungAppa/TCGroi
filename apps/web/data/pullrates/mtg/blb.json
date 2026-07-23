@@ -1,0 +1,20 @@
+{
+  "game": "mtg",
+  "setCode": "blb",
+  "version": 1,
+  "sampleSizePacks": null,
+  "sourceUrl": "https://mtg.fandom.com/wiki/Play_Booster",
+  "sourceNote": "Modern Magic Play Booster (14 cards). Unlike Pokémon/One Piece, WotC discloses the collation, so this is closer to official than community estimate — but it is still modelled and capped at LOW confidence for the reasons below. Structure used: ~7 commons + ~3 uncommons per pack (guaranteed slots), one guaranteed rare-or-mythic slot (mythic ~13.5% of the time), plus a wildcard slot and a traditional-foil slot that each occasionally add another rare/mythic. This model uses the one guaranteed rare-or-mythic slot directly (rare 0.865, mythic 0.135). The wildcard slot and the traditional-foil slot each add roughly another ~0.2 rares/mythics per pack on average — those are NOT modelled here (the modelled hit slots sum to 1.0 per pack by construction), so this pack EV is deliberately CONSERVATIVE / understated by that amount. IMPORTANT approximations: (1) special treatments — showcase, borderless, extended-art — are folded into the flat common/uncommon/rare/mythic tiers with a uniform-within-tier assumption, which OVERSTATES the odds of the specific expensive alt-treatment prints; (2) the foil slot's extra value is approximated by taking the higher of each card's normal/foil TCGplayer price (via Scryfall) into the tier average, not a separate foil pull. Only cards Scryfall marks booster:true are counted, so promos, box-toppers and Commander-deck cards are excluded. Net effect is a rough, indicative pack EV, not a precise one.",
+  "confidence": "low",
+  "slots": [
+    { "rarity": "rare", "perPackProbability": 0.865 },
+    { "rarity": "mythic", "perPackProbability": 0.135 }
+  ],
+  "guaranteedSlots": [
+    { "label": "Commons", "rarity": "common", "countPerPack": 7 },
+    { "label": "Uncommons", "rarity": "uncommon", "countPerPack": 3 }
+  ],
+  "alternateEstimates": [],
+  "boxGuarantees": [],
+  "showWhenPlaceholder": false
+}

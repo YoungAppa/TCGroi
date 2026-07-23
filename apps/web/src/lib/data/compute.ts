@@ -32,10 +32,27 @@ export function computeProduct(
   filter: FilterState,
   availableSourceIds: string[],
 ): ProductComputation {
-  const ev = computeForPayload(payload, filter, availableSourceIds);
+  const raw = computeForPayload(payload, filter, availableSourceIds);
 
   const roiOf = (price: number | null) =>
-    price !== null && price > 0 ? ev.evProductCents / price - 1 : null;
+    price !== null && price > 0 ? raw.evProductCents / price - 1 : null;
+
+  // The EV engine's internal ROI only sees live sealed sources + MSRP, so when a
+  // product's only sealed price is the hand-tracked market figure (no live sealed
+  // feed — every Magic product, some others), the engine warns that ROI fell back
+  // to MSRP or can't be computed. But the UI shows a real market ROI from that
+  // very figure, so those two warnings are inaccurate here — drop them.
+  const ev =
+    payload.market.priceCents !== null
+      ? {
+          ...raw,
+          warnings: raw.warnings.filter(
+            (w) =>
+              !w.startsWith("No market price available") &&
+              !w.startsWith("No sealed price or MSRP"),
+          ),
+        }
+      : raw;
 
   return {
     ev,
