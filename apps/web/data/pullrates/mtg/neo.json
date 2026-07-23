@@ -1,0 +1,34 @@
+{
+  "game": "mtg",
+  "setCode": "neo",
+  "version": 1,
+  "sampleSizePacks": null,
+  "sourceUrl": "https://mtg.fandom.com/wiki/Booster_pack",
+  "sourceNote": "Magic booster EV, modeled on the ~1 rare-or-mythic-per-pack structure common to Draft, Set and Play Boosters: rare 0.865 / mythic 0.135 (mythic ~1 in 7-8), plus ~7 commons + ~3 uncommons per pack. WotC discloses booster collation, so this beats a pure community estimate, but it is still MODELLED and capped LOW: (1) special treatments (showcase/borderless/extended, and pre-2024 alt-frames) are folded into the flat common/uncommon/rare/mythic tiers with a uniform-within-tier assumption, which OVERSTATES the odds of the specific expensive alt-treatment prints; (2) prices are the NON-FOIL TCGplayer market price (via Scryfall) \u2014 a pack's guaranteed slots are all non-foil; the single foil slot's extra value is not added to EV (conservative); (3) for Play Boosters the wildcard + foil slots add ~0.2 more rares/mythics per pack that are NOT modelled (conservative); (4) older sets used Draft Boosters (more commons, foil ~1 in 3-4 packs) - the rare/mythic value driver is the same but the rest is approximate. Only cards Scryfall marks booster:true are counted (no promos/box-toppers/Commander cards). Net: a rough, indicative pack EV, not a precise one.",
+  "confidence": "low",
+  "slots": [
+    {
+      "rarity": "rare",
+      "perPackProbability": 0.865
+    },
+    {
+      "rarity": "mythic",
+      "perPackProbability": 0.135
+    }
+  ],
+  "guaranteedSlots": [
+    {
+      "label": "Commons",
+      "rarity": "common",
+      "countPerPack": 7
+    },
+    {
+      "label": "Uncommons",
+      "rarity": "uncommon",
+      "countPerPack": 3
+    }
+  ],
+  "alternateEstimates": [],
+  "boxGuarantees": [],
+  "showWhenPlaceholder": false
+}

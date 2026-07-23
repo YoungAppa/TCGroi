@@ -33,6 +33,10 @@ const cardSchema = z.object({
   collector_number: z.string(),
   rarity: z.string(),
   booster: z.boolean().nullish(),
+  promo: z.boolean().nullish(),
+  full_art: z.boolean().nullish(),
+  border_color: z.string().nullish(),
+  frame_effects: z.array(z.string()).nullish(),
   image_uris: imageUris.nullish(),
   card_faces: z.array(z.object({ image_uris: imageUris.nullish() }).passthrough()).nullish(),
   prices: z
@@ -40,6 +44,29 @@ const cardSchema = z.object({
     .passthrough()
     .nullish(),
 });
+
+// Frame treatments that come from special, low-rate booster slots (or not from
+// packs at all). Counting them in the flat rarity tier at the base rate wildly
+// overstates EV — e.g. War of the Spark's ★ Japanese-alt Liliana at $1,000
+// sitting in the mythic average. Excluding them makes the tier the base-frame
+// cards you actually pull at the modeled rate: conservative, but honest.
+const SPECIAL_FRAME_EFFECTS = new Set([
+  "showcase",
+  "extendedart",
+  "etched",
+  "inverted",
+  "companion",
+  "shatteredglass",
+]);
+function isBaseFrame(c: z.infer<typeof cardSchema>): boolean {
+  if (c.promo === true) return false; // stamped/promo prints (★ etc.)
+  if (c.full_art === true) return false;
+  if (c.border_color === "borderless") return false;
+  if (c.frame_effects?.some((f) => SPECIAL_FRAME_EFFECTS.has(f))) return false;
+  // Anything with a non-numeric collector number (★, letter suffix) is a variant.
+  if (!/^\d+$/.test(c.collector_number)) return false;
+  return true;
+}
 const cardsResponse = z.object({
   data: z.array(cardSchema),
   has_more: z.boolean(),
@@ -50,12 +77,19 @@ function sleep(ms: number): Promise<void> {
   return new Promise((r) => setTimeout(r, ms));
 }
 function bestPriceCents(c: z.infer<typeof cardSchema>): number | null {
-  let best = 0;
-  for (const raw of [c.prices?.usd, c.prices?.usd_foil, c.prices?.usd_etched]) {
+  // NON-FOIL price. A pack's guaranteed slots (7 commons + 3 uncommons + the
+  // rare/mythic) are all non-foil; folding in the foil price would inflate the
+  // many cheap commons/uncommons a pack contains (a $0.05 common with a $2 foil
+  // would be counted at $2, ×7 per pack). The single foil slot's extra value is
+  // omitted — conservative, and disclosed in the pull-rate note.
+  const usd = c.prices?.usd ? Number(c.prices.usd) : NaN;
+  if (Number.isFinite(usd) && usd > 0) return Math.round(usd * 100);
+  // Foil-only card (no non-foil printing): fall back to foil / etched.
+  for (const raw of [c.prices?.usd_foil, c.prices?.usd_etched]) {
     const v = raw ? Number(raw) : NaN;
-    if (Number.isFinite(v) && v > best) best = v;
+    if (Number.isFinite(v) && v > 0) return Math.round(v * 100);
   }
-  return best > 0 ? Math.round(best * 100) : null;
+  return null;
 }
 function cardImage(c: z.infer<typeof cardSchema>): string | null {
   const top = c.image_uris?.large ?? c.image_uris?.normal;
@@ -82,6 +116,7 @@ async function main() {
   const capturedAt = new Date();
 
   for (const code of codes) {
+   try {
     const [setRow] = await db
       .select({ id: sets.id, name: sets.name })
       .from(sets)
@@ -105,6 +140,7 @@ async function main() {
       }
       for (const c of res.data) {
         if (c.booster !== true) continue; // only pack-openable cards enter EV tiers
+        if (!isBaseFrame(c)) continue; // drop special treatments — they'd inflate tiers
         rows.push({
           name: c.name,
           number: c.collector_number,
@@ -118,10 +154,6 @@ async function main() {
       if (url) await sleep(GAP_MS);
     }
 
-    // Clean slate: drop the set's inventory-era cards (prices cascade), so the
-    // tier averages reflect exactly the booster cards, all of them.
-    await db.delete(cards).where(eq(cards.setId, setRow.id));
-
     // De-dupe by collector number (a number can repeat across variants).
     const byNumber = new Map<string, Row>();
     for (const r of rows) {
@@ -129,6 +161,16 @@ async function main() {
       if (!ex || (r.cents ?? 0) > (ex.cents ?? 0)) byNumber.set(r.number, r);
     }
     const unique = [...byNumber.values()];
+    // Nothing pack-openable (all-reprint / non-draft set): leave its inventory
+    // rows alone rather than delete them and insert nothing.
+    if (unique.length === 0) {
+      console.warn(`  ${code} ${setRow.name}: no booster cards — skipped`);
+      continue;
+    }
+
+    // Clean slate: drop the set's inventory-era cards (prices cascade), so the
+    // tier averages reflect exactly the booster cards, all of them.
+    await db.delete(cards).where(eq(cards.setId, setRow.id));
 
     const inserted = await db
       .insert(cards)
@@ -172,6 +214,9 @@ async function main() {
     console.log(
       `  ${code} ${setRow.name}: ${unique.length} booster cards (${priceRows.length} priced)`,
     );
+   } catch (err) {
+    console.warn(`  ${code}: ${err instanceof Error ? err.message : String(err)} — skipped`);
+   }
   }
 }
 
