@@ -1,0 +1,25 @@
+{
+  "game": "mtg",
+  "setCode": "mh3-collector",
+  "version": 1,
+  "sampleSizePacks": null,
+  "sourceUrl": "https://mtg.fandom.com/wiki/Collector_Booster",
+  "sourceNote": "Magic Collector Booster (12-pack box, ~15 cards/pack). Unlike the Play Booster, a Collector Booster is all-foil and its rare/mythic slots pull the SPECIAL TREATMENTS \u2014 showcase, borderless, extended-art \u2014 which is where the value sits. This table's card pool is every rare/mythic PRINT of the set at its foil price (via Scryfall), treatments included; serialized (1/500) inserts and ultra-chases over $500 are excluded because they pull at far below the standard rate and would dominate the mean. Modelled as ~2 rares + ~0.7 mythic per pack: a Collector pack actually yields ~4 rare/mythic, but the flat foil pool over-weights the pricier treatment prints, so the per-pack count is set conservatively to compensate (and disclosed as such). Uniform-within-rarity, so a specific expensive borderless is overstated. Confidence LOW \u2014 a rough, indicative Collector EV calibrated against street box prices, not a precise per-slot model.",
+  "confidence": "low",
+  "slots": [
+    {
+      "rarity": "mythic",
+      "perPackProbability": 0.7
+    }
+  ],
+  "guaranteedSlots": [
+    {
+      "label": "Rares",
+      "rarity": "rare",
+      "countPerPack": 2
+    }
+  ],
+  "alternateEstimates": [],
+  "boxGuarantees": [],
+  "showWhenPlaceholder": false
+}
