@@ -63,6 +63,16 @@ export const POKEMON_RARITIES = [
    */
   "shiny_rare",
   "shiny_ultra_rare",
+  /**
+   * Simplified Chinese "chase" tier. No source publishes per-card rarities for
+   * the Chinese sets, so the pull-rate files can't name the real star tiers
+   * (一星/二星/三星). This single inferred tier collects a set's genuine pack
+   * chases — the special-art / Master-Ball-pattern cards, identified by high
+   * collector number and value — and is priced against the one officially
+   * printed odd (Gem Pack's 1.81% three-star). Deliberately coarse and disclosed
+   * as such in every Chinese pull-rate file's sourceNote.
+   */
+  "cn_chase",
 ] as const;
 
 export const ONE_PIECE_RARITIES = [

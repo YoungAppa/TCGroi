@@ -170,7 +170,24 @@ async function main() {
     setsDone++;
   }
 
-  console.log(`\nDone: ${setsDone} ZH sets, ${cardsStored} priced cards stored (PriceCharting).`);
+  // Tag the Gem Pack chase tier (cn_chase) reproducibly, so a re-ingest keeps it:
+  // the genuine special-art chases, identified by a 4-digit special-art collector
+  // number AND $12+ value — which excludes the cheap parallel variants and the
+  // low-number promo inserts (e.g. the Captain Pikachu promo). This is the tier
+  // the gem-pack pull-rate tables price against the disclosed 1.81% three-star odd.
+  // Only Gem Pack sets; other ZH sets stay untagged (no ROI, catalog only).
+  await db.execute(sql`
+    update cards set rarity = 'cn_chase'
+    where set_id in (
+      select s.id from sets s join games g on s.game_id = g.id
+      where g.slug = 'pokemon' and s.language = 'ZH' and s.code like 'gem-pack%')
+      and cards.number ~ '^[0-9]+$' and (cards.number)::int >= 1000
+      and exists (
+        select 1 from latest_prices lp
+        where lp.card_id = cards.id and lp.kind = 'raw' and lp.price_cents >= 1200)
+  `);
+
+  console.log(`\nDone: ${setsDone} ZH sets, ${cardsStored} priced cards stored; Gem Pack chases tagged cn_chase.`);
 }
 
 main()

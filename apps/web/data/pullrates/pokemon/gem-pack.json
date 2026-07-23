@@ -1,0 +1,19 @@
+{
+  "game": "pokemon",
+  "setCode": "gem-pack",
+  "version": 1,
+  "sampleSizePacks": null,
+  "sourceUrl": "https://special.pokemon.cn/",
+  "sourceNote": "Simplified Chinese Gem Pack (宝石包). Chinese packs disclose the top-tier odds by regulation: the three-star (★★★) rate is 1.81% per card, and a pack is 4 cards, so ~0.072 three-stars per pack (~1.3 per 18-pack box) — that is the officially printed number this table is anchored to. IMPORTANT: no source publishes per-card rarities for Chinese sets, so the 'chase' tier here is INFERRED — it is the set's genuine special-art chases, identified by a 4-digit special-art collector number AND $12+ value, which excludes the cheap parallel variants and the low-number promo inserts (e.g. the Captain Pikachu promo). Only this chase tier is modelled; the lower-value reverse/parallel and common cards a pack also contains are NOT added, so the pack/box EV is deliberately CONSERVATIVE (understated). Prices are PriceCharting (eBay-sold) market. Confidence LOW: the 1.81% anchor is official, but the tier membership and the single-tier simplification are approximations, not a full per-rarity table.",
+  "confidence": "low",
+  "slots": [
+    {
+      "rarity": "cn_chase",
+      "perPackProbability": 0.0724
+    }
+  ],
+  "guaranteedSlots": [],
+  "alternateEstimates": [],
+  "boxGuarantees": [],
+  "showWhenPlaceholder": false
+}

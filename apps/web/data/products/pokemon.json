@@ -623,6 +623,126 @@
       "type": "booster_pack",
       "packsContained": 1,
       "msrpCents": 449
+    },
+    {
+      "setCode": "gem-pack",
+      "name": "Booster Box (18 packs)",
+      "slug": "booster-box",
+      "type": "booster_box",
+      "packsContained": 18,
+      "msrpCents": null,
+      "marketCents": 8000,
+      "marketAsOf": "2026-07-23",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-23",
+      "contentsNote": "18 packs, 4 cards each. Simplified Chinese."
+    },
+    {
+      "setCode": "gem-pack",
+      "name": "Booster Pack",
+      "slug": "booster-pack",
+      "type": "booster_pack",
+      "packsContained": 1,
+      "msrpCents": null,
+      "marketCents": 1039,
+      "marketAsOf": "2026-07-23",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-23",
+      "contentsNote": "4 cards. Simplified Chinese."
+    },
+    {
+      "setCode": "gem-pack-2",
+      "name": "Booster Box (18 packs)",
+      "slug": "booster-box",
+      "type": "booster_box",
+      "packsContained": 18,
+      "msrpCents": null,
+      "marketCents": 8394,
+      "marketAsOf": "2026-07-23",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-23",
+      "contentsNote": "18 packs, 4 cards each. Simplified Chinese."
+    },
+    {
+      "setCode": "gem-pack-2",
+      "name": "Booster Pack",
+      "slug": "booster-pack",
+      "type": "booster_pack",
+      "packsContained": 1,
+      "msrpCents": null,
+      "marketCents": 1750,
+      "marketAsOf": "2026-07-23",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-23",
+      "contentsNote": "4 cards. Simplified Chinese."
+    },
+    {
+      "setCode": "gem-pack-3",
+      "name": "Booster Box (18 packs)",
+      "slug": "booster-box",
+      "type": "booster_box",
+      "packsContained": 18,
+      "msrpCents": null,
+      "marketCents": 8480,
+      "marketAsOf": "2026-07-23",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-23",
+      "contentsNote": "18 packs, 4 cards each. Simplified Chinese."
+    },
+    {
+      "setCode": "gem-pack-3",
+      "name": "Booster Pack",
+      "slug": "booster-pack",
+      "type": "booster_pack",
+      "packsContained": 1,
+      "msrpCents": null,
+      "marketCents": 1548,
+      "marketAsOf": "2026-07-23",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-23",
+      "contentsNote": "4 cards. Simplified Chinese."
+    },
+    {
+      "setCode": "gem-pack-4",
+      "name": "Booster Box (18 packs)",
+      "slug": "booster-box",
+      "type": "booster_box",
+      "packsContained": 18,
+      "msrpCents": null,
+      "marketCents": 3321,
+      "marketAsOf": "2026-07-23",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-23",
+      "contentsNote": "18 packs, 4 cards each. Simplified Chinese."
+    },
+    {
+      "setCode": "gem-pack-4",
+      "name": "Booster Pack",
+      "slug": "booster-pack",
+      "type": "booster_pack",
+      "packsContained": 1,
+      "msrpCents": null,
+      "marketCents": 938,
+      "marketAsOf": "2026-07-23",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-23",
+      "contentsNote": "4 cards. Simplified Chinese."
+    },
+    {
+      "setCode": "gem-pack-5",
+      "name": "Booster Box (18 packs)",
+      "slug": "booster-box",
+      "type": "booster_box",
+      "packsContained": 18,
+      "msrpCents": null,
+      "marketCents": 4697,
+      "marketAsOf": "2026-07-23",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-23",
+      "contentsNote": "18 packs, 4 cards each. Simplified Chinese."
+    },
+    {
+      "setCode": "gem-pack-5",
+      "name": "Booster Pack",
+      "slug": "booster-pack",
+      "type": "booster_pack",
+      "packsContained": 1,
+      "msrpCents": null,
+      "marketCents": 1308,
+      "marketAsOf": "2026-07-23",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-23",
+      "contentsNote": "4 cards. Simplified Chinese."
     }
   ]
 }
