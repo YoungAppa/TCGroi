@@ -98,7 +98,13 @@
       "msrpCents": null,
       "marketCents": 57439,
       "marketAsOf": "2026-07-20",
-      "marketSource": "PriceCharting (eBay sold), 2026-07-20"
+      "marketSource": "PriceCharting (eBay sold), 2026-07-20",
+      "promos": [
+        {
+          "externalId": "svp-51",
+          "note": "Snorlax foil promo (151 ETB)"
+        }
+      ]
     },
     {
       "setCode": "sv3pt5",
@@ -158,7 +164,13 @@
       "slug": "elite-trainer-box",
       "type": "etb",
       "packsContained": 9,
-      "msrpCents": 4999
+      "msrpCents": 4999,
+      "promos": [
+        {
+          "externalId": "svp-97",
+          "note": "Flutter Mane foil promo (Temporal Forces ETB, Walking Wake version; Iron Leaves version has svp-98 Iron Thorns)"
+        }
+      ]
     },
     {
       "setCode": "sv5",
@@ -191,7 +203,13 @@
       "msrpCents": 4999,
       "marketCents": 10416,
       "marketAsOf": "2026-07-20",
-      "marketSource": "PriceCharting (eBay sold), 2026-07-20"
+      "marketSource": "PriceCharting (eBay sold), 2026-07-20",
+      "promos": [
+        {
+          "externalId": "svp-123",
+          "note": "Teal Mask Ogerpon foil promo (Twilight Masquerade ETB)"
+        }
+      ]
     },
     {
       "setCode": "sv6",
@@ -257,7 +275,13 @@
       "msrpCents": 4999,
       "marketCents": 21500,
       "marketAsOf": "2026-07-20",
-      "marketSource": "PriceCharting (eBay sold), 2026-07-20"
+      "marketSource": "PriceCharting (eBay sold), 2026-07-20",
+      "promos": [
+        {
+          "externalId": "svp-27",
+          "note": "Pikachu foil promo (Paldea Evolved ETB)"
+        }
+      ]
     },
     {
       "setCode": "sv2",
@@ -290,7 +314,13 @@
       "msrpCents": 4999,
       "marketCents": 29100,
       "marketAsOf": "2026-07-20",
-      "marketSource": "PriceCharting (eBay sold), 2026-07-20"
+      "marketSource": "PriceCharting (eBay sold), 2026-07-20",
+      "promos": [
+        {
+          "externalId": "svp-44",
+          "note": "Charmander foil promo (Obsidian Flames ETB)"
+        }
+      ]
     },
     {
       "setCode": "sv3",
@@ -320,7 +350,13 @@
       "slug": "elite-trainer-box",
       "type": "etb",
       "packsContained": 9,
-      "msrpCents": 4999
+      "msrpCents": 4999,
+      "promos": [
+        {
+          "externalId": "svp-65",
+          "note": "Scream Tail foil promo (Paradox Rift ETB, Roaring Moon version; Iron Valiant version has svp-66 Iron Bundle)"
+        }
+      ]
     },
     {
       "setCode": "sv4",
@@ -342,7 +378,13 @@
       "msrpCents": 4999,
       "marketCents": 43607,
       "marketAsOf": "2026-07-20",
-      "marketSource": "PriceCharting (eBay sold), 2026-07-20"
+      "marketSource": "PriceCharting (eBay sold), 2026-07-20",
+      "promos": [
+        {
+          "externalId": "svp-75",
+          "note": "Mimikyu foil promo (Paldean Fates ETB)"
+        }
+      ]
     },
     {
       "setCode": "sv4pt5",
