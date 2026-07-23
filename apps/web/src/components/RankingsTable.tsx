@@ -8,7 +8,7 @@ import { useMemo, useState } from "react";
 
 import { computeProduct, type ProductComputation } from "@/lib/data/compute";
 import type { ProductPayload } from "@/lib/data/types";
-import { formatCents, formatProbability } from "@packroi/ev/format";
+import { formatCents, formatProbability, formatRoi } from "@packroi/ev/format";
 
 import { ConfidenceBadge, RoiCell } from "./badges";
 import { SourceFilter } from "./SourceFilter";
@@ -509,13 +509,23 @@ function IconTile({
     }))
     .filter((ch) => ch.img);
 
-  // Follow the Retail/Market column toggle: show that column's price + ROI,
-  // falling back to the other when the chosen one has no price.
+  // The tile shows retail, market and average-unbox (EV) side by side. The
+  // Retail/Market column toggle decides which price is emphasised and which
+  // ROI drives the headline, falling back to the other when one has no price.
   const marketPrice = payload.market.priceCents;
   const retailPrice = payload.msrpCents;
   const useMarket = marketFirst ? marketPrice !== null : retailPrice === null;
-  const priceCents = useMarket ? marketPrice : retailPrice;
   const roi = useMarket ? c.roiMarket : c.roiRetail;
+  const roiColorClass =
+    roi === null
+      ? "text-muted"
+      : roi >= 0
+        ? "text-roi-pos"
+        : roi >= -0.25
+          ? "text-amber-400"
+          : roi >= -0.5
+            ? "text-orange-400"
+            : "text-roi-neg";
 
   // Set logo when we have one; otherwise the top chase card is the hero.
   const heroImg = payload.imageUrl ?? chase[0]?.img ?? null;
@@ -573,21 +583,28 @@ function IconTile({
         <div className="truncate text-xs text-muted" title={payload.productName}>
           {payload.productName}
         </div>
-        <div className="mt-1.5 flex items-baseline justify-between gap-2">
-          <span className="tabular text-xs text-muted" title="Expected value">
-            EV {formatCents(c.ev.evProductCents)}
-          </span>
-          <span
-            className="flex items-baseline gap-1.5"
-            title={useMarket ? "Current market price" : "Retail (MSRP)"}
-          >
-            <span className="tabular text-sm font-semibold">
-              {priceCents !== null ? formatCents(priceCents) : "—"}
-            </span>
-            <span className="tabular text-sm">
-              <RoiCell roi={roi} />
-            </span>
-          </span>
+        <div className="tabular mt-2 grid grid-cols-3 gap-1 border-t border-border pt-2">
+          <div title="Retail (MSRP)">
+            <div className="text-[9px] uppercase tracking-wide text-muted">Retail</div>
+            <div className={`text-[13px] ${useMarket ? "text-muted" : "font-semibold text-foreground"}`}>
+              {retailPrice !== null ? formatCents(retailPrice) : "—"}
+            </div>
+          </div>
+          <div title="Current market price">
+            <div className="text-[9px] uppercase tracking-wide text-muted">Market</div>
+            <div className={`text-[13px] ${useMarket ? "font-semibold text-foreground" : "text-muted"}`}>
+              {marketPrice !== null ? formatCents(marketPrice) : "—"}
+            </div>
+          </div>
+          <div className="text-right" title="Average value if you open it (expected value)">
+            <div className="text-[9px] uppercase tracking-wide text-muted">Avg. unbox</div>
+            <div className={`text-[13px] font-semibold ${roiColorClass}`}>
+              {formatCents(c.ev.evProductCents)}
+            </div>
+            {roi !== null && (
+              <div className={`text-[10px] font-semibold ${roiColorClass}`}>{formatRoi(roi)}</div>
+            )}
+          </div>
         </div>
       </div>
     </Link>
