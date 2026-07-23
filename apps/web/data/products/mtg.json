@@ -36,6 +36,78 @@
       "marketAsOf": "2026-07-23",
       "marketSource": "Walmart listing (Edge of Eternities Play Booster Display, 30 packs), 2026-07-23",
       "contentsNote": "30 Play Boosters, 14 cards each."
+    },
+    {
+      "setCode": "tdm",
+      "name": "Play Booster Box (30 packs)",
+      "slug": "play-booster-box",
+      "type": "booster_box",
+      "packsContained": 30,
+      "msrpCents": 14970,
+      "marketCents": 13280,
+      "marketAsOf": "2026-07-23",
+      "marketSource": "PriceCharting sealed (Booster Box [Play] loose), 2026-07-23",
+      "contentsNote": "30 Play Boosters, 14 cards each."
+    },
+    {
+      "setCode": "dft",
+      "name": "Play Booster Box (36 packs)",
+      "slug": "play-booster-box",
+      "type": "booster_box",
+      "packsContained": 36,
+      "msrpCents": 17964,
+      "marketCents": 10644,
+      "marketAsOf": "2026-07-23",
+      "marketSource": "PriceCharting sealed (Booster Box [Play] loose), 2026-07-23",
+      "contentsNote": "36 Play Boosters, 14 cards each."
+    },
+    {
+      "setCode": "fdn",
+      "name": "Play Booster Box (36 packs)",
+      "slug": "play-booster-box",
+      "type": "booster_box",
+      "packsContained": 36,
+      "msrpCents": 17964,
+      "marketCents": 15382,
+      "marketAsOf": "2026-07-23",
+      "marketSource": "PriceCharting sealed (Booster Box [Play] loose), 2026-07-23",
+      "contentsNote": "36 Play Boosters, 14 cards each."
+    },
+    {
+      "setCode": "dsk",
+      "name": "Play Booster Box (36 packs)",
+      "slug": "play-booster-box",
+      "type": "booster_box",
+      "packsContained": 36,
+      "msrpCents": 17964,
+      "marketCents": 14239,
+      "marketAsOf": "2026-07-23",
+      "marketSource": "PriceCharting sealed (Booster Box [Play] loose), 2026-07-23",
+      "contentsNote": "36 Play Boosters, 14 cards each."
+    },
+    {
+      "setCode": "inr",
+      "name": "Play Booster Box (36 packs)",
+      "slug": "play-booster-box",
+      "type": "booster_box",
+      "packsContained": 36,
+      "msrpCents": 17964,
+      "marketCents": 17830,
+      "marketAsOf": "2026-07-23",
+      "marketSource": "PriceCharting sealed (Booster Box [Play] loose), 2026-07-23",
+      "contentsNote": "36 Play Boosters, 14 cards each."
+    },
+    {
+      "setCode": "tla",
+      "name": "Play Booster Box (30 packs)",
+      "slug": "play-booster-box",
+      "type": "booster_box",
+      "packsContained": 30,
+      "msrpCents": 20970,
+      "marketCents": 12822,
+      "marketAsOf": "2026-07-23",
+      "marketSource": "PriceCharting sealed (Booster Box [Play] loose), 2026-07-23",
+      "contentsNote": "30 Play Boosters, 14 cards each."
     }
   ]
 }
