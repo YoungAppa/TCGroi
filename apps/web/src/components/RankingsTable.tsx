@@ -15,6 +15,7 @@ import { SourceFilter } from "./SourceFilter";
 import { useFilterState } from "./useFilterState";
 
 type SortKey =
+  | "roi"
   | "roiMarket"
   | "roiRetail"
   | "ev"
@@ -43,6 +44,9 @@ function headlineProb(row: Row): number {
 }
 
 const SORTS: Record<SortKey, (r: Row) => number> = {
+  // "roi" follows the active price column (see `sorted`); this default is the
+  // market metric, overridden at sort time when only Retail is shown.
+  roi: (r) => r.c.roiMarket ?? -Infinity,
   // null sinks to the bottom rather than sorting as 0 — "unknown" must not
   // outrank genuinely bad products.
   roiMarket: (r) => r.c.roiMarket ?? -Infinity,
@@ -68,8 +72,8 @@ const SORT_OPTIONS: { value: string; label: string; key: SortKey; desc: boolean 
   { value: "popular", label: "Popular", key: "popular", desc: true },
   { value: "newest", label: "Newest released", key: "released", desc: true },
   { value: "oldest", label: "Oldest released", key: "released", desc: false },
-  { value: "roi-high", label: "Highest ROI", key: "roiMarket", desc: true },
-  { value: "roi-low", label: "Lowest ROI", key: "roiMarket", desc: false },
+  { value: "roi-high", label: "Highest ROI", key: "roi", desc: true },
+  { value: "roi-low", label: "Lowest ROI", key: "roi", desc: false },
   { value: "price-high", label: "Most expensive", key: "market", desc: true },
   { value: "price-low", label: "Cheapest", key: "market", desc: false },
 ];
@@ -124,9 +128,16 @@ export function RankingsTable({
   }, [products, state, availableIds, game, lang, confFilter, typeFilter, query, positiveOnly]);
 
   const sorted = useMemo(() => {
-    const metric = SORTS[sortKey];
+    // The dropdown's "Highest/Lowest ROI" sorts by whichever price column is
+    // active: Retail's ROI when only Retail is shown, Market's otherwise. The
+    // explicit per-column ROI headers (roiRetail/roiMarket) stay literal.
+    const marketColumnOn = showMarket || !showRetail;
+    const metric: (r: Row) => number =
+      sortKey === "roi"
+        ? (r) => (marketColumnOn ? r.c.roiMarket : r.c.roiRetail) ?? -Infinity
+        : SORTS[sortKey];
     return [...rows].sort((a, b) => (metric(b) - metric(a)) * (sortDesc ? 1 : -1));
-  }, [rows, sortKey, sortDesc]);
+  }, [rows, sortKey, sortDesc, showMarket, showRetail]);
 
   function clickSort(key: SortKey) {
     if (key === sortKey) setSortDesc((d) => !d);
