@@ -599,14 +599,6 @@
     },
     {
       "setCode": "zsv10pt5",
-      "name": "Booster Box (36 packs)",
-      "slug": "booster-box",
-      "type": "booster_box",
-      "packsContained": 36,
-      "msrpCents": 16164
-    },
-    {
-      "setCode": "zsv10pt5",
       "name": "Elite Trainer Box (9 packs)",
       "slug": "elite-trainer-box",
       "type": "etb",
@@ -620,14 +612,6 @@
       "type": "booster_pack",
       "packsContained": 1,
       "msrpCents": 449
-    },
-    {
-      "setCode": "rsv10pt5",
-      "name": "Booster Box (36 packs)",
-      "slug": "booster-box",
-      "type": "booster_box",
-      "packsContained": 36,
-      "msrpCents": 16164
     },
     {
       "setCode": "rsv10pt5",
