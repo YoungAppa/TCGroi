@@ -147,7 +147,6 @@ async function main() {
         throw err;
       }
       for (const c of res.data) {
-        if (c.booster !== true) continue; // only pack-openable cards
         const cents = bestPriceCents(c);
         const base = {
           name: c.name,
@@ -157,13 +156,18 @@ async function main() {
           scryfallId: c.id,
           cents,
         };
-        if (isBaseFrame(c)) {
+        if (c.booster === true && isBaseFrame(c)) {
+          // Pack-openable base-frame card — the EV tier pool.
           rows.push({ ...base, treatment: "base", displayOnly: false });
         } else if (
           (c.rarity === "rare" || c.rarity === "mythic") &&
+          !isBaseFrame(c) &&
           (cents ?? 0) >= DISPLAY_FLOOR_CENTS
         ) {
-          // A notable special treatment — show it, but keep it out of EV.
+          // A notable special treatment (showcase/borderless/extended) — show it
+          // in the gallery but keep it out of EV. Collector-booster-only prints
+          // (booster:false) count too: they're display-only, never EV, so the
+          // pack-openable requirement doesn't apply.
           rows.push({ ...base, treatment: "special", displayOnly: true });
         }
       }
