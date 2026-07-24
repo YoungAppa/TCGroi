@@ -8,7 +8,11 @@
  * Supersedes build-chinese-pokemon-catalog.ts (TCGdex). This DELETES the old ZH
  * sets first (cards cascade) and rebuilds from PriceCharting: one set per console,
  * cards > $1 with their best price, treatment derived from the [Master Ball] /
- * [Poke Ball] / [Reverse] tag. No images (PriceCharting has none). Idempotent.
+ * [Poke Ball] / [Reverse] tag. PriceCharting has no images. Idempotent.
+ *
+ * AFTER a rebuild, run scripts/enrich-chinese-gempacks.ts — it re-adds Gem Pack
+ * card images (tcg.mik.moe) and the sub-$1 cards this floor drops. A full rebuild
+ * clears both, so the two run together.
  *
  * Needs PRICECHARTING_TOKEN. Requires migration 0004 (set_language += 'ZH').
  *
