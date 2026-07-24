@@ -186,8 +186,12 @@ async function main() {
   // numbers like Captain Pikachu #709. Value-banding is the reliable signal.)
   const CHASE_FLOOR_CENTS = 600; // above bulk / cheap parallels
   const CHASE_CEIL_CENTS = 15000; // below the ultra-secret a flat rate can't model
+  // Only RANKED gem packs (those with an active pull table) get tagged. Gem Pack
+  // 4 & 5 were de-ranked (their PriceCharting variant labels are too thin to
+  // infer a chase tier reliably), so they carry no table and stay catalog-only.
   const gemSetIds = sql`(
     select s.id from sets s join games g on s.game_id = g.id
+    join pull_rate_tables prt on prt.set_id = s.id and prt.is_active = true
     where g.slug = 'pokemon' and s.language = 'ZH' and s.code like 'gem-pack%')`;
   // Reset first so re-runs re-derive the tier from scratch (and clear old tags).
   await db.execute(sql`
