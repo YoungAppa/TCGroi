@@ -84,6 +84,7 @@ export async function loadRankingsFromDb(): Promise<RankingsPayload> {
       number: cards.number,
       rarity: cards.rarity,
       imageUrl: cards.imageUrl,
+      displayOnly: cards.displayOnly,
     })
     .from(cards)
     .where(
@@ -184,14 +185,18 @@ export async function loadRankingsFromDb(): Promise<RankingsPayload> {
   };
 
   const cardsBySet = new Map<string, CardPriceData[]>();
+  // Display-only cards (Magic treatments) are kept in a SEPARATE map so they
+  // reach the gallery but never the EV card pool that computeEv sees.
+  const displayBySet = new Map<string, CardPriceData[]>();
   const cardById = new Map<string, (typeof cardRows)[number]>();
   for (const c of cardRows) {
     cardById.set(c.id, c);
     if (!nativeToSet(c.number, c.setId)) continue; // skip cross-set reprints
-    const bucket = cardsBySet.get(c.setId);
+    const target = c.displayOnly ? displayBySet : cardsBySet;
+    const bucket = target.get(c.setId);
     const entry = toCardPriceData(c);
     if (bucket) bucket.push(entry);
-    else cardsBySet.set(c.setId, [entry]);
+    else target.set(c.setId, [entry]);
   }
 
   // Component-set lookup for blended products (mixed-pack collections). Each
@@ -298,6 +303,9 @@ export async function loadRankingsFromDb(): Promise<RankingsPayload> {
       },
       ...(componentPacks.length > 0 ? { componentPacks } : {}),
       cards: [...ownCards, ...extraPromos],
+      ...((displayBySet.get(p.setId)?.length ?? 0) > 0
+        ? { displayCards: displayBySet.get(p.setId) }
+        : {}),
     };
   });
 

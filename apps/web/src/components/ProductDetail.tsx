@@ -370,6 +370,64 @@ export function ProductDetail({
         </p>
       </section>
 
+      {/* ---- special-treatment gallery: shown for reference, NOT in EV ---- */}
+      {payload.displayCards && payload.displayCards.length > 0 && (() => {
+        const val = (raw: Record<string, number>) => {
+          const v = Object.values(raw)
+            .filter((x): x is number => typeof x === "number")
+            .sort((a, b) => a - b);
+          return v.length ? v[Math.floor((v.length - 1) / 2)]! : 0;
+        };
+        const sorted = [...payload.displayCards]
+          .sort((a, b) => val(b.raw) - val(a.raw))
+          .slice(0, 15);
+        return (
+          <section className="space-y-3">
+            <div className="flex flex-wrap items-baseline justify-between gap-2">
+              <h2 className="text-lg font-semibold">Special-treatment cards</h2>
+              <span className="text-xs text-muted">{sorted.length} shown · not counted in EV</span>
+            </div>
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5">
+              {sorted.map((c) => (
+                <div
+                  key={c.cardId}
+                  className="group flex flex-col overflow-hidden rounded-xl bg-surface ring-1 ring-white/5 transition hover:shadow-lg hover:shadow-black/30 hover:ring-accent/50"
+                >
+                  <div className="relative aspect-[5/7] w-full overflow-hidden bg-surface-raised">
+                    {c.imageUrl ? (
+                      <img
+                        src={c.imageUrl}
+                        alt={c.name}
+                        loading="lazy"
+                        className="h-full w-full object-contain transition-transform duration-200 group-hover:scale-[1.04]"
+                      />
+                    ) : (
+                      <div className="flex h-full items-center justify-center text-xs text-muted">
+                        no image
+                      </div>
+                    )}
+                    <span className="tabular absolute right-1.5 top-1.5 rounded-md bg-black/75 px-1.5 py-0.5 text-sm font-semibold text-emerald-300 shadow-sm backdrop-blur-sm">
+                      {formatCents(val(c.raw))}
+                    </span>
+                  </div>
+                  <div className="flex flex-1 flex-col gap-1 p-2.5">
+                    <div className="truncate text-sm font-medium" title={`${c.name} #${c.number}`}>
+                      {c.name} <span className="text-muted">#{c.number}</span>
+                    </div>
+                    <div className="text-xs text-muted">{rarityLabel(c.rarity)}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <p className="text-xs text-muted">
+              Showcase, borderless and extended-art prints — the set&rsquo;s premium chases. They come
+              from special booster slots no public data quantifies, so they&rsquo;re shown here for
+              reference but deliberately excluded from the EV above.
+            </p>
+          </section>
+        );
+      })()}
+
       {/* ---- grading break-even ---- */}
       <GradingGuide chase={ev.chase} />
 

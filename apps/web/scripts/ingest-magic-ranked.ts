@@ -105,7 +105,15 @@ interface Row {
   image: string | null;
   scryfallId: string;
   cents: number | null;
+  treatment: string;
+  displayOnly: boolean;
 }
+
+// Special-treatment rares/mythics worth at least this much are kept as
+// DISPLAY-ONLY cards: they're the set's real chases (showcase/borderless
+// Avatar characters etc.) so the page should show them, but they come from
+// special slots we don't model, so they never enter the EV tiers.
+const DISPLAY_FLOOR_CENTS = 500;
 
 async function main() {
   const codes = process.argv.slice(2).filter((a) => !a.startsWith("--"));
@@ -139,28 +147,38 @@ async function main() {
         throw err;
       }
       for (const c of res.data) {
-        if (c.booster !== true) continue; // only pack-openable cards enter EV tiers
-        if (!isBaseFrame(c)) continue; // drop special treatments — they'd inflate tiers
-        rows.push({
+        if (c.booster !== true) continue; // only pack-openable cards
+        const cents = bestPriceCents(c);
+        const base = {
           name: c.name,
           number: c.collector_number,
           rarity: c.rarity,
           image: cardImage(c),
           scryfallId: c.id,
-          cents: bestPriceCents(c),
-        });
+          cents,
+        };
+        if (isBaseFrame(c)) {
+          rows.push({ ...base, treatment: "base", displayOnly: false });
+        } else if (
+          (c.rarity === "rare" || c.rarity === "mythic") &&
+          (cents ?? 0) >= DISPLAY_FLOOR_CENTS
+        ) {
+          // A notable special treatment — show it, but keep it out of EV.
+          rows.push({ ...base, treatment: "special", displayOnly: true });
+        }
       }
       url = res.has_more ? (res.next_page ?? null) : null;
       if (url) await sleep(GAP_MS);
     }
 
-    // De-dupe by collector number (a number can repeat across variants).
-    const byNumber = new Map<string, Row>();
+    // De-dupe by (number, treatment): base and display pools are kept apart.
+    const byKey = new Map<string, Row>();
     for (const r of rows) {
-      const ex = byNumber.get(r.number);
-      if (!ex || (r.cents ?? 0) > (ex.cents ?? 0)) byNumber.set(r.number, r);
+      const k = `${r.number}|${r.treatment}`;
+      const ex = byKey.get(k);
+      if (!ex || (r.cents ?? 0) > (ex.cents ?? 0)) byKey.set(k, r);
     }
-    const unique = [...byNumber.values()];
+    const unique = [...byKey.values()];
     // Nothing pack-openable (all-reprint / non-draft set): leave its inventory
     // rows alone rather than delete them and insert nothing.
     if (unique.length === 0) {
@@ -180,17 +198,18 @@ async function main() {
           name: r.name,
           number: r.number,
           rarity: r.rarity,
-          treatment: "base",
+          treatment: r.treatment,
+          displayOnly: r.displayOnly,
           imageUrl: r.image,
           externalIds: { scryfall: r.scryfallId },
         })),
       )
-      .returning({ id: cards.id, number: cards.number });
+      .returning({ id: cards.id, number: cards.number, treatment: cards.treatment });
 
-    const idByNumber = new Map(inserted.map((r) => [r.number, r.id]));
+    const idByKey = new Map(inserted.map((r) => [`${r.number}|${r.treatment}`, r.id]));
     const priceRows = unique
       .filter((r) => r.cents !== null)
-      .map((r) => ({ cardId: idByNumber.get(r.number)!, cents: r.cents! }))
+      .map((r) => ({ cardId: idByKey.get(`${r.number}|${r.treatment}`)!, cents: r.cents! }))
       .filter((r) => r.cardId);
     if (priceRows.length > 0) {
       await db
@@ -211,8 +230,9 @@ async function main() {
         });
     }
 
+    const displayN = unique.filter((r) => r.displayOnly).length;
     console.log(
-      `  ${code} ${setRow.name}: ${unique.length} booster cards (${priceRows.length} priced)`,
+      `  ${code} ${setRow.name}: ${unique.length - displayN} EV cards + ${displayN} display-only treatments (${priceRows.length} priced)`,
     );
    } catch (err) {
     console.warn(`  ${code}: ${err instanceof Error ? err.message : String(err)} — skipped`);

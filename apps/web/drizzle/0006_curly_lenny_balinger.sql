@@ -1,0 +1,1 @@
+ALTER TABLE "cards" ADD COLUMN "display_only" boolean DEFAULT false NOT NULL;

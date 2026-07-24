@@ -101,6 +101,14 @@ export interface ProductPayload {
 
   /** Every card in the set with per-source prices. The big part. */
   cards: CardPriceData[];
+
+  /**
+   * Display-only cards: shown in a gallery but never fed to the EV engine.
+   * Magic's special-treatment prints (showcase/borderless — the set's real
+   * chases) live here, so the page can show them without their special-slot
+   * rates inflating the modelled tiers. Empty for most products.
+   */
+  displayCards?: CardPriceData[];
 }
 
 /** Everything the home rankings page needs, one entry per product. */

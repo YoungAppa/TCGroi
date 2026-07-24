@@ -115,6 +115,15 @@ export const cards = pgTable(
      * "base" for an ordinary printing.
      */
     treatment: text("treatment").notNull().default("base"),
+    /**
+     * Display-only: show this card in galleries but KEEP IT OUT of EV. Magic's
+     * special-treatment prints (showcase/borderless/extended) are the set's real
+     * chases yet come from special booster slots at rates we don't model — at the
+     * flat base rare/mythic rate they'd wildly inflate the tier average (the "War
+     * of the Spark +757%" bug). So they're ingested for the card gallery but
+     * flagged here, and the data layer routes them away from the EV card pool.
+     */
+    displayOnly: boolean("display_only").notNull().default(false),
     /** Variant flags, e.g. { firstEdition: false }. */
     variants: jsonb("variants")
       .$type<Record<string, boolean>>()
