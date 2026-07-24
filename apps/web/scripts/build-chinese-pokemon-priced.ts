@@ -23,6 +23,7 @@ import { and, eq, inArray, sql } from "drizzle-orm";
 
 import { cards, games, getDb, latestPrices, sets } from "@/lib/db";
 import { getEnv } from "@/lib/env";
+import { tagGemPackChase } from "@/lib/jobs/tag-gempack-chase";
 
 const CONSOLE_PREFIX = "Pokemon Chinese ";
 
@@ -174,43 +175,7 @@ async function main() {
     setsDone++;
   }
 
-  // Tag the Gem Pack chase tier (cn_chase). China discloses ONLY the ★★★
-  // three-star per-pack odd (the gem-pack pull-rate tables anchor to it), never
-  // per-card rarities, so the ★★★ pool is INFERRED from market value: the
-  // special-art SRs sit in a clear band ABOVE the cheap ●/◆ parallels and BELOW
-  // the single ultra-secret SAR each set carries (Captain Pikachu, Umbreon,
-  // Cubone, Ponyta — $170–$300+). Those top secrets pull far below the flat ★★★
-  // rate, so a uniform tier would overvalue them; they're excluded, which
-  // understates on purpose (same stance as the 151 UPC). Basic/special Energy
-  // cards aren't art chases either — excluded. Only Gem Pack sets are tagged;
-  // other ZH sets stay catalog-only (no ROI).
-  //
-  // (An earlier rule keyed on "collector number ≥ 1000", which mis-caught the
-  // 4-digit special Energy cards and MISSED every real chase — those carry low
-  // numbers like Captain Pikachu #709. Value-banding is the reliable signal.)
-  const CHASE_FLOOR_CENTS = 600; // above bulk / cheap parallels
-  const CHASE_CEIL_CENTS = 15000; // below the ultra-secret a flat rate can't model
-  // Only RANKED gem packs (those with an active pull table) get tagged. Gem Pack
-  // 4 & 5 were de-ranked (their PriceCharting variant labels are too thin to
-  // infer a chase tier reliably), so they carry no table and stay catalog-only.
-  const gemSetIds = sql`(
-    select s.id from sets s join games g on s.game_id = g.id
-    join pull_rate_tables prt on prt.set_id = s.id and prt.is_active = true
-    where g.slug = 'pokemon' and s.language = 'ZH' and s.code like 'gem-pack%')`;
-  // Reset first so re-runs re-derive the tier from scratch (and clear old tags).
-  await db.execute(sql`
-    update cards set rarity = 'unknown'
-    where rarity = 'cn_chase' and set_id in ${gemSetIds}
-  `);
-  await db.execute(sql`
-    update cards set rarity = 'cn_chase'
-    where set_id in ${gemSetIds}
-      and cards.name not ilike '%energy%'
-      and exists (
-        select 1 from latest_prices lp
-        where lp.card_id = cards.id and lp.kind = 'raw'
-          and lp.price_cents between ${CHASE_FLOOR_CENTS} and ${CHASE_CEIL_CENTS})
-  `);
+  await tagGemPackChase(db);
 
   console.log(`\nDone: ${setsDone} ZH sets, ${cardsStored} priced cards stored; Gem Pack chases tagged cn_chase.`);
 }

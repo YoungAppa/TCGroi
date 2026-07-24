@@ -420,9 +420,10 @@ export function ProductDetail({
               ))}
             </div>
             <p className="text-xs text-muted">
-              Showcase, borderless and extended-art prints — the set&rsquo;s premium chases. They come
-              from special booster slots no public data quantifies, so they&rsquo;re shown here for
-              reference but deliberately excluded from the EV above.
+              Premium special-art printings — showcase/borderless prints, ultra-secret SARs and the
+              like. They&rsquo;re the set&rsquo;s headline chases but pulled far below any rate public
+              data quantifies, so they&rsquo;re shown here for reference and deliberately excluded from
+              the EV above.
             </p>
           </section>
         );
