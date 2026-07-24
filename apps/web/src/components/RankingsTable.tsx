@@ -85,7 +85,7 @@ export function RankingsTable({
   const [sortKey, setSortKey] = useState<SortKey>("popular");
   const [sortDesc, setSortDesc] = useState(true);
   const [game, setGame] = useState<string>("pokemon");
-  const [lang, setLang] = useState<"en" | "ja">("en");
+  const [lang, setLang] = useState<"en" | "ja" | "zh">("en");
   // Icons is the default view everywhere (product photos sell the page);
   // List remains a click away for the data-dense comparison.
   const [userView, setUserView] = useState<ViewMode | null>(null);
@@ -104,11 +104,13 @@ export function RankingsTable({
 
   const rows: Row[] = useMemo(() => {
     const q = query.trim().toLowerCase();
-    // All catalog data is English today; the Japanese tab is a placeholder
-    // until a Japanese catalog source lands.
-    if (lang !== "en") return [];
+    // Language tab filters by the set's language. Simplified Chinese Gem Packs
+    // (their card names come from PriceCharting in English, but the sets are
+    // ZH) live under 中文; JP has no ranked sets yet, so that tab is empty.
+    const wantLang = lang === "ja" ? "JP" : lang === "zh" ? "ZH" : "EN";
     return products
       .filter((p) => p.gameSlug === game)
+      .filter((p) => p.setLanguage === wantLang)
       .filter((p) => p.pullRates.confidence !== "placeholder")
       .filter((p) => confFilter === "all" || p.pullRates.confidence === confFilter)
       .filter((p) => typeFilter === "all" || p.productType === typeFilter)
@@ -320,11 +322,12 @@ export function RankingsTable({
           Language
           <select
             value={lang}
-            onChange={(e) => setLang(e.target.value as "en" | "ja")}
+            onChange={(e) => setLang(e.target.value as "en" | "ja" | "zh")}
             className="rounded-md bg-surface-raised px-2.5 py-1 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-accent/40"
           >
             <option value="en">English</option>
             <option value="ja">Japanese</option>
+            <option value="zh">中文 (Chinese)</option>
           </select>
         </label>
       </div>

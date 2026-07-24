@@ -14,10 +14,12 @@ import type { AlternateEstimate, Confidence } from "@/lib/pullrates/schema";
  */
 
 export interface ProductPayload {
-  gameSlug: "pokemon" | "one-piece";
+  gameSlug: "pokemon" | "one-piece" | "mtg";
   gameName: string;
   setCode: string;
   setName: string;
+  /** Set language — drives the rankings language tabs (EN / JP / ZH). */
+  setLanguage: "EN" | "JP" | "ZH";
   releaseDate: string | null;
 
   productId: string;
