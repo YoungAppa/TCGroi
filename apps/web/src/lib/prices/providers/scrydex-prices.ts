@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 import { fetchJson } from "@/lib/catalog/http";
-import { SCRYDEX_TREATMENT_VARIANTS } from "@/lib/catalog/scrydex-variants";
+import { SCRYDEX_DISPLAY_VARIANTS, SCRYDEX_TREATMENT_VARIANTS } from "@/lib/catalog/scrydex-variants";
 import type { CatalogSet } from "@/lib/catalog/types";
 import { getEnv } from "@/lib/env";
 
@@ -306,6 +306,10 @@ export const scrydexPriceProvider = {
         );
         // Mapped treatment tiers.
         for (const [variantName, { treatment }] of Object.entries(SCRYDEX_TREATMENT_VARIANTS)) {
+          emit(treatment, rawDollars(variantsByName.get(variantName)?.prices));
+        }
+        // Display-only high-tier printings (premium/full-art/gold/textured).
+        for (const [variantName, { treatment }] of Object.entries(SCRYDEX_DISPLAY_VARIANTS)) {
           emit(treatment, rawDollars(variantsByName.get(variantName)?.prices));
         }
       }

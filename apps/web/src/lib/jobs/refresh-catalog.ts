@@ -92,6 +92,7 @@ export async function refreshCatalog() {
               number: c.number,
               rarity: c.rarity,
               treatment: c.treatment,
+              displayOnly: c.displayOnly ?? false,
               imageUrl: c.imageUrl,
               externalIds: c.externalIds,
             })
@@ -100,6 +101,7 @@ export async function refreshCatalog() {
               set: {
                 name: c.name,
                 rarity: c.rarity,
+                displayOnly: c.displayOnly ?? false,
                 imageUrl: c.imageUrl,
                 // merge, not replace: another provider's ids must survive
                 externalIds: sql`${cards.externalIds} || ${JSON.stringify(c.externalIds)}::jsonb`,

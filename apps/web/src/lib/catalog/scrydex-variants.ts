@@ -51,6 +51,26 @@ export const SCRYDEX_TREATMENT_VARIANTS: Record<
   treasureRare: { treatment: "treasure", rarity: "treasure_rare" },
 };
 
+/**
+ * High-tier special printings that are NOT standard pack tiers but ARE genuine
+ * chases collectors want — premium/full-art/gold/textured parallels. Ingested as
+ * DISPLAY-ONLY cards: they appear in the card gallery and the collection, but the
+ * data layer routes them away from the EV card pool (like Magic's showcase
+ * prints), so a rate we don't model can't inflate a tier. Deliberately EXCLUDES
+ * true promos filed under the set — tournament/store-qualifier/magazine/event/
+ * anniversary stamps, best-selection & illustration-box alts, sound-loader, etc.
+ * — which aren't part of the set's own card list.
+ */
+export const SCRYDEX_DISPLAY_VARIANTS: Record<
+  string,
+  { treatment: string; rarity: string }
+> = {
+  premiumAltArt: { treatment: "premium_alt_art", rarity: "special" },
+  fullArt: { treatment: "full_art", rarity: "special" },
+  goldSpecialAltArt: { treatment: "gold_special", rarity: "special" },
+  texturedFoil: { treatment: "textured_foil", rarity: "special" },
+};
+
 /** The base rarity for a Scrydex rarity_code, or null if we don't model it. */
 export function scrydexBaseRarity(rarityCode: string | null | undefined): string | null {
   if (!rarityCode) return null;

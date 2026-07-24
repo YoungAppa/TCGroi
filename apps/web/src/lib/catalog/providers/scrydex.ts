@@ -5,6 +5,7 @@ import { getEnv } from "@/lib/env";
 import { fetchJson } from "../http";
 import {
   SCRYDEX_BASE_VARIANTS,
+  SCRYDEX_DISPLAY_VARIANTS,
   SCRYDEX_TREATMENT_VARIANTS,
   scrydexBaseRarity,
 } from "../scrydex-variants";
@@ -195,6 +196,14 @@ export class ScrydexCatalogAdapter implements CatalogAdapter {
           if (!v) continue;
           out.push(makeCard(card, treatment, rarity, firstImage(v.images) ?? firstImage(card.images), seen));
         }
+
+        // High-tier special printings — displayed (gallery + collection) but kept
+        // out of EV. Their rate isn't a modelled pack tier, so display-only.
+        for (const [variantName, { treatment, rarity }] of Object.entries(SCRYDEX_DISPLAY_VARIANTS)) {
+          const v = variantsByName.get(variantName);
+          if (!v) continue;
+          out.push(makeCard(card, treatment, rarity, firstImage(v.images) ?? firstImage(card.images), seen, true));
+        }
       }
 
       const total = res.total_count;
@@ -216,6 +225,7 @@ function makeCard(
   rarity: string,
   imageUrl: string | null,
   seen: Set<string>,
+  displayOnly = false,
 ): CatalogCard {
   const key = `${card.id}::${treatment}`;
   if (seen.has(key)) {
@@ -232,5 +242,6 @@ function makeCard(
     treatment,
     imageUrl,
     externalIds: { scrydex: `${card.id}:${treatment}` },
+    ...(displayOnly ? { displayOnly: true } : {}),
   };
 }

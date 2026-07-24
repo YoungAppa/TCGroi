@@ -28,6 +28,8 @@ export interface CatalogCard {
   treatment: string;
   imageUrl: string | null;
   externalIds: Record<string, string>;
+  /** Show in galleries/collection but keep out of EV. See schema.cards.displayOnly. */
+  displayOnly?: boolean;
 }
 
 export interface CatalogAdapter {
