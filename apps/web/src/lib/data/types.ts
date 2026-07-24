@@ -75,6 +75,30 @@ export interface ProductPayload {
     alternateEstimates: AlternateEstimate[];
   };
 
+  /**
+   * Present only for mixed-pack collection products (e.g. a Team Rocket's
+   * Moltres ex Ultra-Premium Collection). Each entry embeds one component set's
+   * own pull table + priced cards + how many of its packs this product holds.
+   * When set, EV is the blend Σ count·EV(pack of set) — the home-set `pullRates`
+   * above is ignored. Self-contained on purpose: the product page computes from
+   * a single payload, so the blend must not depend on sibling payloads.
+   */
+  componentPacks?: {
+    setCode: string;
+    setName: string;
+    count: number;
+    pullRates: {
+      version: number;
+      sampleSizePacks: number | null;
+      sourceUrl: string;
+      sourceNote: string;
+      confidence: Confidence;
+      slots: PullRateSlot[];
+      guaranteedSlots: { label: string; rarity: string; countPerPack: number }[];
+    };
+    cards: CardPriceData[];
+  }[];
+
   /** Every card in the set with per-source prices. The big part. */
   cards: CardPriceData[];
 }

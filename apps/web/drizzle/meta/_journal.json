@@ -36,6 +36,13 @@
       "when": 1784738954791,
       "tag": "0004_wakeful_blacklash",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1784876246838,
+      "tag": "0005_fancy_fenris",
+      "breakpoints": true
     }
   ]
 }

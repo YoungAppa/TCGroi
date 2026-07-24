@@ -172,6 +172,18 @@ export const sealedProducts = pgTable(
       .$type<string[]>()
       .notNull()
       .default(sql`'[]'::jsonb`),
+    /**
+     * Fixed multi-set pack breakdown for mixed-pack collection products (e.g. a
+     * Team Rocket's Moltres ex Ultra-Premium Collection: 18 packs drawn from a
+     * published 2/2/2/2/3/3/3 split across seven sets). When non-empty, the EV
+     * engine blends per-set per-pack EV by these counts instead of using this
+     * product's home-set pull table — the only honest way to rank a product
+     * whose packs are not all from one set. Empty for normal single-set boxes.
+     */
+    componentPacks: jsonb("component_packs")
+      .$type<{ setCode: string; count: number }[]>()
+      .notNull()
+      .default(sql`'[]'::jsonb`),
     externalIds: jsonb("external_ids")
       .$type<Record<string, string>>()
       .notNull()

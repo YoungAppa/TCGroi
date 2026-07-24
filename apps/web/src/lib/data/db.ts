@@ -38,6 +38,7 @@ export async function loadRankingsFromDb(): Promise<RankingsPayload> {
       manualMarketSource: sealedProducts.manualMarketSource,
       contentsNote: sealedProducts.contentsNote,
       guaranteedCardIds: sealedProducts.guaranteedCardIds,
+      componentPacks: sealedProducts.componentPacks,
       productImageUrl: sealedProducts.imageUrl,
       setId: sets.id,
       setCode: sets.code,
@@ -193,6 +194,33 @@ export async function loadRankingsFromDb(): Promise<RankingsPayload> {
     else cardsBySet.set(c.setId, [entry]);
   }
 
+  // Component-set lookup for blended products (mixed-pack collections). Each
+  // ranked set's own active pull table + priced cards, keyed by set code and
+  // deduped (a set shares one table across its products). Built from rows
+  // already in memory, so a blend costs no extra query — and every component a
+  // blended product references is guaranteed present, because load-data refuses
+  // to ingest a blend whose component sets aren't ranked.
+  type ComponentData = NonNullable<ProductPayload["componentPacks"]>[number];
+  const componentBySetCode = new Map<string, Omit<ComponentData, "count">>();
+  for (const r of productRows) {
+    if (componentBySetCode.has(r.setCode)) continue;
+    componentBySetCode.set(r.setCode, {
+      setCode: r.setCode,
+      setName: r.setName,
+      pullRates: {
+        version: r.prVersion,
+        sampleSizePacks:
+          r.prSample === 0 && r.prConfidence !== "placeholder" ? null : r.prSample,
+        sourceUrl: r.prSourceUrl,
+        sourceNote: r.prSourceNote,
+        confidence: r.prConfidence,
+        slots: r.prSlots,
+        guaranteedSlots: r.prGuaranteedSlots as ComponentData["pullRates"]["guaranteedSlots"],
+      },
+      cards: cardsBySet.get(r.setId) ?? [],
+    });
+  }
+
   const products: ProductPayload[] = productRows.map((p) => {
     // Live sealed source prices win; the hand-tracked figure is the labelled
     // fallback. Median across sources once more than one covers sealed.
@@ -229,6 +257,13 @@ export async function loadRankingsFromDb(): Promise<RankingsPayload> {
         : [];
     });
 
+    // Resolve this product's fixed pack breakdown (if any) to embedded
+    // component tables + cards, so the blend is self-contained in the payload.
+    const componentPacks = p.componentPacks.flatMap((cp) => {
+      const src = componentBySetCode.get(cp.setCode);
+      return src ? [{ ...src, count: cp.count }] : [];
+    });
+
     return {
       gameSlug: p.gameSlug as ProductPayload["gameSlug"],
       gameName: p.gameName,
@@ -261,6 +296,7 @@ export async function loadRankingsFromDb(): Promise<RankingsPayload> {
         guaranteedSlots: p.prGuaranteedSlots as ProductPayload["pullRates"]["guaranteedSlots"],
         alternateEstimates: p.prAlternates as unknown as AlternateEstimate[],
       },
+      ...(componentPacks.length > 0 ? { componentPacks } : {}),
       cards: [...ownCards, ...extraPromos],
     };
   });

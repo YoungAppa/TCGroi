@@ -457,6 +457,27 @@
       "msrpCents": 449
     },
     {
+      "setCode": "sv10",
+      "name": "Team Rocket's Moltres ex Ultra-Premium Collection (18 packs)",
+      "slug": "team-rockets-moltres-ex-ultra-premium-collection",
+      "type": "case",
+      "packsContained": 18,
+      "msrpCents": 11999,
+      "marketCents": 33273,
+      "marketAsOf": "2026-07-24",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-24",
+      "componentPacks": [
+        { "setCode": "sv10", "count": 2 },
+        { "setCode": "sv9", "count": 2 },
+        { "setCode": "sv5", "count": 2 },
+        { "setCode": "sv4", "count": 2 },
+        { "setCode": "sv3", "count": 3 },
+        { "setCode": "sv2", "count": 3 },
+        { "setCode": "sv1", "count": 3 }
+      ],
+      "contentsNote": "Packs are a fixed multi-set mix. Published breakdowns attribute 17 of the 18 packs — 2 Destined Rivals, 2 Journey Together, 2 Temporal Forces, 2 Paradox Rift, 3 Obsidian Flames, 3 Paldea Evolved, 3 Scarlet & Violet — and EV blends each set's own odds; the 18th pack isn't attributed to a set, so it's omitted. Also includes 3 Destined Rivals-stamped Team Rocket's Moltres ex promos (regular, full-art, special illustration rare), a playmat, deck box, coin, dice and markers — not modelled, so EV understates the product."
+    },
+    {
       "setCode": "me1",
       "name": "Booster Box (36 packs)",
       "slug": "booster-box",

@@ -274,6 +274,13 @@ const productFileSchema = z.object({
       promos: z
         .array(z.object({ externalId: z.string().min(1), note: z.string().optional() }))
         .default([]),
+      /**
+       * Fixed multi-set pack breakdown for mixed-pack collections. Each entry's
+       * setCode must be a ranked set (its own pull table drives the blend).
+       */
+      componentPacks: z
+        .array(z.object({ setCode: z.string().min(1), count: z.number().int().positive() }))
+        .default([]),
       contentsNote: z.string().optional(),
     }),
   ),
@@ -314,6 +321,30 @@ export async function loadSealedProducts(gameIdBySlug: Map<string, string>): Pro
         );
       }
 
+      // A blended product's every component set must be ingested AND carry an
+      // active pull table — the blend reads each set's own odds. A missing one
+      // would silently drop packs and understate EV, so fail loudly here.
+      for (const comp of p.componentPacks) {
+        const [compSet] = await db
+          .select({ id: sets.id })
+          .from(sets)
+          .where(and(eq(sets.gameId, gameId), eq(sets.code, comp.setCode)));
+        if (!compSet) {
+          throw new Error(
+            `data/products/${slug}.json: ${p.slug} component set ${comp.setCode} is not ingested.`,
+          );
+        }
+        const [compTable] = await db
+          .select({ id: pullRateTables.id })
+          .from(pullRateTables)
+          .where(and(eq(pullRateTables.setId, compSet.id), eq(pullRateTables.isActive, true)));
+        if (!compTable) {
+          throw new Error(
+            `data/products/${slug}.json: ${p.slug} component set ${comp.setCode} has no active pull table — it must be a ranked set.`,
+          );
+        }
+      }
+
       // Resolve promo external ids -> our card UUIDs. Loud on a miss: a
       // guaranteed card silently absent understates the product's EV.
       const guaranteedCardIds: string[] = [];
@@ -346,6 +377,7 @@ export async function loadSealedProducts(gameIdBySlug: Map<string, string>): Pro
           manualMarketSource: p.marketSource ?? null,
           contentsNote: p.contentsNote ?? null,
           guaranteedCardIds,
+          componentPacks: p.componentPacks,
         })
         .onConflictDoUpdate({
           target: [sealedProducts.setId, sealedProducts.slug],
@@ -359,6 +391,7 @@ export async function loadSealedProducts(gameIdBySlug: Map<string, string>): Pro
             manualMarketSource: p.marketSource ?? null,
             contentsNote: p.contentsNote ?? null,
             guaranteedCardIds,
+            componentPacks: p.componentPacks,
             updatedAt: new Date(),
           },
         });
