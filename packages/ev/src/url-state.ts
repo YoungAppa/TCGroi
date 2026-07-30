@@ -16,12 +16,22 @@ export interface FilterState {
   sources: string[];
   blend: BlendStrategy;
   graded: boolean;
+  /**
+   * Which price denominators to show — Retail (MSRP) and/or Current market.
+   * Both default on; picking one hides the other everywhere (rankings tiles,
+   * list columns, product page) and travels in the URL so a shared link keeps
+   * the choice. Never both-false (the UI snaps the last one back on).
+   */
+  showRetail: boolean;
+  showMarket: boolean;
 }
 
 export const DEFAULT_FILTER_STATE: FilterState = {
   sources: [],
   blend: "median",
   graded: false,
+  showRetail: true,
+  showMarket: true,
 };
 
 const BLENDS: readonly BlendStrategy[] = ["median", "mean", "min", "max"];
@@ -40,10 +50,17 @@ export function parseFilterState(params: URLSearchParams): FilterState {
     ? (blendRaw as BlendStrategy)
     : "median";
 
+  // `cols` names the single denominator to show; absent means both.
+  const cols = params.get("cols");
+  const showRetail = cols !== "market";
+  const showMarket = cols !== "retail";
+
   return {
     sources,
     blend,
     graded: params.get("mode") === "graded",
+    showRetail,
+    showMarket,
   };
 }
 
@@ -53,6 +70,10 @@ export function serializeFilterState(state: FilterState): string {
   if (state.sources.length > 0) params.set("src", state.sources.join(","));
   if (state.blend !== "median") params.set("blend", state.blend);
   if (state.graded) params.set("mode", "graded");
+  // Only a single-denominator choice is non-default; "both" (or an invalid
+  // both-off) serialises to nothing.
+  if (state.showRetail && !state.showMarket) params.set("cols", "retail");
+  else if (state.showMarket && !state.showRetail) params.set("cols", "market");
   const s = params.toString();
   return s ? `?${s}` : "";
 }

@@ -27,6 +27,37 @@ type SortKey =
 type Row = { payload: ProductPayload; c: ProductComputation };
 type ViewMode = "list" | "icons";
 
+/**
+ * Pokémon generation/era a set belongs to, derived from its code prefix. Used
+ * by the rankings generation filter. Non-Pokémon games return "" (no filter).
+ */
+function generationOf(p: ProductPayload): string {
+  if (p.gameSlug !== "pokemon") return "";
+  const c = p.setCode;
+  if (/^gem-pack/.test(c)) return "Gem Pack";
+  if (/^me/.test(c)) return "Mega Evolution";
+  if (/^(sv|rsv|zsv)/.test(c)) return "Scarlet & Violet";
+  if (/^swsh/.test(c)) return "Sword & Shield";
+  if (/^sm/.test(c)) return "Sun & Moon";
+  if (/^xy/.test(c)) return "XY";
+  if (/^bw/.test(c)) return "Black & White";
+  if (/^(dp|pl)/.test(c)) return "Diamond & Pearl / Platinum";
+  return "Other";
+}
+
+/** Generations newest→oldest, for a stable filter-dropdown order. */
+const GENERATION_ORDER = [
+  "Mega Evolution",
+  "Scarlet & Violet",
+  "Sword & Shield",
+  "Sun & Moon",
+  "XY",
+  "Black & White",
+  "Diamond & Pearl / Platinum",
+  "Gem Pack",
+  "Other",
+];
+
 /** The rarity whose per-box probability headlines the rankings, per game. */
 const HEADLINE_RARITY: Record<string, string[]> = {
   pokemon: ["special_illustration_rare"],
@@ -94,14 +125,20 @@ export function RankingsTable({
   // List remains a click away for the data-dense comparison.
   const [userView, setUserView] = useState<ViewMode | null>(null);
   const view: ViewMode = userView ?? "icons";
-  // Which price-column groups the List view shows. Independent of the EV source
-  // selection above — hiding a column never changes how EV is computed.
-  const [showRetail, setShowRetail] = useState(true);
-  const [showMarket, setShowMarket] = useState(true);
+  // Which price denominators to show. Lives in the URL FilterState so the choice
+  // hides the other everywhere (tiles, list columns, product page) and travels
+  // in shared links. Never both-off — the toggles snap the last one back on.
+  const retailOn = state.showRetail;
+  const marketOn = state.showMarket;
+  const toggleRetail = () =>
+    setState({ ...state, showRetail: !retailOn, showMarket: !retailOn ? state.showMarket : true });
+  const toggleMarket = () =>
+    setState({ ...state, showMarket: !marketOn, showRetail: !marketOn ? state.showRetail : true });
   // Search + filters.
   const [query, setQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [confFilter, setConfFilter] = useState<string>("all");
+  const [genFilter, setGenFilter] = useState<string>("all");
   const [positiveOnly, setPositiveOnly] = useState(false);
 
   const availableIds = useMemo(() => availableSources.map((s) => s.id), [availableSources]);
@@ -118,6 +155,7 @@ export function RankingsTable({
       .filter((p) => p.pullRates.confidence !== "placeholder")
       .filter((p) => confFilter === "all" || p.pullRates.confidence === confFilter)
       .filter((p) => typeFilter === "all" || p.productType === typeFilter)
+      .filter((p) => genFilter === "all" || generationOf(p) === genFilter)
       .filter((p) => !q || `${p.setName} ${p.productName}`.toLowerCase().includes(q))
       .map((payload) => ({ payload, c: computeProduct(payload, state, availableIds) }))
       .filter((r) => {
@@ -125,19 +163,19 @@ export function RankingsTable({
         // "Worth opening": either denominator's ROI is non-negative.
         return (r.c.roiRetail ?? -1) >= 0 || (r.c.roiMarket ?? -1) >= 0;
       });
-  }, [products, state, availableIds, game, lang, confFilter, typeFilter, query, positiveOnly]);
+  }, [products, state, availableIds, game, lang, confFilter, typeFilter, genFilter, query, positiveOnly]);
 
   const sorted = useMemo(() => {
     // The dropdown's "Highest/Lowest ROI" sorts by whichever price column is
     // active: Retail's ROI when only Retail is shown, Market's otherwise. The
     // explicit per-column ROI headers (roiRetail/roiMarket) stay literal.
-    const marketColumnOn = showMarket || !showRetail;
+    const marketColumnOn = state.showMarket || !state.showRetail;
     const metric: (r: Row) => number =
       sortKey === "roi"
         ? (r) => (marketColumnOn ? r.c.roiMarket : r.c.roiRetail) ?? -Infinity
         : SORTS[sortKey];
     return [...rows].sort((a, b) => (metric(b) - metric(a)) * (sortDesc ? 1 : -1));
-  }, [rows, sortKey, sortDesc, showMarket, showRetail]);
+  }, [rows, sortKey, sortDesc, state.showMarket, state.showRetail]);
 
   function clickSort(key: SortKey) {
     if (key === sortKey) setSortDesc((d) => !d);
@@ -153,15 +191,26 @@ export function RankingsTable({
   // the filter must only offer the types the selected game actually has.
   const productTypes = [...new Set(products.filter((p) => p.gameSlug === game).map((p) => p.productType))];
   const anyManualMarket = rows.some((r) => r.payload.market.isManual);
-  // At least one price column must remain — snap the other on if both go off.
-  const retailOn = showRetail || !showMarket;
-  const marketOn = showMarket || !showRetail;
+  // Generation options for the selected game, newest era first (Pokémon only —
+  // One Piece/Magic use set codes without a familiar generation vocabulary).
+  const generations = useMemo(() => {
+    if (game !== "pokemon") return [];
+    const present = new Set(
+      products.filter((p) => p.gameSlug === game).map((p) => generationOf(p)),
+    );
+    return GENERATION_ORDER.filter((g) => present.has(g));
+  }, [products, game]);
   const filtersActive =
-    query.trim() !== "" || typeFilter !== "all" || confFilter !== "all" || positiveOnly;
+    query.trim() !== "" ||
+    typeFilter !== "all" ||
+    confFilter !== "all" ||
+    genFilter !== "all" ||
+    positiveOnly;
   function clearFilters() {
     setQuery("");
     setTypeFilter("all");
     setConfFilter("all");
+    setGenFilter("all");
     setPositiveOnly(false);
   }
 
@@ -173,7 +222,8 @@ export function RankingsTable({
             key={row.payload.productId}
             row={row}
             withFilter={withFilter}
-            marketFirst={marketOn}
+            retailOn={retailOn}
+            marketOn={marketOn}
           />
         ))}
       </div>
@@ -313,9 +363,10 @@ export function RankingsTable({
                 key={g}
                 onClick={() => {
                   setGame(g);
-                  // A type filter from the other game (e.g. ETB) would hide
-                  // everything here — reset it when the game changes.
+                  // A type/generation filter from the other game would hide
+                  // everything here — reset them when the game changes.
                   setTypeFilter("all");
+                  setGenFilter("all");
                 }}
                 aria-pressed={on}
                 className={`-mb-px rounded-t-md border-b-2 px-4 py-2 text-sm font-semibold transition-colors ${
@@ -351,10 +402,10 @@ export function RankingsTable({
             onChange={setState}
             gradedAvailable={false /* wired in Phase 6 when a graded source exists */}
           />
-          {/* Column toggles: which price columns the List view shows. */}
-          <span className="ml-1 text-xs uppercase tracking-wide text-muted">Columns</span>
-          <ColumnPill label="Retail (MSRP)" on={retailOn} onClick={() => setShowRetail((v) => !v)} />
-          <ColumnPill label="Market" on={marketOn} onClick={() => setShowMarket((v) => !v)} />
+          {/* Price toggles: which denominator to show (hides the other page-wide). */}
+          <span className="ml-1 text-xs uppercase tracking-wide text-muted">Show</span>
+          <ColumnPill label="Retail (MSRP)" on={retailOn} onClick={toggleRetail} />
+          <ColumnPill label="Market" on={marketOn} onClick={toggleMarket} />
         </div>
         <div className="flex items-center gap-3">
           {/* List / Icon view toggle — a calm segmented control */}
@@ -425,6 +476,21 @@ export function RankingsTable({
             </option>
           ))}
         </select>
+        {generations.length > 1 && (
+          <select
+            value={genFilter}
+            onChange={(e) => setGenFilter(e.target.value)}
+            className="rounded-md bg-surface-raised px-2.5 py-1.5 text-foreground focus:outline-none focus:ring-1 focus:ring-accent/40"
+            aria-label="Filter by generation"
+          >
+            <option value="all">All generations</option>
+            {generations.map((g) => (
+              <option key={g} value={g}>
+                {g}
+              </option>
+            ))}
+          </select>
+        )}
         <select
           value={confFilter}
           onChange={(e) => setConfFilter(e.target.value)}
@@ -506,12 +572,14 @@ const TYPE_LABEL: Record<ProductPayload["productType"], string> = {
 function IconTile({
   row,
   withFilter,
-  marketFirst,
+  retailOn,
+  marketOn,
 }: {
   row: Row;
   withFilter: (path: string) => string;
-  /** Which column the user has active — drives the price + ROI shown. */
-  marketFirst: boolean;
+  /** Which denominators the user has active — hides the other, drives ROI. */
+  retailOn: boolean;
+  marketOn: boolean;
 }) {
   const { payload, c } = row;
   const chase = c.ev.chase
@@ -523,12 +591,12 @@ function IconTile({
     }))
     .filter((ch) => ch.img);
 
-  // The tile shows retail, market and average-unbox (EV) side by side. The
-  // Retail/Market column toggle decides which price is emphasised and which
-  // ROI drives the headline, falling back to the other when one has no price.
+  // The tile shows the selected denominator(s) plus average-unbox (EV). With
+  // both on, market leads (the honest verdict) and retail sits alongside; with
+  // one hidden, only the chosen price shows and its ROI drives the headline.
   const marketPrice = payload.market.priceCents;
   const retailPrice = payload.msrpCents;
-  const useMarket = marketFirst ? marketPrice !== null : retailPrice === null;
+  const useMarket = marketOn && (marketPrice !== null || !retailOn);
   const roi = useMarket ? c.roiMarket : c.roiRetail;
   const roiColorClass =
     roi === null
@@ -597,19 +665,27 @@ function IconTile({
         <div className="truncate text-xs text-muted" title={payload.productName}>
           {payload.productName}
         </div>
-        <div className="tabular mt-2 grid grid-cols-3 gap-1 border-t border-border pt-2">
-          <div title="Retail (MSRP)">
-            <div className="text-[9px] uppercase tracking-wide text-muted">Retail</div>
-            <div className={`text-[13px] ${useMarket ? "text-muted" : "font-semibold text-foreground"}`}>
-              {retailPrice !== null ? formatCents(retailPrice) : "—"}
+        <div
+          className={`tabular mt-2 grid gap-1 border-t border-border pt-2 ${
+            retailOn && marketOn ? "grid-cols-3" : "grid-cols-2"
+          }`}
+        >
+          {retailOn && (
+            <div title="Retail (MSRP)">
+              <div className="text-[9px] uppercase tracking-wide text-muted">Retail</div>
+              <div className={`text-[13px] ${useMarket ? "text-muted" : "font-semibold text-foreground"}`}>
+                {retailPrice !== null ? formatCents(retailPrice) : "—"}
+              </div>
             </div>
-          </div>
-          <div title="Current market price">
-            <div className="text-[9px] uppercase tracking-wide text-muted">Market</div>
-            <div className={`text-[13px] ${useMarket ? "font-semibold text-foreground" : "text-muted"}`}>
-              {marketPrice !== null ? formatCents(marketPrice) : "—"}
+          )}
+          {marketOn && (
+            <div title="Current market price">
+              <div className="text-[9px] uppercase tracking-wide text-muted">Market</div>
+              <div className={`text-[13px] ${useMarket ? "font-semibold text-foreground" : "text-muted"}`}>
+                {marketPrice !== null ? formatCents(marketPrice) : "—"}
+              </div>
             </div>
-          </div>
+          )}
           <div className="text-right" title="Average value if you open it (expected value)">
             <div className="text-[9px] uppercase tracking-wide text-muted">Avg. unbox</div>
             <div className={`text-[13px] font-semibold ${roiColorClass}`}>

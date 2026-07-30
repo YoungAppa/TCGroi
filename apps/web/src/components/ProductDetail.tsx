@@ -96,8 +96,14 @@ export function ProductDetail({
         gradedAvailable={false}
       />
 
-      {/* ---- the split: EV once, two denominators ---- */}
-      <div className="grid gap-3 lg:grid-cols-[1fr_1fr_1fr]">
+      {/* ---- the split: EV once, the selected denominator(s) ---- */}
+      <div
+        className={`grid gap-3 ${
+          state.showRetail && state.showMarket
+            ? "lg:grid-cols-[1fr_1fr_1fr]"
+            : "lg:grid-cols-[1fr_1fr]"
+        }`}
+      >
         <div className="rounded-xl border border-border bg-surface p-4">
           <div className="text-xs uppercase tracking-wide text-muted">Expected value</div>
           <div className="tabular mt-1 text-2xl font-semibold">
@@ -110,49 +116,53 @@ export function ProductDetail({
           </div>
         </div>
 
-        <div className="rounded-xl border border-border bg-surface p-4">
-          <div className="text-xs uppercase tracking-wide text-muted">Retail (MSRP)</div>
-          <div className="tabular mt-1 flex items-baseline gap-3">
-            <span className="text-2xl font-semibold">
-              {payload.msrpCents !== null ? formatCents(payload.msrpCents) : "—"}
-            </span>
-            <span className="text-xl">
-              <RoiCell roi={roiRetail} />
-            </span>
-          </div>
-          <div className="mt-1 text-xs text-muted">
-            if you can find it at retail price
-          </div>
-        </div>
-
-        {/* Current market is the honest verdict — tie it to the home hero with
-            the same foil sheen + accent border so the two pages read as one. */}
-        <div className="relative overflow-hidden rounded-xl border border-accent/30 bg-surface p-4">
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0 bg-[radial-gradient(120%_150%_at_100%_0%,rgba(234,179,8,0.10),transparent_55%)]"
-          />
-          <div className="relative">
-            <div className="text-xs uppercase tracking-wide text-muted">Current market</div>
+        {state.showRetail && (
+          <div className="rounded-xl border border-border bg-surface p-4">
+            <div className="text-xs uppercase tracking-wide text-muted">Retail (MSRP)</div>
             <div className="tabular mt-1 flex items-baseline gap-3">
               <span className="text-2xl font-semibold">
-                {payload.market.priceCents !== null
-                  ? formatCents(payload.market.priceCents)
-                  : "—"}
+                {payload.msrpCents !== null ? formatCents(payload.msrpCents) : "—"}
               </span>
               <span className="text-xl">
-                <RoiCell roi={roiMarket} />
+                <RoiCell roi={roiRetail} />
               </span>
             </div>
             <div className="mt-1 text-xs text-muted">
-              {payload.market.priceCents === null
-                ? "no tracked market price yet"
-                : payload.market.isManual
-                  ? `hand-tracked ${payload.market.asOf ?? ""} — ${payload.market.source ?? ""}`
-                  : "live market price"}
+              if you can find it at retail price
             </div>
           </div>
-        </div>
+        )}
+
+        {/* Current market is the honest verdict — tie it to the home hero with
+            the same foil sheen + accent border so the two pages read as one. */}
+        {state.showMarket && (
+          <div className="relative overflow-hidden rounded-xl border border-accent/30 bg-surface p-4">
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-0 bg-[radial-gradient(120%_150%_at_100%_0%,rgba(234,179,8,0.10),transparent_55%)]"
+            />
+            <div className="relative">
+              <div className="text-xs uppercase tracking-wide text-muted">Current market</div>
+              <div className="tabular mt-1 flex items-baseline gap-3">
+                <span className="text-2xl font-semibold">
+                  {payload.market.priceCents !== null
+                    ? formatCents(payload.market.priceCents)
+                    : "—"}
+                </span>
+                <span className="text-xl">
+                  <RoiCell roi={roiMarket} />
+                </span>
+              </div>
+              <div className="mt-1 text-xs text-muted">
+                {payload.market.priceCents === null
+                  ? "no tracked market price yet"
+                  : payload.market.isManual
+                    ? `hand-tracked ${payload.market.asOf ?? ""} — ${payload.market.source ?? ""}`
+                    : "live market price"}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* ---- guaranteed promos sidecar ---- */}

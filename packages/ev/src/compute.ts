@@ -225,8 +225,8 @@ export function computeEv(input: EvInput, opts: EvOptions): EvResult {
  * violate this — short prints exist — but no public dataset quantifies it, so
  * uniform is the honest default and /methodology states it.
  */
-const CHASE_MIN_CENTS = 1000; // $10 — the floor for "a card worth chasing".
-const CHASE_MAX = 60;
+const CHASE_MIN_CENTS = 500; // $5 — the floor for "a card worth chasing".
+const CHASE_MAX = 90;
 
 function buildChaseTable(
   cards: CardPriceData[],

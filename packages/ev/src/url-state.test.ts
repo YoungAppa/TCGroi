@@ -19,7 +19,14 @@ describe("parseFilterState", () => {
       sources: ["a", "b"],
       blend: "mean",
       graded: true,
+      showRetail: true,
+      showMarket: true,
     });
+  });
+
+  it("parses a single-denominator choice from cols", () => {
+    expect(parse("cols=market")).toMatchObject({ showRetail: false, showMarket: true });
+    expect(parse("cols=retail")).toMatchObject({ showRetail: true, showMarket: false });
   });
 
   it("falls back to median for a nonsense blend rather than crashing the page", () => {
@@ -42,17 +49,44 @@ describe("serializeFilterState", () => {
   });
 
   it("round-trips through parse", () => {
-    const state = { sources: ["a", "b"], blend: "max" as const, graded: true };
+    const state = {
+      sources: ["a", "b"],
+      blend: "max" as const,
+      graded: true,
+      showRetail: true,
+      showMarket: false,
+    };
     expect(parse(serializeFilterState(state).slice(1))).toEqual(state);
   });
 
   it("omits each default individually", () => {
-    expect(serializeFilterState({ sources: ["a"], blend: "median", graded: false })).toBe(
-      "?src=a",
-    );
-    expect(serializeFilterState({ sources: [], blend: "mean", graded: false })).toBe(
-      "?blend=mean",
-    );
+    expect(
+      serializeFilterState({
+        sources: ["a"],
+        blend: "median",
+        graded: false,
+        showRetail: true,
+        showMarket: true,
+      }),
+    ).toBe("?src=a");
+    expect(
+      serializeFilterState({
+        sources: [],
+        blend: "mean",
+        graded: false,
+        showRetail: true,
+        showMarket: true,
+      }),
+    ).toBe("?blend=mean");
+  });
+
+  it("serialises a single-denominator choice to cols", () => {
+    expect(
+      serializeFilterState({ ...DEFAULT_FILTER_STATE, showRetail: false, showMarket: true }),
+    ).toBe("?cols=market");
+    expect(
+      serializeFilterState({ ...DEFAULT_FILTER_STATE, showRetail: true, showMarket: false }),
+    ).toBe("?cols=retail");
   });
 });
 
