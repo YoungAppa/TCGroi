@@ -1,0 +1,19 @@
+{
+  "game": "pokemon",
+  "setCode": "bw2",
+  "version": 1,
+  "sampleSizePacks": null,
+  "sourceUrl": "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg-part-two",
+  "sourceNote": "Emerging Powers: Black & White pre-EX aggregate model, confidence LOW. The 2011 base-era sets had no Pokémon-EX; the only chases are the full-art Ultra Rares (~1:20 packs) and the odd secret rare (~1:72). ultra_rare (Rare Ultra full arts) ~0.05/pack, hyper_rare (Rare Secret) ~0.014/pack — a thin chase pool. PRICE CAVEAT: sealed BW-era boxes trade in a very thin, volatile, ask-skewed vintage market; the PriceCharting box figure is indicative, not a firm transaction price.",
+  "confidence": "low",
+  "slots": [
+    {
+      "rarity": "ultra_rare",
+      "perPackProbability": 0.05
+    }
+  ],
+  "alternateEstimates": [],
+  "guaranteedSlots": [],
+  "boxGuarantees": [],
+  "showWhenPlaceholder": false
+}

@@ -1,0 +1,23 @@
+{
+  "game": "pokemon",
+  "setCode": "bw4",
+  "version": 1,
+  "sampleSizePacks": null,
+  "sourceUrl": "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg-part-two",
+  "sourceNote": "Next Destinies: Black & White EX-era aggregate model, confidence LOW. BW's Pokémon-EX (from Next Destinies on) pulled at ~1:6-8 packs with full-art UR ~1:12 and secret rare ~1:72 (community EX-era studies). Folded: ultra_rare (Rare Holo EX + Rare Ultra full arts) ~0.25/pack, hyper_rare (Rare Secret) ~0.014/pack. PRICE CAVEAT: sealed BW-era boxes trade in a very thin, volatile, ask-skewed vintage market; the PriceCharting box figure is indicative, not a firm transaction price. ROI is deeply negative across the whole plausible range.",
+  "confidence": "low",
+  "slots": [
+    {
+      "rarity": "ultra_rare",
+      "perPackProbability": 0.25
+    },
+    {
+      "rarity": "hyper_rare",
+      "perPackProbability": 0.014
+    }
+  ],
+  "alternateEstimates": [],
+  "guaranteedSlots": [],
+  "boxGuarantees": [],
+  "showWhenPlaceholder": false
+}
