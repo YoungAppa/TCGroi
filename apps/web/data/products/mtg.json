@@ -1212,6 +1212,18 @@
       "marketAsOf": "2026-07-23",
       "marketSource": "PriceCharting sealed (Booster Box/Pack [Collector] loose), 2026-07-23",
       "contentsNote": "1 Collector Booster, ~15 cards."
+    },
+    {
+      "setCode": "ltr",
+      "name": "Draft Booster Box (36 packs)",
+      "slug": "booster-box",
+      "type": "booster_box",
+      "packsContained": 36,
+      "msrpCents": null,
+      "marketCents": 40501,
+      "marketAsOf": "2026-07-23",
+      "marketSource": "PriceCharting sealed (Booster Box [Draft] loose), 2026-07-23",
+      "contentsNote": "36 Draft Boosters. One of the rare sealed products with EV near/above cost — The One Ring, Orcish Bowmasters and strong uncommons keep singles high. Single-pack ROI is omitted: loose-pack prices are unreliable for this set."
     }
   ]
 }
