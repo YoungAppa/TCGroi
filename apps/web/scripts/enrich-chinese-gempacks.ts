@@ -70,12 +70,19 @@ function parseCard(product: string): { name: string; number: string; treatment: 
 
 const mikResponse = z.object({
   data: z.object({
-    cards: z.array(z.object({ cardIndex: z.string(), cardName: z.string().nullish() })),
+    cards: z.array(
+      z.object({ cardIndex: z.string(), cardName: z.string().nullish(), rarity: z.string().nullish() }),
+    ),
   }),
 });
 
-/** Fetch tcg.mik.moe's full card list for a set: normalised number -> cardIndex. */
-async function fetchMikIndex(mikId: string): Promise<Map<string, string>> {
+/**
+ * Fetch tcg.mik.moe's full card list: normalised number -> {cardIndex, rarity}.
+ * rarity is the OFFICIAL Chinese star grade (●, ◆, ★, ★★, ★★★) — the ★★★ set is
+ * the true three-star chase pool the disclosed odd applies to (more reliable than
+ * inferring it from price bands).
+ */
+async function fetchMikIndex(mikId: string): Promise<Map<string, { cardIndex: string; rarity: string | null }>> {
   const res = await fetch(`${MIK_BASE}/api/v3/card/product-detail`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -83,8 +90,8 @@ async function fetchMikIndex(mikId: string): Promise<Map<string, string>> {
   });
   if (!res.ok) throw new Error(`tcg.mik.moe ${mikId}: HTTP ${res.status}`);
   const { data } = mikResponse.parse(await res.json());
-  const map = new Map<string, string>();
-  for (const c of data.cards) map.set(norm(c.cardIndex), c.cardIndex);
+  const map = new Map<string, { cardIndex: string; rarity: string | null }>();
+  for (const c of data.cards) map.set(norm(c.cardIndex), { cardIndex: c.cardIndex, rarity: c.rarity ?? null });
   return map;
 }
 
@@ -145,23 +152,33 @@ async function main() {
     const unique = [...byKey.values()];
 
     let withImage = 0;
+    let withRarity = 0;
     const values = unique.map((r) => {
-      const cardIndex = mikIndex.get(norm(r.number));
-      const imageUrl = cardIndex ? `${MIK_BASE}/static/img/${mikId}/${cardIndex}.png` : null;
+      const mik = mikIndex.get(norm(r.number));
+      const imageUrl = mik ? `${MIK_BASE}/static/img/${mikId}/${mik.cardIndex}.png` : null;
       if (imageUrl) withImage++;
-      return { setId: setRow.id, name: r.name, number: r.number, treatment: r.treatment, imageUrl };
+      // Persist the official star grade so the chase tagging reads it (not price).
+      const externalIds: Record<string, string> = mik?.rarity ? { mik_rarity: mik.rarity } : {};
+      if (mik?.rarity) withRarity++;
+      return { setId: setRow.id, name: r.name, number: r.number, treatment: r.treatment, imageUrl, externalIds };
     });
 
-    // Upsert cards: insert the missing (sub-$1) ones, and set imageUrl on all.
-    // Crucially, DO NOT touch rarity — the cn_chase tags must survive.
+    // Upsert cards: insert the missing (sub-$1) ones; set imageUrl + merge the
+    // star rarity into externalIds on all. DO NOT touch `rarity` — the cn_chase
+    // tags (set by tag-gempack-chase) must survive a re-run.
     const inserted = await db
       .insert(cards)
-      .values(values.map((v) => ({ ...v, rarity: "unknown", externalIds: {} })))
+      .values(values.map((v) => ({ ...v, rarity: "unknown" })))
       .onConflictDoUpdate({
         target: [cards.setId, cards.number, cards.treatment],
-        set: { imageUrl: sql`excluded.image_url`, updatedAt: new Date() },
+        set: {
+          imageUrl: sql`excluded.image_url`,
+          externalIds: sql`${cards.externalIds} || excluded.external_ids`,
+          updatedAt: new Date(),
+        },
       })
       .returning({ id: cards.id, number: cards.number, treatment: cards.treatment });
+    void withRarity;
 
     // Prices (idempotent): every card gets its PriceCharting market price.
     const idByKey = new Map(inserted.map((r) => [`${r.number}|${r.treatment}`, r.id]));
