@@ -34,12 +34,13 @@ export function effectiveCardValue(
   }
 
   if (opts.graded && raw >= opts.grading.gradingMinValueCents) {
-    const psa10 = card.psa10
-      ? blendPrices(card.psa10, opts.selectedSources, opts.blend)
-      : null;
-    const psa9 = card.psa9
-      ? blendPrices(card.psa9, opts.selectedSources, opts.blend)
-      : null;
+    // Graded (PSA 9/10) prices come from a graded-only source that is
+    // deliberately NOT one of the toggleable raw-source pills — so blend them
+    // over their OWN sources, not opts.selectedSources (which are raw). Blending
+    // over the raw sources here always returned null, which is why graded mode
+    // silently fell back to raw before the toggle was wired up.
+    const psa10 = card.psa10 ? blendPrices(card.psa10, Object.keys(card.psa10), opts.blend) : null;
+    const psa9 = card.psa9 ? blendPrices(card.psa9, Object.keys(card.psa9), opts.blend) : null;
 
     // Both legs are required: half the formula is not an estimate worth
     // showing. When graded data is absent the card just sells raw.

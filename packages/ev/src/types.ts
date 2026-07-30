@@ -108,8 +108,14 @@ export interface GradingAssumptions {
 export const DEFAULT_GRADING: GradingAssumptions = {
   gemRate: 0.45,
   grade9Rate: 0.35,
-  gradingFeeCents: 1900,
-  gradingMinValueCents: 2000,
+  // PSA paused its cheap "Value" tiers under a huge backlog (see fees.ts), so the
+  // cheapest service anyone can actually submit to is Regular at $79.99. A flat
+  // fee understates PSA's premium tiers for five-figure cards, but there the fee
+  // is a rounding error against the graded value; where the fee matters (mid
+  // chases) $79.99 is the real floor. Was $19 — a paused price you can't buy.
+  gradingFeeCents: 7999,
+  // Below $100 raw, grading is never worth the $79.99 fee + risk — sell it raw.
+  gradingMinValueCents: 10000,
 };
 
 export interface EvOptions {

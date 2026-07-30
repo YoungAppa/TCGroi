@@ -68,7 +68,13 @@ describe("effectiveCardValue — bulk floor", () => {
 });
 
 describe("effectiveCardValue — graded mode", () => {
-  const gradedOpts = opts({ graded: true });
+  // Pin explicit grading assumptions so these formula tests don't move when the
+  // default fee/threshold policy changes (DEFAULT_GRADING is a policy choice,
+  // tested separately from the arithmetic here).
+  const gradedOpts = opts({
+    graded: true,
+    grading: { gemRate: 0.45, grade9Rate: 0.35, gradingFeeCents: 1900, gradingMinValueCents: 2000 },
+  });
 
   it("replaces raw with the graded expectation above the min value", () => {
     // 10000*0.45 + 6000*0.35 - 1900 = 4500 + 2100 - 1900 = 4700
@@ -147,9 +153,34 @@ describe("effectiveCardValue — graded mode", () => {
         psa10: { a: 10000, b: 12000 },
         psa9: { a: 4000, b: 6000 },
       }),
-      opts({ graded: true, selectedSources: ["a", "b"], blend: "mean" }),
+      opts({
+        graded: true,
+        selectedSources: ["a", "b"],
+        blend: "mean",
+        grading: { gemRate: 0.45, grade9Rate: 0.35, gradingFeeCents: 1900, gradingMinValueCents: 2000 },
+      }),
     );
     expect(r).toEqual({ valueCents: 4800, isBulk: false, isGraded: true });
+  });
+
+  it("reads graded prices from their own source, not the selected raw sources", () => {
+    // Real graded prices come from a graded-only source (e.g. pokemonpricetracker)
+    // that is NOT one of the selectable raw-source pills. Blending them over the
+    // raw selection returned null and silently fell back to raw — this pins the fix.
+    // 20000*0.45 + 12000*0.35 - 1900 = 9000 + 4200 - 1900 = 11300
+    const r = effectiveCardValue(
+      card({
+        raw: { tcgplayer: 5000 },
+        psa10: { pokemonpricetracker: 20000 },
+        psa9: { pokemonpricetracker: 12000 },
+      }),
+      opts({
+        graded: true,
+        selectedSources: ["tcgplayer"],
+        grading: { gemRate: 0.45, grade9Rate: 0.35, gradingFeeCents: 1900, gradingMinValueCents: 2000 },
+      }),
+    );
+    expect(r).toEqual({ valueCents: 11300, isBulk: false, isGraded: true });
   });
 
   it("applies the bulk floor before considering grading", () => {

@@ -46,6 +46,12 @@ export function ProductDetail({
 }) {
   const { state, setState, withFilter } = useFilterState();
   const availableIds = useMemo(() => availableSources.map((s) => s.id), [availableSources]);
+  // The graded toggle is offered only when at least one EV-pool card actually
+  // carries both PSA legs — otherwise the mode would be a no-op here.
+  const gradedAvailable = useMemo(
+    () => payload.cards.some((c) => c.psa9 && c.psa10),
+    [payload.cards],
+  );
 
   const { ev, roiRetail, roiMarket } = useMemo(
     () => computeProduct(payload, state, availableIds),
@@ -93,7 +99,7 @@ export function ProductDetail({
         available={availableSources}
         state={state}
         onChange={setState}
-        gradedAvailable={false}
+        gradedAvailable={gradedAvailable}
       />
 
       {/* ---- the split: EV once, the selected denominator(s) ---- */}

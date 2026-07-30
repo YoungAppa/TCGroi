@@ -144,6 +144,11 @@ export function RankingsTable({
   const [positiveOnly, setPositiveOnly] = useState(false);
 
   const availableIds = useMemo(() => availableSources.map((s) => s.id), [availableSources]);
+  // Offer the graded toggle once any product has a card with both PSA legs.
+  const gradedAvailable = useMemo(
+    () => products.some((p) => p.cards.some((c) => c.psa9 && c.psa10)),
+    [products],
+  );
 
   const rows: Row[] = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -402,7 +407,7 @@ export function RankingsTable({
             available={availableSources}
             state={state}
             onChange={setState}
-            gradedAvailable={false /* wired in Phase 6 when a graded source exists */}
+            gradedAvailable={gradedAvailable}
           />
           {/* Price toggles: which denominator to show (hides the other page-wide). */}
           <span className="ml-1 text-xs uppercase tracking-wide text-muted">Show</span>
