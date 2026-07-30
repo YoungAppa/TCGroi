@@ -62,6 +62,10 @@ const POKEMON_RARITY_MAP: Record<string, string> = {
   "amazing rare": "ultra_rare",
   "radiant rare": "double_rare",
   "trainer gallery rare holo": "illustration_rare",
+  // Sun & Moon ◇ Prism Star: a distinct low-value rarity, not a chase tier.
+  // Folded into plain "rare" so it stays out of every pull-rate slot (excluded
+  // from EV, like commons) rather than being dropped as unknown.
+  "rare prism star": "rare",
   // Own tier, never in a pull-rate slot — see the note in POKEMON_RARITIES.
   promo: "promo",
 };
