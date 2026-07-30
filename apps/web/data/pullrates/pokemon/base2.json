@@ -1,0 +1,19 @@
+{
+  "game": "pokemon",
+  "setCode": "base2",
+  "version": 1,
+  "sampleSizePacks": null,
+  "sourceUrl": "https://www.pricecharting.com/",
+  "sourceNote": "Jungle: WOTC vintage (1999–2002) model, confidence LOW. A pack of this era is 11 cards with a single rare slot; the only chase is the HOLO rare (Charizard, Lugia, …), which appears roughly 1 in 3 packs — so ultra_rare (Rare Holo) is set to ~0.33/pack, non-holo rares and below are bulk. Card + box prices are PriceCharting's UNLIMITED-print market (1st Edition / Shadowless trade far higher and are NOT modelled here). PRICE CAVEAT: sealed vintage boxes trade in an extremely thin, ask-skewed collector market — the box figure is indicative, not a firm transaction price. ROI is deeply negative across the whole plausible range.",
+  "confidence": "low",
+  "slots": [
+    {
+      "rarity": "ultra_rare",
+      "perPackProbability": 0.33
+    }
+  ],
+  "alternateEstimates": [],
+  "guaranteedSlots": [],
+  "boxGuarantees": [],
+  "showWhenPlaceholder": false
+}
