@@ -54,4 +54,18 @@ export async function tagGemPackChase(db: ReturnType<typeof getDb>): Promise<voi
     update cards set rarity = 'cn_chase', display_only = true
     where set_id in ${gemSetIds} and ${threeStar} and ${dearerThanSecret}
   `);
+  // Also surface the valuable lower-star special-art holos (★★ / ★ worth ≥ $5)
+  // as display-only. They aren't part of the disclosed ★★★ odd, so they stay OUT
+  // of EV — but they're real hits a buyer cares about, so showing them in the
+  // gallery answers "where are the rest of the good cards?" without distorting
+  // the model. (These carry rarity 'unknown' otherwise, i.e. show up nowhere.)
+  const DISPLAY_FLOOR_CENTS = 500; // $5, matching the chase-gallery floor
+  await db.execute(sql`
+    update cards set rarity = 'cn_chase', display_only = true
+    where set_id in ${gemSetIds}
+      and cards.external_ids->>'mik_rarity' in ('★★', '★')
+      and exists (
+        select 1 from latest_prices lp
+        where lp.card_id = cards.id and lp.kind = 'raw' and lp.price_cents >= ${DISPLAY_FLOOR_CENTS})
+  `);
 }

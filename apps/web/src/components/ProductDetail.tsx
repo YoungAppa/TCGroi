@@ -390,7 +390,7 @@ export function ProductDetail({
         };
         const sorted = [...payload.displayCards]
           .sort((a, b) => val(b.raw) - val(a.raw))
-          .slice(0, 15);
+          .slice(0, 60);
         return (
           <section className="space-y-3">
             <div className="flex flex-wrap items-baseline justify-between gap-2">
