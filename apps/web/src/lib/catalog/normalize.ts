@@ -70,6 +70,8 @@ const POKEMON_RARITY_MAP: Record<string, string> = {
   // into plain "rare" (out of EV) — conservative: their modest value is omitted
   // rather than lumped into ultra_rare where it would distort the tier mean.
   "rare break": "rare",
+  // Diamond & Pearl / Platinum-era Lv.X: the era's top chase, the ultra-rare tier.
+  "rare holo lv.x": "ultra_rare",
   // Own tier, never in a pull-rate slot — see the note in POKEMON_RARITIES.
   promo: "promo",
 };

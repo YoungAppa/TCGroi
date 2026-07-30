@@ -1407,6 +1407,116 @@
       "marketCents": 1666650,
       "marketAsOf": "2026-07-30",
       "marketSource": "PriceCharting (vintage sealed, thin market), 2026-07-30"
+    },
+    {
+      "setCode": "dp1",
+      "name": "Booster Box (36 packs)",
+      "slug": "booster-box",
+      "type": "booster_box",
+      "packsContained": 36,
+      "msrpCents": 14364,
+      "marketCents": 146258,
+      "marketAsOf": "2026-07-30",
+      "marketSource": "PriceCharting (vintage sealed, thin market), 2026-07-30"
+    },
+    {
+      "setCode": "dp2",
+      "name": "Booster Box (36 packs)",
+      "slug": "booster-box",
+      "type": "booster_box",
+      "packsContained": 36,
+      "msrpCents": 14364,
+      "marketCents": 1711938,
+      "marketAsOf": "2026-07-30",
+      "marketSource": "PriceCharting (vintage sealed, thin market), 2026-07-30"
+    },
+    {
+      "setCode": "dp3",
+      "name": "Booster Box (36 packs)",
+      "slug": "booster-box",
+      "type": "booster_box",
+      "packsContained": 36,
+      "msrpCents": 14364,
+      "marketCents": 1250000,
+      "marketAsOf": "2026-07-30",
+      "marketSource": "PriceCharting (vintage sealed, thin market), 2026-07-30"
+    },
+    {
+      "setCode": "dp4",
+      "name": "Booster Box (36 packs)",
+      "slug": "booster-box",
+      "type": "booster_box",
+      "packsContained": 36,
+      "msrpCents": 14364,
+      "marketCents": 479648,
+      "marketAsOf": "2026-07-30",
+      "marketSource": "PriceCharting (vintage sealed, thin market), 2026-07-30"
+    },
+    {
+      "setCode": "dp5",
+      "name": "Booster Box (36 packs)",
+      "slug": "booster-box",
+      "type": "booster_box",
+      "packsContained": 36,
+      "msrpCents": 14364,
+      "marketCents": 590000,
+      "marketAsOf": "2026-07-30",
+      "marketSource": "PriceCharting (vintage sealed, thin market), 2026-07-30"
+    },
+    {
+      "setCode": "dp6",
+      "name": "Booster Box (36 packs)",
+      "slug": "booster-box",
+      "type": "booster_box",
+      "packsContained": 36,
+      "msrpCents": 14364,
+      "marketCents": 733597,
+      "marketAsOf": "2026-07-30",
+      "marketSource": "PriceCharting (vintage sealed, thin market), 2026-07-30"
+    },
+    {
+      "setCode": "pl1",
+      "name": "Booster Box (36 packs)",
+      "slug": "booster-box",
+      "type": "booster_box",
+      "packsContained": 36,
+      "msrpCents": 14364,
+      "marketCents": 1221248,
+      "marketAsOf": "2026-07-30",
+      "marketSource": "PriceCharting (vintage sealed, thin market), 2026-07-30"
+    },
+    {
+      "setCode": "pl2",
+      "name": "Booster Box (36 packs)",
+      "slug": "booster-box",
+      "type": "booster_box",
+      "packsContained": 36,
+      "msrpCents": 14364,
+      "marketCents": 876035,
+      "marketAsOf": "2026-07-30",
+      "marketSource": "PriceCharting (vintage sealed, thin market), 2026-07-30"
+    },
+    {
+      "setCode": "pl3",
+      "name": "Booster Box (36 packs)",
+      "slug": "booster-box",
+      "type": "booster_box",
+      "packsContained": 36,
+      "msrpCents": 14364,
+      "marketCents": 1425577,
+      "marketAsOf": "2026-07-30",
+      "marketSource": "PriceCharting (vintage sealed, thin market), 2026-07-30"
+    },
+    {
+      "setCode": "pl4",
+      "name": "Booster Box (36 packs)",
+      "slug": "booster-box",
+      "type": "booster_box",
+      "packsContained": 36,
+      "msrpCents": 14364,
+      "marketCents": 410278,
+      "marketAsOf": "2026-07-30",
+      "marketSource": "PriceCharting (vintage sealed, thin market), 2026-07-30"
     }
   ]
 }

@@ -1,0 +1,23 @@
+{
+  "game": "pokemon",
+  "setCode": "pl3",
+  "version": 1,
+  "sampleSizePacks": null,
+  "sourceUrl": "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg-part-two",
+  "sourceNote": "Supreme Victors: Diamond & Pearl / Platinum-era model, confidence LOW. The era's chases are the Pokémon Lv.X (ultra_rare) and, in the Platinum sub-series, gold-star Secret Rares. Lv.X pulled at roughly 1-2 per 36-pack box (~0.04/pack); secret rares ~1:72 (~0.014/pack). Regular holos are bulk. PRICE CAVEAT: sealed DP/Platinum boxes trade in a very thin, ask-skewed vintage market; the PriceCharting box figure is indicative, not a firm transaction price. ROI is deeply negative across the whole plausible range.",
+  "confidence": "low",
+  "slots": [
+    {
+      "rarity": "ultra_rare",
+      "perPackProbability": 0.04
+    },
+    {
+      "rarity": "hyper_rare",
+      "perPackProbability": 0.014
+    }
+  ],
+  "alternateEstimates": [],
+  "guaranteedSlots": [],
+  "boxGuarantees": [],
+  "showWhenPlaceholder": false
+}
