@@ -66,6 +66,10 @@ const POKEMON_RARITY_MAP: Record<string, string> = {
   // Folded into plain "rare" so it stays out of every pull-rate slot (excluded
   // from EV, like commons) rather than being dropped as unknown.
   "rare prism star": "rare",
+  // XY-era BREAK cards: a mid-tier rarity outside the EX/full-art chase. Folded
+  // into plain "rare" (out of EV) — conservative: their modest value is omitted
+  // rather than lumped into ultra_rare where it would distort the tier mean.
+  "rare break": "rare",
   // Own tier, never in a pull-rate slot — see the note in POKEMON_RARITIES.
   promo: "promo",
 };

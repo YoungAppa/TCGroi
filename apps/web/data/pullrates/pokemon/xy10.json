@@ -1,0 +1,23 @@
+{
+  "game": "pokemon",
+  "setCode": "xy10",
+  "version": 1,
+  "sampleSizePacks": null,
+  "sourceUrl": "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg-part-two",
+  "sourceNote": "Fates Collide: XY (EX/BREAK-era) aggregate model, confidence LOW. Community studies (Flipside Gaming, Elite Fourum) put EX at ~1:6 packs, full-art UR ~1:12, secret rare ~1:72. Folded onto the tiers this set has: ultra_rare (Rare Holo EX + Rare Ultra full arts) ~0.25/pack, hyper_rare (Rare Secret) ~0.014/pack; BREAK cards sit out of EV. PRICE CAVEAT: sealed XY-era boxes trade in a thin, volatile vintage market with very wide ask/sold spreads (e.g. a BREAKthrough box showed a ~$12k ask vs a $797 last sale). The box price here is PriceCharting's aggregate — a real reference, validated on the liquid Evolutions set (PC ~$2.3k ≈ StockX ~$2.6k), but treat it as indicative, not a firm transaction price. ROI is deeply negative across the whole plausible range regardless.",
+  "confidence": "low",
+  "slots": [
+    {
+      "rarity": "ultra_rare",
+      "perPackProbability": 0.25
+    },
+    {
+      "rarity": "hyper_rare",
+      "perPackProbability": 0.014
+    }
+  ],
+  "alternateEstimates": [],
+  "guaranteedSlots": [],
+  "boxGuarantees": [],
+  "showWhenPlaceholder": false
+}
