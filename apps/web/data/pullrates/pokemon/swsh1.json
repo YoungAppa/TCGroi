@@ -1,0 +1,27 @@
+{
+  "game": "pokemon",
+  "setCode": "swsh1",
+  "version": 1,
+  "sampleSizePacks": null,
+  "sourceUrl": "https://deltiasgaming.com/everything-you-need-to-know-about-pokemon-tcg-pull-rates/",
+  "sourceNote": "Sword & Shield: Sword & Shield-era aggregate model, not a single primary study. Community box breakdowns (Deltia's Gaming, Coded Yellow, Bleeding Cool pull-rate quests, 10,000+-pack samples) converge on ~6-8 Pokémon V/VMAX, 1-3 alt/full arts, and 1-2 rainbow/gold secrets per 36-pack box. Mapped onto the three normalized tiers this set has: double_rare (plain V + Radiant) ~0.11/pack, ultra_rare (VMAX/VSTAR + Rare Ultra full/alt art, incl. Amazing Rare) ~0.11/pack, hyper_rare (Rainbow + Secret) ~0.042/pack. Alt arts pull ~1:72, far below the flat ultra_rare rate, so a uniform tier average does not inflate the headline chase. Tier values are computed from live PriceCharting card prices, so per-set EV differences come from real card values, not the odds.",
+  "confidence": "low",
+  "slots": [
+    {
+      "rarity": "double_rare",
+      "perPackProbability": 0.11
+    },
+    {
+      "rarity": "ultra_rare",
+      "perPackProbability": 0.11
+    },
+    {
+      "rarity": "hyper_rare",
+      "perPackProbability": 0.042
+    }
+  ],
+  "alternateEstimates": [],
+  "guaranteedSlots": [],
+  "boxGuarantees": [],
+  "showWhenPlaceholder": false
+}

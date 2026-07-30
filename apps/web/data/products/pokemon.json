@@ -923,6 +923,116 @@
       "marketCents": 1400,
       "marketAsOf": "2026-07-30",
       "marketSource": "PriceCharting (eBay sold), 2026-07-30"
+    },
+    {
+      "setCode": "swsh1",
+      "name": "Booster Box (36 packs)",
+      "slug": "booster-box",
+      "type": "booster_box",
+      "packsContained": 36,
+      "msrpCents": 14364,
+      "marketCents": 55579,
+      "marketAsOf": "2026-07-30",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-30"
+    },
+    {
+      "setCode": "swsh1",
+      "name": "Booster Pack",
+      "slug": "booster-pack",
+      "type": "booster_pack",
+      "packsContained": 1,
+      "msrpCents": 399,
+      "marketCents": 3989,
+      "marketAsOf": "2026-07-30",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-30"
+    },
+    {
+      "setCode": "swsh2",
+      "name": "Booster Box (36 packs)",
+      "slug": "booster-box",
+      "type": "booster_box",
+      "packsContained": 36,
+      "msrpCents": 14364,
+      "marketCents": 45350,
+      "marketAsOf": "2026-07-30",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-30"
+    },
+    {
+      "setCode": "swsh2",
+      "name": "Booster Pack",
+      "slug": "booster-pack",
+      "type": "booster_pack",
+      "packsContained": 1,
+      "msrpCents": 399,
+      "marketCents": 947,
+      "marketAsOf": "2026-07-30",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-30"
+    },
+    {
+      "setCode": "swsh3",
+      "name": "Booster Box (36 packs)",
+      "slug": "booster-box",
+      "type": "booster_box",
+      "packsContained": 36,
+      "msrpCents": 14364,
+      "marketCents": 34235,
+      "marketAsOf": "2026-07-30",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-30"
+    },
+    {
+      "setCode": "swsh3",
+      "name": "Booster Pack",
+      "slug": "booster-pack",
+      "type": "booster_pack",
+      "packsContained": 1,
+      "msrpCents": 399,
+      "marketCents": 1161,
+      "marketAsOf": "2026-07-30",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-30"
+    },
+    {
+      "setCode": "swsh4",
+      "name": "Booster Box (36 packs)",
+      "slug": "booster-box",
+      "type": "booster_box",
+      "packsContained": 36,
+      "msrpCents": 14364,
+      "marketCents": 31500,
+      "marketAsOf": "2026-07-30",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-30"
+    },
+    {
+      "setCode": "swsh4",
+      "name": "Booster Pack",
+      "slug": "booster-pack",
+      "type": "booster_pack",
+      "packsContained": 1,
+      "msrpCents": 399,
+      "marketCents": 1052,
+      "marketAsOf": "2026-07-30",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-30"
+    },
+    {
+      "setCode": "swsh5",
+      "name": "Booster Box (36 packs)",
+      "slug": "booster-box",
+      "type": "booster_box",
+      "packsContained": 36,
+      "msrpCents": 14364,
+      "marketCents": 27541,
+      "marketAsOf": "2026-07-30",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-30"
+    },
+    {
+      "setCode": "swsh5",
+      "name": "Booster Pack",
+      "slug": "booster-pack",
+      "type": "booster_pack",
+      "packsContained": 1,
+      "msrpCents": 399,
+      "marketCents": 899,
+      "marketAsOf": "2026-07-30",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-30"
     }
   ]
 }
