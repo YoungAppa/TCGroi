@@ -1517,6 +1517,50 @@
       "marketCents": 410278,
       "marketAsOf": "2026-07-30",
       "marketSource": "PriceCharting (vintage sealed, thin market), 2026-07-30"
+    },
+    {
+      "setCode": "SV2a",
+      "name": "Booster Box (20 packs)",
+      "slug": "booster-box",
+      "type": "booster_box",
+      "packsContained": 20,
+      "marketCents": 28999,
+      "marketAsOf": "2026-07-30",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-30",
+      "msrpCents": null
+    },
+    {
+      "setCode": "S12a",
+      "name": "Booster Box (10 packs)",
+      "slug": "booster-box",
+      "type": "booster_box",
+      "packsContained": 10,
+      "marketCents": 19025,
+      "marketAsOf": "2026-07-30",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-30",
+      "msrpCents": null
+    },
+    {
+      "setCode": "SV4a",
+      "name": "Booster Box (30 packs)",
+      "slug": "booster-box",
+      "type": "booster_box",
+      "packsContained": 30,
+      "marketCents": 9700,
+      "marketAsOf": "2026-07-30",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-30",
+      "msrpCents": null
+    },
+    {
+      "setCode": "S9",
+      "name": "Booster Box (30 packs)",
+      "slug": "booster-box",
+      "type": "booster_box",
+      "packsContained": 30,
+      "marketCents": 12997,
+      "marketAsOf": "2026-07-30",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-30",
+      "msrpCents": null
     }
   ]
 }

@@ -33,7 +33,7 @@ type ViewMode = "list" | "icons";
  */
 function generationOf(p: ProductPayload): string {
   if (p.gameSlug !== "pokemon") return "";
-  const c = p.setCode;
+  const c = p.setCode.toLowerCase(); // JP codes are upper-cased (SV2a, S9)
   if (/^gem-pack/.test(c)) return "Gem Pack";
   if (/^me/.test(c)) return "Mega Evolution";
   if (/^(sv|rsv|zsv)/.test(c)) return "Scarlet & Violet";
@@ -42,6 +42,8 @@ function generationOf(p: ProductPayload): string {
   if (/^xy/.test(c)) return "XY";
   if (/^bw/.test(c)) return "Black & White";
   if (/^(dp|pl)/.test(c)) return "Diamond & Pearl / Platinum";
+  // JP era prefixes: S# = Sword & Shield, SV already caught above.
+  if (/^s\d/.test(c)) return "Sword & Shield";
   return "Other";
 }
 
@@ -511,11 +513,11 @@ export function RankingsTable({
         <span className="ml-auto text-muted">{rows.length} shown</span>
       </div>
 
-      {lang === "ja" ? (
+      {lang === "ja" && rows.length === 0 ? (
         <div className="rounded-lg border border-border bg-surface p-8 text-center text-sm text-muted">
-          {gameName(game)} <span className="font-medium">Japanese</span> sets are coming soon — the
-          site tracks English sets today. Prices for Japanese product exist, but a Japanese card
-          catalog source is still needed.
+          {gameName(game)} <span className="font-medium">Japanese</span> ROI is rolling out set by
+          set — a first batch of flagship sets is ranked, with more to come. Try another game tab or
+          check back soon.
         </div>
       ) : sorted.length === 0 ? (
         <div className="rounded-lg border border-border bg-surface p-8 text-center text-sm text-muted">
@@ -622,6 +624,10 @@ function IconTile({
         <span className="rounded bg-surface-raised px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted">
           {TYPE_LABEL[payload.productType]}
         </span>
+        <ConfidenceBadge
+          confidence={payload.pullRates.confidence}
+          sampleSizePacks={payload.pullRates.sampleSizePacks}
+        />
       </div>
 
       {/* Hero: set logo or top chase card, overlaid on hover by the chase trio. */}
