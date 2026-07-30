@@ -660,7 +660,8 @@
       "marketCents": 8000,
       "marketAsOf": "2026-07-23",
       "marketSource": "PriceCharting (eBay sold), 2026-07-23",
-      "contentsNote": "18 packs, 4 cards each. Simplified Chinese."
+      "contentsNote": "18 packs, 4 cards each. Simplified Chinese.",
+      "language": "ZH"
     },
     {
       "setCode": "gem-pack",
@@ -672,7 +673,8 @@
       "marketCents": 1039,
       "marketAsOf": "2026-07-23",
       "marketSource": "PriceCharting (eBay sold), 2026-07-23",
-      "contentsNote": "4 cards. Simplified Chinese."
+      "contentsNote": "4 cards. Simplified Chinese.",
+      "language": "ZH"
     },
     {
       "setCode": "gem-pack-2",
@@ -684,7 +686,8 @@
       "marketCents": 8394,
       "marketAsOf": "2026-07-23",
       "marketSource": "PriceCharting (eBay sold), 2026-07-23",
-      "contentsNote": "18 packs, 4 cards each. Simplified Chinese."
+      "contentsNote": "18 packs, 4 cards each. Simplified Chinese.",
+      "language": "ZH"
     },
     {
       "setCode": "gem-pack-2",
@@ -696,7 +699,8 @@
       "marketCents": 1750,
       "marketAsOf": "2026-07-23",
       "marketSource": "PriceCharting (eBay sold), 2026-07-23",
-      "contentsNote": "4 cards. Simplified Chinese."
+      "contentsNote": "4 cards. Simplified Chinese.",
+      "language": "ZH"
     },
     {
       "setCode": "gem-pack-3",
@@ -708,7 +712,8 @@
       "marketCents": 8480,
       "marketAsOf": "2026-07-23",
       "marketSource": "PriceCharting (eBay sold), 2026-07-23",
-      "contentsNote": "18 packs, 4 cards each. Simplified Chinese."
+      "contentsNote": "18 packs, 4 cards each. Simplified Chinese.",
+      "language": "ZH"
     },
     {
       "setCode": "gem-pack-3",
@@ -720,7 +725,8 @@
       "marketCents": 1548,
       "marketAsOf": "2026-07-23",
       "marketSource": "PriceCharting (eBay sold), 2026-07-23",
-      "contentsNote": "4 cards. Simplified Chinese."
+      "contentsNote": "4 cards. Simplified Chinese.",
+      "language": "ZH"
     },
     {
       "setCode": "gem-pack-4",
@@ -732,7 +738,8 @@
       "marketCents": 3321,
       "marketAsOf": "2026-07-23",
       "marketSource": "PriceCharting (eBay sold), 2026-07-23",
-      "contentsNote": "18 packs, 4 cards each. Simplified Chinese."
+      "contentsNote": "18 packs, 4 cards each. Simplified Chinese.",
+      "language": "ZH"
     },
     {
       "setCode": "gem-pack-4",
@@ -744,7 +751,8 @@
       "marketCents": 938,
       "marketAsOf": "2026-07-23",
       "marketSource": "PriceCharting (eBay sold), 2026-07-23",
-      "contentsNote": "4 cards. Simplified Chinese."
+      "contentsNote": "4 cards. Simplified Chinese.",
+      "language": "ZH"
     },
     {
       "setCode": "gem-pack-5",
@@ -756,7 +764,8 @@
       "marketCents": 4697,
       "marketAsOf": "2026-07-23",
       "marketSource": "PriceCharting (eBay sold), 2026-07-23",
-      "contentsNote": "18 packs, 4 cards each. Simplified Chinese."
+      "contentsNote": "18 packs, 4 cards each. Simplified Chinese.",
+      "language": "ZH"
     },
     {
       "setCode": "gem-pack-5",
@@ -768,7 +777,8 @@
       "marketCents": 1308,
       "marketAsOf": "2026-07-23",
       "marketSource": "PriceCharting (eBay sold), 2026-07-23",
-      "contentsNote": "4 cards. Simplified Chinese."
+      "contentsNote": "4 cards. Simplified Chinese.",
+      "language": "ZH"
     },
     {
       "setCode": "swsh6",
@@ -1527,7 +1537,8 @@
       "marketCents": 28999,
       "marketAsOf": "2026-07-30",
       "marketSource": "PriceCharting (eBay sold), 2026-07-30",
-      "msrpCents": null
+      "msrpCents": null,
+      "language": "JP"
     },
     {
       "setCode": "S12a",
@@ -1538,7 +1549,8 @@
       "marketCents": 19025,
       "marketAsOf": "2026-07-30",
       "marketSource": "PriceCharting (eBay sold), 2026-07-30",
-      "msrpCents": null
+      "msrpCents": null,
+      "language": "JP"
     },
     {
       "setCode": "SV4a",
@@ -1549,7 +1561,8 @@
       "marketCents": 9700,
       "marketAsOf": "2026-07-30",
       "marketSource": "PriceCharting (eBay sold), 2026-07-30",
-      "msrpCents": null
+      "msrpCents": null,
+      "language": "JP"
     },
     {
       "setCode": "S9",
@@ -1560,7 +1573,8 @@
       "marketCents": 12997,
       "marketAsOf": "2026-07-30",
       "marketSource": "PriceCharting (eBay sold), 2026-07-30",
-      "msrpCents": null
+      "msrpCents": null,
+      "language": "JP"
     },
     {
       "setCode": "base1",
@@ -1627,6 +1641,18 @@
       "marketCents": 1875000,
       "marketAsOf": "2026-07-30",
       "marketSource": "PriceCharting (vintage sealed, unlimited, thin market), 2026-07-30"
+    },
+    {
+      "setCode": "SV3",
+      "language": "JP",
+      "name": "Booster Box (30 packs)",
+      "slug": "booster-box",
+      "type": "booster_box",
+      "packsContained": 30,
+      "msrpCents": null,
+      "marketCents": 13500,
+      "marketAsOf": "2026-07-30",
+      "marketSource": "PriceCharting (eBay sold), 2026-07-30"
     }
   ]
 }

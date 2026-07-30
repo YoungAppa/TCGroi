@@ -66,7 +66,12 @@ export async function refreshCatalog() {
       const wantedCodes =
         adapter.gameSlug === "pokemon"
           ? new Set([
-              ...loaded.filter((l) => l.file.game === "pokemon").map((l) => l.file.setCode),
+              // English only: the pokemontcg.io catalog is EN, so JP/ZH tables
+              // must not pull a code into this fetch (it wouldn't match anyway,
+              // and their catalogs come from TCGdex / PriceCharting instead).
+              ...loaded
+                .filter((l) => l.file.game === "pokemon" && l.language === "EN")
+                .map((l) => l.file.setCode),
               // Black Star Promos: never has a pull-rate table, but products'
               // guaranteed promo cards live here and need catalog + prices.
               "svp",
@@ -195,14 +200,16 @@ export async function loadPullRateTables(
   const db = getDb();
   const loaded = preloaded ?? (await loadAllPullRates());
   let tablesLoaded = 0;
-  for (const { file } of loaded) {
+  for (const { file, language } of loaded) {
     const gameId = gameIdBySlug.get(file.game);
     if (!gameId) continue;
 
     const [setRow] = await db
       .select({ id: sets.id })
       .from(sets)
-      .where(and(eq(sets.gameId, gameId), eq(sets.code, file.setCode)));
+      .where(
+        and(eq(sets.gameId, gameId), eq(sets.code, file.setCode), eq(sets.language, language)),
+      );
     if (!setRow) continue; // set not ingested (e.g. placeholder for a future set)
 
     await db
@@ -263,6 +270,8 @@ const productFileSchema = z.object({
   products: z.array(
     z.object({
       setCode: z.string().min(1),
+      /** Set language, so a JP "SV3" product resolves to the JP set, not EN. */
+      language: z.enum(["EN", "JP", "ZH"]).default("EN"),
       name: z.string().min(1),
       slug: z.string().min(1),
       type: z.enum(["booster_pack", "booster_box", "etb", "bundle", "display", "case"]),
@@ -309,10 +318,10 @@ export async function loadSealedProducts(gameIdBySlug: Map<string, string>): Pro
       const [setRow] = await db
         .select({ id: sets.id })
         .from(sets)
-        .where(and(eq(sets.gameId, gameId), eq(sets.code, p.setCode)));
+        .where(and(eq(sets.gameId, gameId), eq(sets.code, p.setCode), eq(sets.language, p.language)));
       if (!setRow) {
         throw new Error(
-          `data/products/${slug}.json: set ${p.setCode} is not ingested — run catalog ingest first or fix the code.`,
+          `data/products/${slug}.json: set ${p.setCode} (${p.language}) is not ingested — run catalog ingest first or fix the code.`,
         );
       }
 
@@ -330,7 +339,7 @@ export async function loadSealedProducts(gameIdBySlug: Map<string, string>): Pro
         const [compSet] = await db
           .select({ id: sets.id })
           .from(sets)
-          .where(and(eq(sets.gameId, gameId), eq(sets.code, comp.setCode)));
+          .where(and(eq(sets.gameId, gameId), eq(sets.code, comp.setCode), eq(sets.language, p.language)));
         if (!compSet) {
           throw new Error(
             `data/products/${slug}.json: ${p.slug} component set ${comp.setCode} is not ingested.`,

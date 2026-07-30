@@ -1,0 +1,23 @@
+{
+  "game": "pokemon",
+  "setCode": "SV3",
+  "version": 1,
+  "sampleSizePacks": null,
+  "sourceUrl": "https://www.tcgdex.net/",
+  "sourceNote": "Ruler of the Black Flame (JP): Japanese Pokémon model, confidence LOW — a scaffold, not a measured study. Catalog + card images from TCGdex (Japanese names), card + box prices from PriceCharting's 'Pokemon Japanese <set>' consoles. TCGdex does not carry rarities for the JP secret/chase range, so the chase tier here is INFERRED from market value — the priced holos that aren't base-set rares are grouped as ultra_rare, and the ultra-chases (SAR/UR > $100) are shown display-only, out of EV, exactly as the Chinese gem-pack model does. Per-pack odds reuse the English-era shape at deliberately conservative rates (understating, the safe direction), so ROI reads as an honest lower bound, not a promise. Tier values are live PriceCharting prices.",
+  "confidence": "low",
+  "slots": [
+    {
+      "rarity": "double_rare",
+      "perPackProbability": 0.13
+    },
+    {
+      "rarity": "ultra_rare",
+      "perPackProbability": 0.15
+    }
+  ],
+  "alternateEstimates": [],
+  "guaranteedSlots": [],
+  "boxGuarantees": [],
+  "showWhenPlaceholder": false
+}
