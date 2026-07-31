@@ -111,15 +111,32 @@ export const MTG_RARITIES = [
   "mythic",
 ] as const;
 
+/**
+ * Counter-Strike 2 weapon-case grades. Unlike the TCG vocabularies, these are
+ * the five OFFICIAL drop tiers Valve discloses, in fixed order least -> most
+ * rare, with fixed odds that are the SAME for every case (79.92 / 15.98 / 3.20 /
+ * 0.64 / 0.26 %). A case's per-tier VALUE differs by its skins, but its odds
+ * never do — so the pull-rate table is genuinely HIGH confidence, not estimated.
+ * `rare_special` is the gold "Rare Special Item" tier: the knives and gloves.
+ */
+export const CS2_RARITIES = [
+  "mil_spec", // blue
+  "restricted", // purple
+  "classified", // pink
+  "covert", // red
+  "rare_special", // gold — knives / gloves
+] as const;
+
 export type PokemonRarity = (typeof POKEMON_RARITIES)[number];
 export type OnePieceRarity = (typeof ONE_PIECE_RARITIES)[number];
 
-export type KnownGameSlug = "pokemon" | "one-piece" | "mtg";
+export type KnownGameSlug = "pokemon" | "one-piece" | "mtg" | "counter-strike-2";
 
 export const RARITY_VOCAB: Record<KnownGameSlug, readonly string[]> = {
   pokemon: POKEMON_RARITIES,
   "one-piece": ONE_PIECE_RARITIES,
   mtg: MTG_RARITIES,
+  "counter-strike-2": CS2_RARITIES,
 };
 
 /** Human-facing labels. Anything absent falls back to a title-cased slug. */
@@ -149,6 +166,12 @@ export const RARITY_LABELS: Record<string, string> = {
   manga_rare: "Manga Rare",
   special: "Special (SP)",
   mythic: "Mythic Rare",
+  // Counter-Strike 2
+  mil_spec: "Mil-Spec",
+  restricted: "Restricted",
+  classified: "Classified",
+  covert: "Covert",
+  rare_special: "Rare Special (Knife / Glove)",
 };
 
 export function rarityLabel(slug: string): string {
@@ -193,6 +216,13 @@ export const RARITY_DESCRIPTIONS: Record<string, string> = {
   manga_rare:
     "The manga-art treatment — routinely the most valuable One Piece cards.",
   special: "An SP card — a special foil treatment.",
+  // Counter-Strike 2 (odds are the same in every case)
+  mil_spec: "Blue-grade skin — the common drop, 79.92% of opens.",
+  restricted: "Purple-grade skin — 15.98% of opens.",
+  classified: "Pink-grade skin — 3.20% of opens.",
+  covert: "Red-grade skin — 0.64% of opens.",
+  rare_special:
+    "The gold 'Rare Special Item' — a knife or gloves. Just 0.26% of opens, and the value that dominates every case's EV.",
 };
 
 export function rarityDescription(slug: string): string | undefined {

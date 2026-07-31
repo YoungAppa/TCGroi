@@ -22,6 +22,11 @@ export function RoiCell({ roi }: { roi: number | null }) {
 }
 
 const CONFIDENCE_STYLE: Record<Confidence, { label: string; cls: string; title: string }> = {
+  official: {
+    label: "OFFICIAL",
+    cls: "border-accent/50 bg-accent/10 text-accent",
+    title: "Odds published by the game's maker — the strongest tier, no sampling needed.",
+  },
   high: {
     label: "HIGH",
     cls: "border-emerald-500/40 bg-emerald-500/10 text-emerald-400",
@@ -57,8 +62,8 @@ export function ConfidenceBadge({
 }) {
   const s = CONFIDENCE_STYLE[confidence];
   const sample =
-    confidence === "placeholder"
-      ? null
+    confidence === "placeholder" || confidence === "official"
+      ? null // official odds aren't sampled — there's no n to show
       : sampleSizePacks === null
         ? "n undisclosed"
         : `n=${sampleSizePacks.toLocaleString("en-US")}`;

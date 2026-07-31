@@ -12,7 +12,11 @@ import { isKnownRarity, RARITY_VOCAB, type KnownGameSlug } from "@/lib/catalog/r
  * the numbers out of public rankings.
  */
 
-export const confidenceSchema = z.enum(["high", "medium", "low", "placeholder"]);
+// "official" = odds the publisher disclosed directly (CS2 case rates, printed
+// Chinese ★★★ odds) — the strongest tier, and the one case where there is no
+// sampleSizePacks because nobody had to open packs to measure it. "high"/"medium"
+// are precision claims about a community SAMPLE and so require a disclosed n.
+export const confidenceSchema = z.enum(["official", "high", "medium", "low", "placeholder"]);
 export type Confidence = z.infer<typeof confidenceSchema>;
 
 const slotSchema = z.object({
@@ -70,7 +74,7 @@ export type AlternateEstimate = z.infer<typeof alternateEstimateSchema>;
 export const pullRateFileSchema = z
   .object({
     $schema: z.string().optional(),
-    game: z.enum(["pokemon", "one-piece", "mtg"]),
+    game: z.enum(["pokemon", "one-piece", "mtg", "counter-strike-2"]),
     setCode: z.string().min(1),
     version: z.number().int().positive(),
     /**

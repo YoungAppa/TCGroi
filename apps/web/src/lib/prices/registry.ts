@@ -1,4 +1,5 @@
 import { PriceChartingAdapter } from "./adapters/pricecharting";
+import { SkinportAdapter } from "./adapters/skinport";
 import { EbayDirectAdapter, CardmarketAdapter } from "./adapters/stubs";
 import { TcgplayerMarketAdapter } from "./adapters/tcgplayer-market";
 import type { PriceSourceAdapter } from "./types";

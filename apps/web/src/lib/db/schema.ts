@@ -19,7 +19,7 @@ import {
 // ---------------------------------------------------------------------------
 
 /** Game-agnostic by construction: adding MTG later is a data change, not code. */
-export const gameSlug = pgEnum("game_slug", ["pokemon", "one-piece", "mtg"]);
+export const gameSlug = pgEnum("game_slug", ["pokemon", "one-piece", "mtg", "counter-strike-2"]);
 
 export const setLanguage = pgEnum("set_language", ["EN", "JP", "ZH"]);
 
@@ -34,6 +34,7 @@ export const sealedProductType = pgEnum("sealed_product_type", [
 
 /** Publishers do not publish official odds; every table is an estimate. */
 export const pullRateConfidence = pgEnum("pull_rate_confidence", [
+  "official",
   "high",
   "medium",
   "low",

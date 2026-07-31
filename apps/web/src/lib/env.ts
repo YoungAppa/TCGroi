@@ -43,6 +43,15 @@ const serverEnvSchema = z.object({
   // budget-aware job (scripts/refresh-graded.ts), not the main price refresh.
   POKEPRICE_TOKEN: z.string().min(1).optional(),
 
+  // --- Optional: skinport (Counter-Strike 2) -------------------------------
+  // Skin + case prices for CS2, from Skinport's items API. The public endpoint
+  // is keyless but Cloudflare-gates automated clients, so SKINPORT_API_BASE lets
+  // you point at a reachable path (a proxy, or Skinport's authenticated host)
+  // and SKINPORT_API_KEY carries a bearer/basic credential when one is needed.
+  // Absent => the CS2 adapter is disabled and cases stay unpriced (site is fine).
+  SKINPORT_API_BASE: z.string().min(1).default("https://api.skinport.com"),
+  SKINPORT_API_KEY: z.string().min(1).optional(),
+
   // --- Tunables -------------------------------------------------------------
   BULK_THRESHOLD_CENTS: z.coerce.number().int().nonnegative().default(50),
 

@@ -9,16 +9,20 @@
  *   npm run db:seed
  */
 import { getDb, games, priceSources } from "@/lib/db";
-import { RARITY_VOCAB } from "@/lib/catalog/rarities";
+import { RARITY_VOCAB, type KnownGameSlug } from "@/lib/catalog/rarities";
 import { ALL_PRICE_SOURCES } from "@/lib/prices/sources";
 
-const GAMES: { slug: "pokemon" | "one-piece" | "mtg"; displayName: string }[] = [
+const GAMES: { slug: KnownGameSlug; displayName: string }[] = [
   { slug: "pokemon", displayName: "Pokémon TCG" },
   { slug: "one-piece", displayName: "One Piece TCG" },
   // Magic is searchable inventory today (Scryfall catalog + prices, built by
   // scripts/build-magic-catalog.ts). Pull-rate files can land later to give it
   // EV/ranking; the schema, EV engine, and UI need no change for either.
   { slug: "mtg", displayName: "Magic: The Gathering" },
+  // Counter-Strike 2 weapon cases: official Valve drop odds (HIGH confidence),
+  // catalog from bymykel/CSGO-API, prices from Skinport. Cases are "case" sealed
+  // products; one open = one item, cost = case price + a $2.50 key.
+  { slug: "counter-strike-2", displayName: "Counter-Strike 2" },
 ];
 
 async function main() {

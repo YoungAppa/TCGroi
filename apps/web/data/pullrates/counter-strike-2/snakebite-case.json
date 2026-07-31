@@ -1,0 +1,35 @@
+{
+  "game": "counter-strike-2",
+  "setCode": "snakebite-case",
+  "version": 1,
+  "sampleSizePacks": null,
+  "sourceUrl": "https://www.csgo.com.cn/news/gamebroad/20170911/206155.shtml",
+  "sourceNote": "Snakebite Case: Official Counter-Strike 2 weapon-case drop odds — the same for every case: Mil-Spec 79.92%, Restricted 15.98%, Classified 3.20%, Covert 0.64%, Rare Special (knife/glove) 0.26%. These are Valve's disclosed rates, not a community estimate, so confidence is OFFICIAL — the strongest tier. Within a tier every skin is equally likely; the wear (Factory New … Battle-Scarred) and ~10% StatTrak sub-distribution is modelled at the price layer, not here.",
+  "confidence": "official",
+  "slots": [
+    {
+      "rarity": "mil_spec",
+      "perPackProbability": 0.7992
+    },
+    {
+      "rarity": "restricted",
+      "perPackProbability": 0.1598
+    },
+    {
+      "rarity": "classified",
+      "perPackProbability": 0.032
+    },
+    {
+      "rarity": "covert",
+      "perPackProbability": 0.0064
+    },
+    {
+      "rarity": "rare_special",
+      "perPackProbability": 0.0026
+    }
+  ],
+  "alternateEstimates": [],
+  "guaranteedSlots": [],
+  "boxGuarantees": [],
+  "showWhenPlaceholder": false
+}

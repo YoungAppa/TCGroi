@@ -1,0 +1,1 @@
+ALTER TYPE "public"."pull_rate_confidence" ADD VALUE 'official' BEFORE 'high';

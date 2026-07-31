@@ -1,0 +1,425 @@
+{
+  "_comment": "CS2 cases as sealed products; prices (case + skins) load from Skinport.",
+  "products": [
+    {
+      "setCode": "cs-go-weapon-case",
+      "language": "EN",
+      "name": "CS:GO Weapon Case",
+      "slug": "case",
+      "type": "case",
+      "packsContained": 1,
+      "msrpCents": null,
+      "contentsNote": "Opening also needs a $2.50 key (Valve's cut). Cost to open = case price + key; prices come from Skinport."
+    },
+    {
+      "setCode": "esports-2013-case",
+      "language": "EN",
+      "name": "eSports 2013 Case",
+      "slug": "case",
+      "type": "case",
+      "packsContained": 1,
+      "msrpCents": null,
+      "contentsNote": "Opening also needs a $2.50 key (Valve's cut). Cost to open = case price + key; prices come from Skinport."
+    },
+    {
+      "setCode": "operation-bravo-case",
+      "language": "EN",
+      "name": "Operation Bravo Case",
+      "slug": "case",
+      "type": "case",
+      "packsContained": 1,
+      "msrpCents": null,
+      "contentsNote": "Opening also needs a $2.50 key (Valve's cut). Cost to open = case price + key; prices come from Skinport."
+    },
+    {
+      "setCode": "cs-go-weapon-case-2",
+      "language": "EN",
+      "name": "CS:GO Weapon Case 2",
+      "slug": "case",
+      "type": "case",
+      "packsContained": 1,
+      "msrpCents": null,
+      "contentsNote": "Opening also needs a $2.50 key (Valve's cut). Cost to open = case price + key; prices come from Skinport."
+    },
+    {
+      "setCode": "esports-2013-winter-case",
+      "language": "EN",
+      "name": "eSports 2013 Winter Case",
+      "slug": "case",
+      "type": "case",
+      "packsContained": 1,
+      "msrpCents": null,
+      "contentsNote": "Opening also needs a $2.50 key (Valve's cut). Cost to open = case price + key; prices come from Skinport."
+    },
+    {
+      "setCode": "winter-offensive-weapon-case",
+      "language": "EN",
+      "name": "Winter Offensive Weapon Case",
+      "slug": "case",
+      "type": "case",
+      "packsContained": 1,
+      "msrpCents": null,
+      "contentsNote": "Opening also needs a $2.50 key (Valve's cut). Cost to open = case price + key; prices come from Skinport."
+    },
+    {
+      "setCode": "cs-go-weapon-case-3",
+      "language": "EN",
+      "name": "CS:GO Weapon Case 3",
+      "slug": "case",
+      "type": "case",
+      "packsContained": 1,
+      "msrpCents": null,
+      "contentsNote": "Opening also needs a $2.50 key (Valve's cut). Cost to open = case price + key; prices come from Skinport."
+    },
+    {
+      "setCode": "operation-phoenix-weapon-case",
+      "language": "EN",
+      "name": "Operation Phoenix Weapon Case",
+      "slug": "case",
+      "type": "case",
+      "packsContained": 1,
+      "msrpCents": null,
+      "contentsNote": "Opening also needs a $2.50 key (Valve's cut). Cost to open = case price + key; prices come from Skinport."
+    },
+    {
+      "setCode": "huntsman-weapon-case",
+      "language": "EN",
+      "name": "Huntsman Weapon Case",
+      "slug": "case",
+      "type": "case",
+      "packsContained": 1,
+      "msrpCents": null,
+      "contentsNote": "Opening also needs a $2.50 key (Valve's cut). Cost to open = case price + key; prices come from Skinport."
+    },
+    {
+      "setCode": "operation-breakout-weapon-case",
+      "language": "EN",
+      "name": "Operation Breakout Weapon Case",
+      "slug": "case",
+      "type": "case",
+      "packsContained": 1,
+      "msrpCents": null,
+      "contentsNote": "Opening also needs a $2.50 key (Valve's cut). Cost to open = case price + key; prices come from Skinport."
+    },
+    {
+      "setCode": "esports-2014-summer-case",
+      "language": "EN",
+      "name": "eSports 2014 Summer Case",
+      "slug": "case",
+      "type": "case",
+      "packsContained": 1,
+      "msrpCents": null,
+      "contentsNote": "Opening also needs a $2.50 key (Valve's cut). Cost to open = case price + key; prices come from Skinport."
+    },
+    {
+      "setCode": "operation-vanguard-weapon-case",
+      "language": "EN",
+      "name": "Operation Vanguard Weapon Case",
+      "slug": "case",
+      "type": "case",
+      "packsContained": 1,
+      "msrpCents": null,
+      "contentsNote": "Opening also needs a $2.50 key (Valve's cut). Cost to open = case price + key; prices come from Skinport."
+    },
+    {
+      "setCode": "chroma-case",
+      "language": "EN",
+      "name": "Chroma Case",
+      "slug": "case",
+      "type": "case",
+      "packsContained": 1,
+      "msrpCents": null,
+      "contentsNote": "Opening also needs a $2.50 key (Valve's cut). Cost to open = case price + key; prices come from Skinport."
+    },
+    {
+      "setCode": "chroma-2-case",
+      "language": "EN",
+      "name": "Chroma 2 Case",
+      "slug": "case",
+      "type": "case",
+      "packsContained": 1,
+      "msrpCents": null,
+      "contentsNote": "Opening also needs a $2.50 key (Valve's cut). Cost to open = case price + key; prices come from Skinport."
+    },
+    {
+      "setCode": "falchion-case",
+      "language": "EN",
+      "name": "Falchion Case",
+      "slug": "case",
+      "type": "case",
+      "packsContained": 1,
+      "msrpCents": null,
+      "contentsNote": "Opening also needs a $2.50 key (Valve's cut). Cost to open = case price + key; prices come from Skinport."
+    },
+    {
+      "setCode": "shadow-case",
+      "language": "EN",
+      "name": "Shadow Case",
+      "slug": "case",
+      "type": "case",
+      "packsContained": 1,
+      "msrpCents": null,
+      "contentsNote": "Opening also needs a $2.50 key (Valve's cut). Cost to open = case price + key; prices come from Skinport."
+    },
+    {
+      "setCode": "revolver-case",
+      "language": "EN",
+      "name": "Revolver Case",
+      "slug": "case",
+      "type": "case",
+      "packsContained": 1,
+      "msrpCents": null,
+      "contentsNote": "Opening also needs a $2.50 key (Valve's cut). Cost to open = case price + key; prices come from Skinport."
+    },
+    {
+      "setCode": "operation-wildfire-case",
+      "language": "EN",
+      "name": "Operation Wildfire Case",
+      "slug": "case",
+      "type": "case",
+      "packsContained": 1,
+      "msrpCents": null,
+      "contentsNote": "Opening also needs a $2.50 key (Valve's cut). Cost to open = case price + key; prices come from Skinport."
+    },
+    {
+      "setCode": "chroma-3-case",
+      "language": "EN",
+      "name": "Chroma 3 Case",
+      "slug": "case",
+      "type": "case",
+      "packsContained": 1,
+      "msrpCents": null,
+      "contentsNote": "Opening also needs a $2.50 key (Valve's cut). Cost to open = case price + key; prices come from Skinport."
+    },
+    {
+      "setCode": "gamma-case",
+      "language": "EN",
+      "name": "Gamma Case",
+      "slug": "case",
+      "type": "case",
+      "packsContained": 1,
+      "msrpCents": null,
+      "contentsNote": "Opening also needs a $2.50 key (Valve's cut). Cost to open = case price + key; prices come from Skinport."
+    },
+    {
+      "setCode": "gamma-2-case",
+      "language": "EN",
+      "name": "Gamma 2 Case",
+      "slug": "case",
+      "type": "case",
+      "packsContained": 1,
+      "msrpCents": null,
+      "contentsNote": "Opening also needs a $2.50 key (Valve's cut). Cost to open = case price + key; prices come from Skinport."
+    },
+    {
+      "setCode": "glove-case",
+      "language": "EN",
+      "name": "Glove Case",
+      "slug": "case",
+      "type": "case",
+      "packsContained": 1,
+      "msrpCents": null,
+      "contentsNote": "Opening also needs a $2.50 key (Valve's cut). Cost to open = case price + key; prices come from Skinport."
+    },
+    {
+      "setCode": "spectrum-case",
+      "language": "EN",
+      "name": "Spectrum Case",
+      "slug": "case",
+      "type": "case",
+      "packsContained": 1,
+      "msrpCents": null,
+      "contentsNote": "Opening also needs a $2.50 key (Valve's cut). Cost to open = case price + key; prices come from Skinport."
+    },
+    {
+      "setCode": "operation-hydra-case",
+      "language": "EN",
+      "name": "Operation Hydra Case",
+      "slug": "case",
+      "type": "case",
+      "packsContained": 1,
+      "msrpCents": null,
+      "contentsNote": "Opening also needs a $2.50 key (Valve's cut). Cost to open = case price + key; prices come from Skinport."
+    },
+    {
+      "setCode": "spectrum-2-case",
+      "language": "EN",
+      "name": "Spectrum 2 Case",
+      "slug": "case",
+      "type": "case",
+      "packsContained": 1,
+      "msrpCents": null,
+      "contentsNote": "Opening also needs a $2.50 key (Valve's cut). Cost to open = case price + key; prices come from Skinport."
+    },
+    {
+      "setCode": "clutch-case",
+      "language": "EN",
+      "name": "Clutch Case",
+      "slug": "case",
+      "type": "case",
+      "packsContained": 1,
+      "msrpCents": null,
+      "contentsNote": "Opening also needs a $2.50 key (Valve's cut). Cost to open = case price + key; prices come from Skinport."
+    },
+    {
+      "setCode": "horizon-case",
+      "language": "EN",
+      "name": "Horizon Case",
+      "slug": "case",
+      "type": "case",
+      "packsContained": 1,
+      "msrpCents": null,
+      "contentsNote": "Opening also needs a $2.50 key (Valve's cut). Cost to open = case price + key; prices come from Skinport."
+    },
+    {
+      "setCode": "danger-zone-case",
+      "language": "EN",
+      "name": "Danger Zone Case",
+      "slug": "case",
+      "type": "case",
+      "packsContained": 1,
+      "msrpCents": null,
+      "contentsNote": "Opening also needs a $2.50 key (Valve's cut). Cost to open = case price + key; prices come from Skinport."
+    },
+    {
+      "setCode": "prisma-case",
+      "language": "EN",
+      "name": "Prisma Case",
+      "slug": "case",
+      "type": "case",
+      "packsContained": 1,
+      "msrpCents": null,
+      "contentsNote": "Opening also needs a $2.50 key (Valve's cut). Cost to open = case price + key; prices come from Skinport."
+    },
+    {
+      "setCode": "shattered-web-case",
+      "language": "EN",
+      "name": "Shattered Web Case",
+      "slug": "case",
+      "type": "case",
+      "packsContained": 1,
+      "msrpCents": null,
+      "contentsNote": "Opening also needs a $2.50 key (Valve's cut). Cost to open = case price + key; prices come from Skinport."
+    },
+    {
+      "setCode": "cs20-case",
+      "language": "EN",
+      "name": "CS20 Case",
+      "slug": "case",
+      "type": "case",
+      "packsContained": 1,
+      "msrpCents": null,
+      "contentsNote": "Opening also needs a $2.50 key (Valve's cut). Cost to open = case price + key; prices come from Skinport."
+    },
+    {
+      "setCode": "prisma-2-case",
+      "language": "EN",
+      "name": "Prisma 2 Case",
+      "slug": "case",
+      "type": "case",
+      "packsContained": 1,
+      "msrpCents": null,
+      "contentsNote": "Opening also needs a $2.50 key (Valve's cut). Cost to open = case price + key; prices come from Skinport."
+    },
+    {
+      "setCode": "fracture-case",
+      "language": "EN",
+      "name": "Fracture Case",
+      "slug": "case",
+      "type": "case",
+      "packsContained": 1,
+      "msrpCents": null,
+      "contentsNote": "Opening also needs a $2.50 key (Valve's cut). Cost to open = case price + key; prices come from Skinport."
+    },
+    {
+      "setCode": "operation-broken-fang-case",
+      "language": "EN",
+      "name": "Operation Broken Fang Case",
+      "slug": "case",
+      "type": "case",
+      "packsContained": 1,
+      "msrpCents": null,
+      "contentsNote": "Opening also needs a $2.50 key (Valve's cut). Cost to open = case price + key; prices come from Skinport."
+    },
+    {
+      "setCode": "snakebite-case",
+      "language": "EN",
+      "name": "Snakebite Case",
+      "slug": "case",
+      "type": "case",
+      "packsContained": 1,
+      "msrpCents": null,
+      "contentsNote": "Opening also needs a $2.50 key (Valve's cut). Cost to open = case price + key; prices come from Skinport."
+    },
+    {
+      "setCode": "operation-riptide-case",
+      "language": "EN",
+      "name": "Operation Riptide Case",
+      "slug": "case",
+      "type": "case",
+      "packsContained": 1,
+      "msrpCents": null,
+      "contentsNote": "Opening also needs a $2.50 key (Valve's cut). Cost to open = case price + key; prices come from Skinport."
+    },
+    {
+      "setCode": "dreams-and-nightmares-case",
+      "language": "EN",
+      "name": "Dreams & Nightmares Case",
+      "slug": "case",
+      "type": "case",
+      "packsContained": 1,
+      "msrpCents": null,
+      "contentsNote": "Opening also needs a $2.50 key (Valve's cut). Cost to open = case price + key; prices come from Skinport."
+    },
+    {
+      "setCode": "recoil-case",
+      "language": "EN",
+      "name": "Recoil Case",
+      "slug": "case",
+      "type": "case",
+      "packsContained": 1,
+      "msrpCents": null,
+      "contentsNote": "Opening also needs a $2.50 key (Valve's cut). Cost to open = case price + key; prices come from Skinport."
+    },
+    {
+      "setCode": "revolution-case",
+      "language": "EN",
+      "name": "Revolution Case",
+      "slug": "case",
+      "type": "case",
+      "packsContained": 1,
+      "msrpCents": null,
+      "contentsNote": "Opening also needs a $2.50 key (Valve's cut). Cost to open = case price + key; prices come from Skinport."
+    },
+    {
+      "setCode": "kilowatt-case",
+      "language": "EN",
+      "name": "Kilowatt Case",
+      "slug": "case",
+      "type": "case",
+      "packsContained": 1,
+      "msrpCents": null,
+      "contentsNote": "Opening also needs a $2.50 key (Valve's cut). Cost to open = case price + key; prices come from Skinport."
+    },
+    {
+      "setCode": "gallery-case",
+      "language": "EN",
+      "name": "Gallery Case",
+      "slug": "case",
+      "type": "case",
+      "packsContained": 1,
+      "msrpCents": null,
+      "contentsNote": "Opening also needs a $2.50 key (Valve's cut). Cost to open = case price + key; prices come from Skinport."
+    },
+    {
+      "setCode": "fever-case",
+      "language": "EN",
+      "name": "Fever Case",
+      "slug": "case",
+      "type": "case",
+      "packsContained": 1,
+      "msrpCents": null,
+      "contentsNote": "Opening also needs a $2.50 key (Valve's cut). Cost to open = case price + key; prices come from Skinport."
+    }
+  ]
+}
