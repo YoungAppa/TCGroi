@@ -112,12 +112,26 @@ const SORT_OPTIONS: { value: string; label: string; key: SortKey; desc: boolean 
 ];
 
 export function RankingsTable({
-  products,
+  products: allProducts,
   availableSources,
 }: {
   products: ProductPayload[];
   availableSources: { id: string; displayName: string }[];
 }) {
+  // Only products that can produce a real EV or ROI belong in the rankings (and
+  // in the game tabs derived from them). A freshly-scaffolded game with no price
+  // source yet — CS2 before Skinport — is thus hidden from the public list while
+  // its own product pages (a separate loader) stay reachable by direct link.
+  const products = useMemo(
+    () =>
+      allProducts.filter(
+        (p) =>
+          p.market.priceCents !== null ||
+          p.msrpCents !== null ||
+          p.cards.some((c) => Object.keys(c.raw).length > 0),
+      ),
+    [allProducts],
+  );
   const { state, setState, withFilter } = useFilterState();
   const [sortKey, setSortKey] = useState<SortKey>("popular");
   const [sortDesc, setSortDesc] = useState(true);

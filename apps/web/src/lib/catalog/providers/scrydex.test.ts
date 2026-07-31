@@ -30,7 +30,7 @@ afterEach(() => {
 });
 
 describe("ScrydexCatalogAdapter.fetchCards", () => {
-  it("emits one row per pack tier and skips promo/special variants", async () => {
+  it("emits one row per pack tier, ingests high-tier specials as display-only, and skips promos", async () => {
     vi.stubGlobal(
       "fetch",
       vi.fn(async () =>
@@ -41,11 +41,12 @@ describe("ScrydexCatalogAdapter.fetchCards", () => {
               name: "Shanks",
               number: "120",
               rarity_code: "SEC",
+              images: [{ type: "front", large: "img/base" }],
               variants: [
                 { name: "foil", images: [{ type: "front", large: "img/base" }] }, // SEC base
                 { name: "altArt", images: [{ type: "front", large: "img/alt" }] },
                 { name: "mangaAltArt", images: [{ type: "front", large: "img/manga" }] },
-                { name: "premiumAltArt", images: [] }, // special release — skip
+                { name: "premiumAltArt", images: [{ type: "front", large: "img/premium" }] }, // special release — display-only
                 { name: "championshipStamp", images: [] }, // promo — skip
               ],
             },
@@ -57,7 +58,16 @@ describe("ScrydexCatalogAdapter.fetchCards", () => {
     const cards = await new ScrydexCatalogAdapter().fetchCards(opSet());
     const byTreatment = new Map(cards.map((c) => [c.treatment, c]));
 
-    expect([...byTreatment.keys()].sort()).toEqual(["alt_art", "base", "manga"]);
+    // premium_alt_art is ingested (display-only) since bafd66a; championshipStamp stays skipped.
+    expect([...byTreatment.keys()].sort()).toEqual([
+      "alt_art",
+      "base",
+      "manga",
+      "premium_alt_art",
+    ]);
+    expect(byTreatment.get("premium_alt_art")!.displayOnly).toBe(true);
+    expect(byTreatment.get("premium_alt_art")!.rarity).toBe("special");
+    expect(byTreatment.get("base")!.displayOnly).toBeUndefined();
     // The $4,000 manga is now its OWN manga_rare card — the whole point.
     expect(byTreatment.get("manga")!.rarity).toBe("manga_rare");
     expect(byTreatment.get("base")!.rarity).toBe("secret_rare"); // SEC base from foil
