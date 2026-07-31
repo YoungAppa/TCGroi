@@ -78,7 +78,9 @@ async function main() {
     products.push({
       setCode: s.code,
       language: "EN",
-      name: s.name,
+      // The set IS the case (e.g. "Kilowatt Case"), so the product is just
+      // "Case" — otherwise the product page reads "Kilowatt Case — Kilowatt Case".
+      name: "Case",
       slug: "case",
       type: "case",
       packsContained: 1,
