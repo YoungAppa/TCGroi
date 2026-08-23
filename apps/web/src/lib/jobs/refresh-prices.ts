@@ -126,6 +126,26 @@ export async function refreshPrices() {
         .from(cards)
         .where(eq(cards.setId, setRow.id));
 
+      // Current raw price per card (median across sources), so a graded source
+      // can tell WHICH printing our row represents — see PriceableCard.rawCents.
+      // Read before this run's writes, i.e. yesterday's number: prices barely
+      // move day to day, and a card with no raw yet simply gets null.
+      const rawByCard = new Map<string, number>();
+      if (cardRows.length > 0) {
+        const rawRows = await db.execute<{ card_id: string; cents: number }>(sql`
+          select lp.card_id,
+                 round(percentile_cont(0.5) within group (order by lp.price_cents))::int as cents
+          from ${latestPrices} lp
+          where lp.kind = 'raw'
+            and lp.card_id in (${sql.join(
+              cardRows.map((c) => sql`${c.id}::uuid`),
+              sql`, `,
+            )})
+          group by lp.card_id
+        `);
+        for (const r of rawRows) rawByCard.set(r.card_id, Number(r.cents));
+      }
+
       const priceable: PriceableCard[] = cardRows.map((c) => ({
         cardId: c.id,
         name: c.name,
@@ -133,6 +153,7 @@ export async function refreshPrices() {
         rarity: c.rarity,
         treatment: c.treatment,
         externalIds: c.externalIds,
+        rawCents: rawByCard.get(c.id) ?? null,
       }));
 
       // Map provider-side external ids back to our card ids. Built per set so
@@ -165,7 +186,7 @@ export async function refreshPrices() {
             : [];
           const graded =
             adapter.supports.cardsGraded && adapter.fetchGradedPrices
-              ? await adapter.fetchGradedPrices(priceable)
+              ? await adapter.fetchGradedPrices(priceable, catalogSet)
               : [];
 
           snapshotsWritten += await writeSnapshots(

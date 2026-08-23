@@ -13,6 +13,7 @@ export const PRICE_SOURCE_IDS = [
   "ebay_direct",
   "cardmarket",
   "pokeprice_graded",
+  "scrydex_graded",
   "skinport",
 ] as const;
 
@@ -68,6 +69,12 @@ export const PRICE_SOURCES: Record<PriceSourceId, PriceSourceMeta> = {
     displayName: "PSA graded (eBay)",
     attribution:
       "Graded (PSA 10/9) sale prices from PokemonPriceTracker, derived from eBay sold listings. Not endorsed by PokemonPriceTracker, PSA, or eBay.",
+  },
+  scrydex_graded: {
+    id: "scrydex_graded",
+    displayName: "PSA graded (Scrydex)",
+    attribution:
+      "Graded (PSA 10/9) prices from Scrydex. Not endorsed by or affiliated with Scrydex or PSA.",
   },
   skinport: {
     id: "skinport",

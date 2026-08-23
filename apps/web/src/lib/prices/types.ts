@@ -38,6 +38,17 @@ export interface PriceableCard {
    */
   treatment: string;
   externalIds: Record<string, string>;
+  /**
+   * Our current raw (ungraded) price in cents, when we have one.
+   *
+   * Used to disambiguate a source that lists several PRINTINGS of one card
+   * under separate variants — Base Set Charizard is 1st-Edition Shadowless,
+   * Shadowless, Unlimited, metal and jumbo, whose PSA 10 values span $584 to
+   * $414,330 while our catalog has a single Charizard row. The raw price says
+   * which printing that row actually represents, so graded value can be taken
+   * from the same one instead of guessed.
+   */
+  rawCents?: number | null;
 }
 
 export interface PriceSourceAdapter {
@@ -49,8 +60,16 @@ export interface PriceSourceAdapter {
 
   fetchCardPrices(set: CatalogSet, cards: PriceableCard[]): Promise<PriceSnapshotInput[]>;
   fetchSealedPrices(set: CatalogSet): Promise<PriceSnapshotInput[]>;
-  /** psa9/psa10. Only implemented where the source has graded data. */
-  fetchGradedPrices?(cards: PriceableCard[]): Promise<PriceSnapshotInput[]>;
+  /**
+   * psa9/psa10. Only implemented where the source has graded data. Receives
+   * the set too: a per-expansion source (Scrydex) pages by set rather than
+   * fetching card-by-card, which is the difference between a few credits and
+   * one per card.
+   */
+  fetchGradedPrices?(
+    cards: PriceableCard[],
+    set: CatalogSet,
+  ): Promise<PriceSnapshotInput[]>;
 }
 
 export class PriceSourceError extends Error {

@@ -37,13 +37,23 @@ import {
  *     map (scrydex-variants.ts). Matching is therefore self-consistent: a row
  *     labelled "manga" always reads the mangaAltArt price — no name-guessing,
  *     which is what once let a $4,000 Shanks manga read as $96.
- *   - Graded prices + pop_reports exist in the API but are Growth-plan-gated
- *     ($99) — on Starter every price entry is type "raw". Wire graded/pop when
- *     the plan supports it.
+ *   - Graded prices are Growth-plan-gated ($99). VERIFIED LIVE ON GROWTH
+ *     2026-08-23: Pokémon carries deep graded coverage (swsh7-215 returns 45
+ *     graded entries, base1-4 returns 314) as entries of type "graded" with
+ *     { company, grade, is_perfect, is_signed, is_error, market, currency }.
+ *     One Piece graded is NOT populated yet (0 entries on every probe) — the
+ *     extractor below simply yields nothing for OP until Scrydex fills it in.
  * ───────────────────────────────────────────────────────────────────────────
  */
 const BASE = "https://api.scrydex.com";
 const PAGE_SIZE = 100;
+
+/**
+ * Graded rows carry their own source id, separate from the raw mirror's
+ * "tcgplayer_market": PSA sale prices are a different market from raw NM asks,
+ * and the UI/attribution treats graded sources as their own pill.
+ */
+export const GRADED_SOURCE_ID = "scrydex_graded";
 
 const priceEntry = z
   .object({
@@ -51,9 +61,14 @@ const priceEntry = z
     market: z.number().nullish(),
     low: z.number().nullish(),
     mid: z.number().nullish(),
+    high: z.number().nullish(),
     condition: z.string().nullish(), // NM / LP / MP / HP / DM / U (sealed)
-    company: z.string().nullish(),
+    currency: z.string().nullish(), // USD / JPY — never mix them
+    company: z.string().nullish(), // PSA / BGS / CGC / TAG / ACE / ...
     grade: z.union([z.string(), z.number()]).nullish(),
+    is_perfect: z.boolean().nullish(), // black-label / perfect 10
+    is_signed: z.boolean().nullish(),
+    is_error: z.boolean().nullish(),
   })
   .passthrough();
 
@@ -207,6 +222,120 @@ function rawDollars(prices: z.infer<typeof priceEntry>[] | null | undefined): nu
   return null;
 }
 
+/**
+ * One graded price (dollars) for an exact (company, grade) from a variant's
+ * price list, or null.
+ *
+ * Deliberately strict about WHICH slab counts, because these feed the graded-EV
+ * mode where an over-read directly inflates "worth grading":
+ *   - currency must be USD. Scrydex also returns JPY entries; treating one as
+ *     dollars would be a ~150x error, so a non-USD entry is skipped, never
+ *     converted.
+ *   - signed / error slabs are excluded — a signed PSA 10 trades in a different
+ *     market than the vanilla card, in either direction.
+ *   - is_perfect (black label) is excluded for the same reason: it is a rarer,
+ *     pricier sub-grade, so folding it in would overstate an ordinary PSA 10.
+ * market first, then mid, then low — the same preference order as raw.
+ */
+function gradedDollars(
+  prices: z.infer<typeof priceEntry>[] | null | undefined,
+  company: string,
+  grade: string,
+): number | null {
+  if (!prices?.length) return null;
+  for (const p of prices) {
+    if ((p.type ?? "").toLowerCase() !== "graded") continue;
+    if ((p.company ?? "").toUpperCase() !== company) continue;
+    if (String(p.grade ?? "").trim() !== grade) continue;
+    if (p.is_signed || p.is_error || p.is_perfect) continue;
+    if (p.currency && p.currency.toUpperCase() !== "USD") continue;
+    const v = p.market ?? p.mid ?? p.low;
+    if (typeof v === "number" && v > 0) return v;
+  }
+  return null;
+}
+
+/** The graded kinds we model, in the order they are emitted. */
+const GRADED_KINDS = [
+  { kind: "psa10" as const, company: "PSA", grade: "10" },
+  { kind: "psa9" as const, company: "PSA", grade: "9" },
+];
+
+/** Does this variant carry any usable graded entry at all? */
+function hasGraded(prices: z.infer<typeof priceEntry>[] | null | undefined): boolean {
+  return GRADED_KINDS.some(({ company, grade }) => gradedDollars(prices, company, grade) !== null);
+}
+
+/**
+ * The widest ratio between our raw price and a variant's raw price that still
+ * counts as "the same printing". Competing printings of a card sit far further
+ * apart than this (Base Charizard's variants are 3.5x+ apart), while the same
+ * printing differs only by price drift between snapshots.
+ */
+const PRINTING_MATCH_MAX_RATIO = 3;
+
+/**
+ * The most a PSA 10 may exceed the SAME card's PSA 9 before we treat it as
+ * unverifiable rather than a price.
+ *
+ * Graded entries for low-population cards are asking prices, not sales, and a
+ * single fantasy listing shows up as a PSA 10 wildly detached from its PSA 9 —
+ * e.g. a Platinum Giratina LV.X at PSA 10 $29,890 against PSA 9 $1,017 (29x)
+ * on a $112 raw card, or the suspiciously round $15,000 seen on several
+ * Black & White cards. Left in, those flow straight into graded EV and invent
+ * a "worth grading" verdict out of one listing.
+ *
+ * 12x is the 90th percentile of the observed PSA10:PSA9 distribution across
+ * 5,403 paired cards (median 4.0x, p75 6.7x), and sits well clear of every
+ * verified chase — Base Charizard 3.5x, Blastoise 7.2x, Moonbreon 2.0x. Above
+ * it we drop the PSA 10 only; graded valuation needs both grades, so the card
+ * quietly falls back to its raw value. Understating grading upside is the safe
+ * error, inventing it is not.
+ */
+const MAX_PSA10_OVER_PSA9 = 12;
+
+/**
+ * Which ONE of a Pokémon card's variants our single catalog row represents.
+ *
+ * Scrydex lists each PRINTING as a variant — 1st Edition, Shadowless,
+ * Unlimited, reverse holo — each with its own graded prices, and those differ
+ * enormously ($584 to $414,330 for Base Charizard). Our catalog has one row per
+ * card, so emitting every variant would leave whichever wrote last attached to
+ * the row: a 1st-Edition PSA 10 on an Unlimited card is a ~29x overstatement,
+ * straight into graded EV.
+ *
+ * The raw price settles it: our stored raw came from the printing the row
+ * really is, so the variant whose own raw price is nearest to it is that
+ * printing. When nothing is near, or the card is ambiguous and we hold no raw
+ * price, this returns null and the card is skipped — refusing to guess is the
+ * safe error, since a missing graded price only hides the grading upside while
+ * a wrong one inflates it.
+ */
+function pickPokemonVariant(
+  variants: z.infer<typeof variantSchema>[],
+  ourRawCents: number | null | undefined,
+): z.infer<typeof variantSchema> | null {
+  const candidates = variants.filter((v) => hasGraded(v.prices));
+  if (candidates.length === 0) return null;
+  // Only one printing carries graded prices — no ambiguity to resolve.
+  if (candidates.length === 1) return candidates[0]!;
+  if (!ourRawCents || ourRawCents <= 0) return null;
+
+  const ourDollars = ourRawCents / 100;
+  let best: z.infer<typeof variantSchema> | null = null;
+  let bestRatio = Infinity;
+  for (const v of candidates) {
+    const raw = rawDollars(v.prices);
+    if (raw === null || raw <= 0) continue;
+    const ratio = raw > ourDollars ? raw / ourDollars : ourDollars / raw;
+    if (ratio < bestRatio) {
+      bestRatio = ratio;
+      best = v;
+    }
+  }
+  return bestRatio <= PRINTING_MATCH_MAX_RATIO ? best : null;
+}
+
 export const scrydexPriceProvider = {
   id: "scrydex",
   displayName: "Scrydex",
@@ -319,6 +448,146 @@ export const scrydexPriceProvider = {
       if (rows.length === 0 || total == null || page * size >= total) break;
     }
 
+    return out;
+  },
+
+  /**
+   * PSA 10 / PSA 9 prices for a set's cards, from the SAME per-expansion paged
+   * endpoint the raw fetch uses (`include=prices` returns raw and graded
+   * entries together). One request per page of a set — never per card — so a
+   * full graded pass over a set costs the same handful of credits as raw.
+   *
+   * Emits under its own source id (`scrydex_graded`), not tcgplayer_market:
+   * graded sale prices are a different market from raw NM asks and the UI
+   * attributes them separately, alongside PokemonPriceTracker.
+   */
+  async fetchGradedPrices(
+    set: CatalogSet,
+    cards: PriceableCard[],
+  ): Promise<PriceSnapshotInput[]> {
+    const creds = credentials();
+    if (!creds) return [];
+
+    const game = gameOf(set);
+    const path = GAME_PATH[game];
+    if (!path) return [];
+
+    // Scrydex carries English printings. A JP/ZH set (TCGdex-sourced, so no
+    // pokemontcg_io id) would otherwise fall back to its bare set code, which
+    // can collide with an English expansion id — pointing a Japanese set at
+    // English graded prices. Its cards carry no pokemontcg_io id so nothing
+    // would match today, but the guard makes that safety explicit rather than
+    // incidental.
+    if (set.language !== "EN") return [];
+    if (game === "pokemon" && !set.externalIds["pokemontcg_io"]) return [];
+
+    const pokemonByExternalId = new Map<string, PriceableCard>();
+    const opByNumberTreatment = new Map<string, PriceableCard>();
+    for (const c of cards) {
+      const ext = c.externalIds["pokemontcg_io"];
+      if (ext) pokemonByExternalId.set(ext, c);
+      opByNumberTreatment.set(`${c.number}|${c.treatment}`, c);
+    }
+
+    const headers = { "X-Api-Key": creds.key, "X-Team-ID": creds.teamId };
+    const expansionId =
+      game === "pokemon"
+        ? (set.externalIds["pokemontcg_io"] ?? set.code)
+        : set.code.replace(/-/g, "");
+
+    const out: PriceSnapshotInput[] = [];
+    let implausible = 0;
+    for (let page = 1; ; page++) {
+      const res = await fetchJson(
+        `${BASE}/${path}/v1/expansions/${encodeURIComponent(expansionId)}/cards?include=prices&page=${page}&page_size=${PAGE_SIZE}`,
+        cardsResponse,
+        { provider: "scrydex", headers },
+      );
+
+      const rows = res.data ?? [];
+      const capturedAt = new Date();
+
+      for (const card of rows) {
+        // Resolve this Scrydex card to our row(s), mirroring the raw matcher:
+        // Pokémon ids are ours 1:1; One Piece keys on number + treatment.
+        const targets: { match: PriceableCard; prices: z.infer<typeof priceEntry>[] }[] = [];
+
+        if (game === "pokemon") {
+          const match = pokemonByExternalId.get(card.id);
+          if (match) {
+            // EXACTLY ONE variant per card — see pickPokemonVariant. Pushing
+            // every variant would race several printings' graded prices onto
+            // the same row.
+            const v = pickPokemonVariant(card.variants ?? [], match.rawCents);
+            if (v?.prices?.length) targets.push({ match, prices: v.prices });
+          }
+        } else {
+          const variantsByName = new Map<string, z.infer<typeof variantSchema>>();
+          for (const v of card.variants ?? []) if (v.name) variantsByName.set(v.name, v);
+
+          const consider = (treatment: string, variantName: string | undefined) => {
+            if (!variantName) return;
+            const match = opByNumberTreatment.get(`${card.id}|${treatment}`);
+            const prices = variantsByName.get(variantName)?.prices;
+            if (match && prices?.length) targets.push({ match, prices });
+          };
+          consider("base", variantsByName.has("normal") ? "normal" : "foil");
+          for (const [variantName, { treatment }] of Object.entries(SCRYDEX_TREATMENT_VARIANTS)) {
+            consider(treatment, variantName);
+          }
+          for (const [variantName, { treatment }] of Object.entries(SCRYDEX_DISPLAY_VARIANTS)) {
+            consider(treatment, variantName);
+          }
+        }
+
+        for (const { match, prices } of targets) {
+          const psa10 = gradedDollars(prices, "PSA", "10");
+          const psa9 = gradedDollars(prices, "PSA", "9");
+
+          // A PSA 10 detached from its own PSA 9 is a fantasy listing, not a
+          // price — drop it and let the card fall back to raw.
+          const psa10Trusted =
+            psa10 !== null &&
+            (psa9 === null || psa10 <= psa9 * MAX_PSA10_OVER_PSA9);
+          if (psa10 !== null && !psa10Trusted) implausible++;
+
+          const emit = (kind: "psa10" | "psa9", dollars: number | null) => {
+            if (dollars === null) return;
+            // Same rule the PokemonPriceTracker job uses: a slab worth less
+            // than the raw card is bad data, not a bargain.
+            const cents = toCents(dollars);
+            if (match.rawCents) {
+              const floor = kind === "psa9" ? Math.round(match.rawCents * 0.5) : match.rawCents;
+              if (cents < floor) return;
+            }
+            out.push({
+              externalCardId:
+                match.externalIds["pokemontcg_io"] ??
+                match.externalIds["scrydex"] ??
+                card.id,
+              sourceId: GRADED_SOURCE_ID,
+              priceCents: cents,
+              kind,
+              capturedAt,
+            });
+          };
+
+          emit("psa10", psa10Trusted ? psa10 : null);
+          emit("psa9", psa9);
+        }
+      }
+
+      const total = res.total_count;
+      const size = res.page_size ?? PAGE_SIZE;
+      if (rows.length === 0 || total == null || page * size >= total) break;
+    }
+
+    if (implausible > 0) {
+      // Visible, not silent: a dropped price is data we chose not to trust.
+      console.warn(
+        `[scrydex] ${set.code}: dropped ${implausible} PSA 10 price(s) exceeding ${MAX_PSA10_OVER_PSA9}x their PSA 9.`,
+      );
+    }
     return out;
   },
 

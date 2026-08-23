@@ -67,11 +67,29 @@ export function computeForPayload(
   filter: FilterState,
   availableSourceIds: string[],
 ): EvResult {
+  // Graded valuation is only as sound as the pull rate it multiplies.
+  //
+  // Switching a tier from raw to graded value raises it by an order of
+  // magnitude (Roaring Skies' ultra-rare tier goes $50 -> $830 a card), so the
+  // per-pack rate is amplified by roughly that factor too. On a HIGH/OFFICIAL
+  // table that is fine — the rate is measured. On a LOW-confidence table the
+  // rate is our own estimate, and amplifying an estimate 16x manufactures
+  // conclusions: an XY-era box priced at $4,125 came out "+81% ROI, worth
+  // opening" purely because a guessed 0.25/pack met four-figure PSA 10 prices.
+  //
+  // The default 45% gem rate compounds it — that is a modern-card assumption,
+  // and 2007-2015 cards grade far worse. We have no per-era gem-rate data, and
+  // inventing one would be fabricating the very number in question, so graded
+  // valuation is withheld where the odds are a guess. The card prices are still
+  // shown; only the graded EV is suppressed.
+  const gradeableConfidence =
+    payload.pullRates.confidence !== "low" && payload.pullRates.confidence !== "placeholder";
+
   const opts: EvOptions = {
     ...DEFAULT_EV_OPTIONS,
     selectedSources: effectiveSources(filter, availableSourceIds),
     blend: filter.blend,
-    graded: filter.graded,
+    graded: filter.graded && gradeableConfidence,
   };
 
   // Mixed-pack collections (a UPC whose packs span several sets) can't ride one

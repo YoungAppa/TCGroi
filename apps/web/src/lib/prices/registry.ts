@@ -1,4 +1,5 @@
 import { PriceChartingAdapter } from "./adapters/pricecharting";
+import { ScrydexGradedAdapter } from "./adapters/scrydex-graded";
 import { SkinportAdapter } from "./adapters/skinport";
 import { EbayDirectAdapter, CardmarketAdapter } from "./adapters/stubs";
 import { TcgplayerMarketAdapter } from "./adapters/tcgplayer-market";
@@ -13,6 +14,7 @@ export function allPriceAdapters(): PriceSourceAdapter[] {
   return [
     new TcgplayerMarketAdapter(),
     new PriceChartingAdapter(),
+    new ScrydexGradedAdapter(),
     new EbayDirectAdapter(),
     new CardmarketAdapter(),
   ];
