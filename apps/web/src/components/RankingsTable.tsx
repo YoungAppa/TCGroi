@@ -554,21 +554,8 @@ export function RankingsTable({
           different evidence base than an English one. */}
       {lang === "ja" && (
         <div className="rounded-lg border border-accent/30 bg-accent/5 p-3 text-xs text-muted">
-          <span className="font-medium text-foreground">About Japanese sets.</span>{" "}
-          Cards, rarities and prices come from Scrydex — real Japanese tiers
-          (ダブルレア / アートレア / スーパーレア / スペシャルアートレア), not a translation of the
-          English ones — and prices are converted from the USD figures Scrydex
-          quotes. Card and set names stay in Japanese; they are never machine
-          translated.{" "}
-          <span className="text-foreground">
-            Only a few Japanese sets are ranked so far
-          </span>
-          , because ranking one needs a pull-rate study for that set, and
-          Japanese odds are far less documented than English ones. Japanese
-          boxes also often carry published per-box guarantees (Terastal Festival
-          ex guarantees one SAR per box) which are modelled per set rather than
-          assumed era-wide. Sets without that research stay unranked instead of
-          being given invented odds.
+          <span className="font-medium text-foreground">{t("jp.about.title")}</span>{" "}
+          {t("jp.about.body")}
         </div>
       )}
 

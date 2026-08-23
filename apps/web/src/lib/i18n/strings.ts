@@ -32,6 +32,9 @@ export function isLocale(v: string | null | undefined): v is Locale {
 /** Every translatable string, keyed by a stable English-ish identifier. */
 export const STRINGS = {
   en: {
+    "jp.about.title": "About Japanese sets.",
+    "jp.about.body":
+      "Cards, rarities and prices come from Scrydex — real Japanese tiers, not a translation of the English ones — and prices are converted from the USD figures Scrydex quotes. Card and set names stay in Japanese; they are never machine translated. Only a few Japanese sets are ranked so far, because ranking one needs a pull-rate study for that set, and Japanese odds are far less documented than English ones. Japanese boxes also often carry published per-box guarantees (Terastal Festival ex guarantees one SAR per box), which are modelled per set rather than assumed era-wide. Sets without that research stay unranked instead of being given invented odds.",
     "nav.rankings": "Rankings",
     "nav.collection": "Collection",
     "nav.methodology": "Methodology",
@@ -74,6 +77,9 @@ export const STRINGS = {
   },
 
   ja: {
+    "jp.about.title": "日本語セットについて",
+    "jp.about.body":
+      "カード・レアリティ・価格は Scrydex から取得しています。英語版レアリティの翻訳ではなく、実際の日本語レアリティ（ダブルレア／アートレア／スーパーレア／スペシャルアートレア）です。価格は Scrydex が提示する米ドル建ての数値を換算したものです。カード名・セット名は機械翻訳せず日本語のまま表示します。現時点でランキング対象の日本語セットが少ないのは、ランキングに載せるにはそのセット固有の封入率データが必要で、日本語版の確率は英語版ほど公開されていないためです。また日本語のボックスには公表された「1BOXにSAR1枚」といった保証（テラスタルフェスex など）があることが多く、これは時代ごとの一律推定ではなくセット単位でモデル化しています。根拠のないセットには推測値を与えず、未ランキングのままにしています。",
     "nav.rankings": "ランキング",
     "nav.collection": "コレクション",
     "nav.methodology": "算出方法",
@@ -115,6 +121,9 @@ export const STRINGS = {
   },
 
   zh: {
+    "jp.about.title": "关于日文系列",
+    "jp.about.body":
+      "卡牌、稀有度与价格均来自 Scrydex——采用真实的日文稀有度分级，而非英文分级的翻译；价格由 Scrydex 提供的美元数值换算而来。卡牌与系列名称保留日文原文，不做机器翻译。目前仅有少数日文系列进入排行榜，因为排名需要该系列自身的抽卡率研究，而日文版的概率公开程度远不如英文版。日文原盒通常还带有官方公布的每盒保底（例如「太晶祭 ex」保证每盒 1 张 SAR），我们按系列单独建模，而不套用整个世代的估算。缺乏研究依据的系列宁可不排名，也不会使用凭空推测的概率。",
     "nav.rankings": "排行榜",
     "nav.collection": "收藏",
     "nav.methodology": "计算方法",
