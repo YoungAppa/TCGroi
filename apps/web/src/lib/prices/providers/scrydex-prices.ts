@@ -176,9 +176,19 @@ const CONDITION_ORDER = ["NM", "LP", "MP", "HP", "DM", "U"] as const;
  */
 const SEALED_TYPES: Record<
   string,
-  { our: string; nameMust?: RegExp; nameMustNot: RegExp }
+  { our: string; nameMust?: RegExp; nameMustNot: RegExp; imageMustNot?: RegExp }
 > = {
-  "booster box": { our: "booster_box", nameMustNot: /\bcase\b|sleeved|wave|edition/i },
+  // imageMustNot is the laxer rule used for PHOTOS only. A wave/edition
+  // reprint is a different SKU at a different price, so it must never supply a
+  // price — but it is the same box on camera, and One Piece's early sets ship
+  // exclusively as "Wave 1"/"Wave 2", so the strict rule leaves them with no
+  // picture at all. A Case (12 boxes) or a Sleeved pack is a genuinely
+  // different object and stays rejected for both.
+  "booster box": {
+    our: "booster_box",
+    nameMustNot: /\bcase\b|sleeved|wave|edition/i,
+    imageMustNot: /\bcase\b|sleeved/i,
+  },
   "booster pack": {
     our: "booster_pack",
     nameMustNot: /sleeved|\bcase\b|bundle|set of|blister|art|dash|double/i,
@@ -626,6 +636,9 @@ async function bestSealedByType(
   const game = gameOf(set);
   const path = GAME_PATH[game];
   const best = new Map<string, { name: string; cents: number | null; imageUrl: string | null }>();
+  // Photo-only fallback, filled under the laxer imageMustNot rule and consulted
+  // by fetchScrydexSealedImages when the strict pass found no picture.
+  const imageFallback = new Map<string, { name: string; imageUrl: string | null }>();
   if (!path) return best;
 
   const expansionId =
@@ -643,8 +656,17 @@ async function bestSealedByType(
       const rule = item.type ? SEALED_TYPES[item.type.toLowerCase()] : undefined;
       if (!rule) continue;
       const name = item.name ?? "";
-      if (rule.nameMustNot.test(name)) continue;
       if (rule.nameMust && !rule.nameMust.test(name)) continue;
+
+      // Photo-only pass first: laxer, and never feeds a price.
+      if (!(rule.imageMustNot ?? rule.nameMustNot).test(name)) {
+        const prevImg = imageFallback.get(rule.our);
+        if (!prevImg || name.length < prevImg.name.length) {
+          imageFallback.set(rule.our, { name, imageUrl: sealedImageUrl(item) });
+        }
+      }
+
+      if (rule.nameMustNot.test(name)) continue;
       const prev = best.get(rule.our);
       if (!prev || name.length < prev.name.length) {
         const dollars = sealedRawDollars(item);
@@ -658,6 +680,13 @@ async function bestSealedByType(
     const total = res.total_count;
     const size = res.page_size ?? PAGE_SIZE;
     if (rows.length === 0 || total == null || page * size >= total) break;
+  }
+
+  // Fill in photos the strict pass couldn't supply, without touching prices.
+  for (const [ourType, fb] of imageFallback) {
+    const cur = best.get(ourType);
+    if (!cur) best.set(ourType, { name: fb.name, cents: null, imageUrl: fb.imageUrl });
+    else if (!cur.imageUrl) cur.imageUrl = fb.imageUrl;
   }
   return best;
 }
@@ -680,5 +709,12 @@ export async function fetchScrydexSealedImages(set: CatalogSet): Promise<Map<str
 function gameOf(set: CatalogSet): string {
   if (set.externalIds["pokemontcg_io"]) return "pokemon";
   if (set.externalIds["optcgapi"]) return "one-piece";
+  // Scrydex became the One Piece CATALOG source (ef5de3c), so sets ingested
+  // since carry only a scrydex id ("OP01") and no optcgapi one. Without this
+  // they resolved to "unknown" and were skipped for sealed prices AND photos —
+  // silently, since an unsupported game is a legitimate no-op here. Pokémon
+  // sets always keep their pokemontcg_io id and are matched above; Magic comes
+  // from Scryfall and carries neither.
+  if (set.externalIds["scrydex"]) return "one-piece";
   return "unknown";
 }
