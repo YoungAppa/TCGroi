@@ -1,23 +1,23 @@
 {
   "game": "pokemon",
   "setCode": "swsh7",
-  "version": 1,
-  "sampleSizePacks": null,
-  "sourceUrl": "https://deltiasgaming.com/everything-you-need-to-know-about-pokemon-tcg-pull-rates/",
-  "sourceNote": "Evolving Skies: Sword & Shield-era aggregate model, not a single primary study. Community box breakdowns (Deltia's Gaming, Coded Yellow, Bleeding Cool pull-rate quests, 10,000+-pack samples) converge on ~6-8 Pokémon V/VMAX, 1-3 alt/full arts, and 1-2 rainbow/gold secrets per 36-pack box. Mapped onto the three normalized tiers this set actually has: double_rare (plain V + Radiant) ~0.11/pack, ultra_rare (VMAX/VSTAR + Rare Ultra full/alt art) ~0.11/pack, hyper_rare (Rainbow + Secret) ~0.042/pack. Alt arts pull ~1:72, far below the flat ultra_rare rate, so a uniform tier average UNDERSTATES the headline chase (e.g. Moonbreon) rather than inflating it — deliberately conservative. Tier values are computed from live PriceCharting card prices, so per-set EV differences come from real card values, not the odds.",
-  "confidence": "low",
+  "version": 2,
+  "sampleSizePacks": 8000,
+  "sourceUrl": "https://www.tcgplayer.com/content/article/Pok%C3%A9mon-TCG-Evolving-Skies-Pull-Rates/6a743d7b-e5ee-4fd6-9d18-64a636990e8c/",
+  "sourceNote": "PRIMARY MEASURED STUDY, not a community aggregate: the TCGplayer Authentication Center opened more than 8,000 Evolving Skies packs (August 2021) and published per-pack rates with 95% confidence intervals. Their figures: normal V 10.56% +/-0.65, normal VMAX 5.60% +/-0.48, full art 2.78% +/-0.35, alt-art V 1.10% +/-0.22, rainbow rare 0.84% +/-0.19, gold rare 0.91% +/-0.20; any alt-art VMAX 0.30% +/-0.12 (1 in 332) and the Umbreon VMAX alt 'Moonbreon' about 0.05% (1 in ~2,000). Mapped onto this set's three normalized tiers by what each ACTUALLY contains: double_rare = plain V (#7-122) = 10.56%; ultra_rare = plain VMAX plus the full-art/alt-art V secret range (#166-203) = 5.60+2.78+1.10 = 9.48%; hyper_rare = the #204+ secret range of alt-art VMAX, rainbow and gold = 0.30+0.84+0.91 = 2.05%. Two independent checks confirm the mapping: the three tiers sum to 22.09% against TCGplayer's stated 22.10% for 'any Ultra Rare or Secret Rare', and full-art-or-better sums to 5.93% against their stated 5.94%. This REPLACES a Sword & Shield era-generic estimate that put hyper_rare at 4.2% - roughly double the measured 2.05% - which overstated this set's EV by about 1.5x. Note the tier average understates the headline chase: Moonbreon at 1 in ~2,000 is far rarer than the uniform-within-tier assumption implies, so the error runs in the conservative direction.",
+  "confidence": "high",
   "slots": [
     {
       "rarity": "double_rare",
-      "perPackProbability": 0.11
+      "perPackProbability": 0.1056
     },
     {
       "rarity": "ultra_rare",
-      "perPackProbability": 0.11
+      "perPackProbability": 0.0948
     },
     {
       "rarity": "hyper_rare",
-      "perPackProbability": 0.042
+      "perPackProbability": 0.0205
     }
   ],
   "alternateEstimates": [],
