@@ -181,8 +181,14 @@ export function RankingsTable({
       .map((payload) => ({ payload, c: computeProduct(payload, state, availableIds) }))
       .filter((r) => {
         if (!positiveOnly) return true;
-        // "Worth opening": either denominator's ROI is non-negative.
-        return (r.c.roiRetail ?? -1) >= 0 || (r.c.roiMarket ?? -1) >= 0;
+        // "Worth opening" means worth opening at a price you can actually pay,
+        // so it keys on MARKET ROI alone. Retail ROI is measured against MSRP,
+        // which for anything sought-after is a price no shelf has — counting it
+        // marked sets "worth opening" that lose most of their value at the only
+        // price you could really buy them at (Paldea Evolved: +80% at MSRP,
+        // -38% at market). Retail ROI is still shown; it just doesn't decide
+        // the verdict.
+        return (r.c.roiMarket ?? -1) >= 0;
       });
   }, [products, state, availableIds, game, lang, confFilter, typeFilter, genFilter, query, positiveOnly]);
 
@@ -523,7 +529,12 @@ export function RankingsTable({
           <option value="medium">Medium data</option>
           <option value="low">Low data</option>
         </select>
-        <ColumnPill label="Worth opening (+ROI)" on={positiveOnly} onClick={() => setPositiveOnly((v) => !v)} />
+        <ColumnPill
+          label="Worth opening (+ROI)"
+          title="Products whose average unbox beats today's market price — the price you can actually buy at. Retail/MSRP ROI is shown but doesn't decide this."
+          on={positiveOnly}
+          onClick={() => setPositiveOnly((v) => !v)}
+        />
         {filtersActive && (
           <button onClick={clearFilters} className="text-muted underline hover:text-foreground">
             clear
@@ -559,11 +570,22 @@ export function RankingsTable({
   );
 }
 
-function ColumnPill({ label, on, onClick }: { label: string; on: boolean; onClick: () => void }) {
+function ColumnPill({
+  label,
+  on,
+  onClick,
+  title,
+}: {
+  label: string;
+  on: boolean;
+  onClick: () => void;
+  title?: string;
+}) {
   return (
     <button
       onClick={onClick}
       aria-pressed={on}
+      title={title}
       className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
         on
           ? "bg-accent/15 text-accent"

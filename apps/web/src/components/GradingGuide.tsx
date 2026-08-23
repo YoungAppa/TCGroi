@@ -7,6 +7,8 @@ interface ChaseLike {
   number: string;
   valueCents: number;
   psa10Cents: number | null;
+  /** Guaranteed promo (ETB/box insert) rather than a card pulled from a pack. */
+  isPromo?: boolean;
 }
 
 /**
@@ -20,9 +22,24 @@ interface ChaseLike {
  * not the probability-weighted expectation. Cards below a few dollars raw are
  * never worth grading, so they're omitted.
  */
-export function GradingGuide({ chase }: { chase: ChaseLike[] }) {
+export function GradingGuide({
+  chase,
+  promos = [],
+}: {
+  chase: ChaseLike[];
+  /**
+   * Guaranteed promos, listed FIRST: unlike a chase card you might pull, every
+   * buyer gets these, so "should I grade it?" is a decision they will actually
+   * face. Tagged so they're never mistaken for a pack pull.
+   */
+  promos?: ChaseLike[];
+}) {
   const GRADEABLE_MIN = 1000; // $10 raw — the fee ($80+) dwarfs anything cheaper
-  const rows = chase.filter((c) => c.valueCents >= GRADEABLE_MIN).slice(0, 12);
+  const promoRows = promos
+    .filter((c) => c.valueCents >= GRADEABLE_MIN)
+    .map((c) => ({ ...c, isPromo: true }));
+  const chaseRows = chase.filter((c) => c.valueCents >= GRADEABLE_MIN);
+  const rows = [...promoRows, ...chaseRows].slice(0, 12);
   if (rows.length === 0) return null;
 
   return (
@@ -61,6 +78,14 @@ export function GradingGuide({ chase }: { chase: ChaseLike[] }) {
                 <tr key={c.cardId} className="border-b border-border/40 last:border-0">
                   <td className="py-1.5 pr-3">
                     {c.name} <span className="text-muted">#{c.number}</span>
+                    {c.isPromo && (
+                      <span
+                        className="ml-1.5 rounded bg-surface-raised px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted"
+                        title="Guaranteed promo card — every one of these products includes it, so it isn't a pack pull."
+                      >
+                        promo
+                      </span>
+                    )}
                   </td>
                   <td className="tabular py-1.5 pr-3">{formatCents(c.valueCents)}</td>
                   <td className="tabular py-1.5 pr-3 text-muted">

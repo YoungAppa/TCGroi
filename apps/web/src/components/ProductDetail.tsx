@@ -9,7 +9,7 @@ import { useMemo, useState } from "react";
 import { rarityDescription, rarityLabel } from "@/lib/catalog/rarities";
 import { computeProduct } from "@/lib/data/compute";
 import type { ProductPayload } from "@/lib/data/types";
-import { blendPrices, packsForProbability } from "@packroi/ev";
+import { blendPrices, median, packsForProbability } from "@packroi/ev";
 import {
   formatCents,
   formatOneIn,
@@ -446,7 +446,22 @@ export function ProductDetail({
       })()}
 
       {/* ---- grading break-even ---- */}
-      <GradingGuide chase={ev.chase} />
+      <GradingGuide
+        chase={ev.chase}
+        promos={promoRows
+          .filter((p) => p.priceCents !== null)
+          .map((p) => {
+            const card = payload.cards.find((c) => c.cardId === p.cardId);
+            return {
+              cardId: p.cardId,
+              name: p.name,
+              number: p.number,
+              valueCents: p.priceCents!,
+              // Graded price is its own market, like the chase table's.
+              psa10Cents: median(Object.values(card?.psa10 ?? {})),
+            };
+          })}
+      />
 
       {/* ---- packs-needed calculator ---- */}
       <PacksCalculator ev={ev} roiMarket={roiMarket} />
