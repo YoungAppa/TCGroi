@@ -1,6 +1,12 @@
 # Deploying TCGROI
 
-The app is a Next.js 16 app in `apps/web`, backed by a Neon Postgres database,
+> **Update 2026-07-30:** the database moved from Neon to **Railway Postgres**
+> (Neon hit its transfer quota). Wherever this doc says "Neon", read Railway —
+> the app's DB client is generic, so only `DATABASE_URL` changes (it's in
+> `.env.local`). Rotate the Railway DB password before going public, then use
+> the rotated URL as the production `DATABASE_URL`.
+
+The app is a Next.js 16 app in `apps/web`, backed by a Railway Postgres database,
 with three scheduled data-refresh cron jobs. It builds cleanly and is ready to
 deploy to Vercel. This guide lists what's already done and the steps only you
 can do (creating accounts, pasting secrets, connecting the repo, the domain).
