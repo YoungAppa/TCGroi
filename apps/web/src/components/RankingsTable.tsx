@@ -548,6 +548,30 @@ export function RankingsTable({
         <span className="ml-auto text-muted">{rows.length} shown</span>
       </div>
 
+      {/* What the Japanese data does and does not cover. Shown above the
+          results, not as an empty state, because the caveat matters most when
+          sets ARE listed — a reader needs to know a ranked JP set rests on a
+          different evidence base than an English one. */}
+      {lang === "ja" && (
+        <div className="rounded-lg border border-accent/30 bg-accent/5 p-3 text-xs text-muted">
+          <span className="font-medium text-foreground">About Japanese sets.</span>{" "}
+          Cards, rarities and prices come from Scrydex — real Japanese tiers
+          (ダブルレア / アートレア / スーパーレア / スペシャルアートレア), not a translation of the
+          English ones — and prices are converted from the USD figures Scrydex
+          quotes. Card and set names stay in Japanese; they are never machine
+          translated.{" "}
+          <span className="text-foreground">
+            Only a few Japanese sets are ranked so far
+          </span>
+          , because ranking one needs a pull-rate study for that set, and
+          Japanese odds are far less documented than English ones. Japanese
+          boxes also often carry published per-box guarantees (Terastal Festival
+          ex guarantees one SAR per box) which are modelled per set rather than
+          assumed era-wide. Sets without that research stay unranked instead of
+          being given invented odds.
+        </div>
+      )}
+
       {lang === "ja" && rows.length === 0 ? (
         <div className="rounded-lg border border-border bg-surface p-8 text-center text-sm text-muted">
           {gameName(game)} <span className="font-medium">Japanese</span> ROI is rolling out set by
