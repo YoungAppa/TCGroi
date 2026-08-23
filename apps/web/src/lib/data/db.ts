@@ -21,6 +21,36 @@ import type { ProductPayload, RankingsPayload } from "./types";
  * A handful of queries assembled in JS — never a query per product, never an
  * external API call. Pages are ISR'd, so this runs at build/revalidate only.
  */
+/**
+ * The most the market may exceed MSRP before MSRP stops being a real option.
+ *
+ * Set at 2x: normal retail scarcity and regional variation move a box maybe
+ * 20-50% over list, but a box trading at double its MSRP is not a box anyone
+ * is selling at MSRP.
+ */
+const MSRP_STALE_MARKET_RATIO = 2;
+
+/**
+ * MSRP, but only when it is still a price someone could actually pay.
+ *
+ * The printed retail price is real history and stays in the data files, yet
+ * quoting a retail ROI against it implies a purchase that is not available:
+ * Evolving Skies lists at $143.64 and trades at $2,417, which rendered as
+ * "+108% at retail" on a box that loses ~88% at any price you can buy it for.
+ * Pre-Sword & Shield sets already carry no MSRP for this reason; this applies
+ * the same rule by evidence rather than by date, so a sought-after modern set
+ * is treated like the vintage it now trades as. Returns null once the market
+ * has run past the ratio, which makes the retail column read "—" exactly as an
+ * unpriced product does.
+ */
+function purchasableMsrpCents(
+  msrpCents: number | null,
+  marketCents: number | null,
+): number | null {
+  if (msrpCents === null || marketCents === null) return msrpCents;
+  return marketCents > msrpCents * MSRP_STALE_MARKET_RATIO ? null : msrpCents;
+}
+
 export async function loadRankingsFromDb(): Promise<RankingsPayload> {
   const db = getDb();
 
@@ -283,7 +313,7 @@ export async function loadRankingsFromDb(): Promise<RankingsPayload> {
       packsContained: p.packsContained,
       // Prefer the actual box/pack photo; fall back to the set logo.
       imageUrl: p.productImageUrl ?? p.logoUrl,
-      msrpCents: p.msrpCents,
+      msrpCents: purchasableMsrpCents(p.msrpCents, market.priceCents),
       market,
       sealed,
       guaranteedCardIds: p.guaranteedCardIds,
