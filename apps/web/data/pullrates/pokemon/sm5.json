@@ -1,19 +1,19 @@
 {
   "game": "pokemon",
   "setCode": "sm5",
-  "version": 1,
+  "version": 3,
   "sampleSizePacks": null,
-  "sourceUrl": "https://www.dripshop.live/blog/pokemon-trading-cards/team-up-pull-rates---full-breakdown--rarest-cards",
-  "sourceNote": "Ultra Prism: Sun & Moon (GX-era) aggregate model, confidence LOW. Community box breakdowns (dripshop Team Up study, Pokecompare, Flipside Gaming) put holo GX at ~1:6-9 packs, full-art GX/trainer ~1:20, and rainbow/gold secret ~1:60 each. Folded onto the two normalized tiers this set has: ultra_rare (Rare Holo GX + Rare Ultra full arts) ~0.18/pack, hyper_rare (Rainbow + Secret) ~0.03/pack. Tier values come from live PriceCharting card prices, so per-set EV differences reflect real card values, not the odds. Box price validated against a real 2025 eBay sold comp for the era (Cosmic Eclipse box ~$3,275 sold Dec 2025).",
+  "sourceUrl": "https://www.elitefourum.com/t/pull-rates-in-sun-moon-sword-shield-sets/25220",
+  "sourceNote": "Sun & Moon era estimate, ANCHORED to the one primary measurement that exists for the era: the Elite Fourum tally of Sun & Moon base (sm1) at n=7,020 packs, which measured Holo GX 11.15%, full-art Ultra Rare 4.22%, Rainbow 1.47% and Secret 0.81% - so ultra_rare 15.37% and hyper_rare 2.28% on our tiers. Those figures are applied here in place of the previous unsourced 18%/3% aggregate. CONFIDENCE STAYS LOW, DELIBERATELY, for two reasons. First, this is a measurement of a DIFFERENT SET: no counted study of this set was found, and Sun & Moon sets are known to vary - the same thread reports Cosmic Eclipse (sm12) at roughly 28% overall against sm1's 17.65%, which if real would mean later sets in the era are considerably richer than this table assumes. Second, even the sm1 anchor is video-sourced and unauditable (see the sm1 table's note). A dedicated 2026 research pass across five search angles found NO other primary, sample-sized study for any Sun & Moon set.",
   "confidence": "low",
   "slots": [
     {
       "rarity": "ultra_rare",
-      "perPackProbability": 0.18
+      "perPackProbability": 0.1537
     },
     {
       "rarity": "hyper_rare",
-      "perPackProbability": 0.03
+      "perPackProbability": 0.0228
     }
   ],
   "alternateEstimates": [],

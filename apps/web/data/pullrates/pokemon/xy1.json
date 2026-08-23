@@ -1,10 +1,10 @@
 {
   "game": "pokemon",
   "setCode": "xy1",
-  "version": 1,
+  "version": 2,
   "sampleSizePacks": null,
-  "sourceUrl": "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg-part-two",
-  "sourceNote": "XY: XY (EX/BREAK-era) aggregate model, confidence LOW. Community studies (Flipside Gaming, Elite Fourum) put EX at ~1:6 packs, full-art UR ~1:12, secret rare ~1:72. Folded onto the tiers this set has: ultra_rare (Rare Holo EX + Rare Ultra full arts) ~0.25/pack, hyper_rare (Rare Secret) ~0.014/pack; BREAK cards sit out of EV. PRICE CAVEAT: sealed XY-era boxes trade in a thin, volatile vintage market with very wide ask/sold spreads (e.g. a BREAKthrough box showed a ~$12k ask vs a $797 last sale). The box price here is PriceCharting's aggregate — a real reference, validated on the liquid Evolutions set (PC ~$2.3k ≈ StockX ~$2.6k), but treat it as indicative, not a firm transaction price. ROI is deeply negative across the whole plausible range regardless.",
+  "sourceUrl": "https://www.pokebeach.com/forums/threads/the-english-booster-box-pull-rates-thread.115712/",
+  "sourceNote": "NO PRIMARY DATA EXISTS FOR THIS ERA. A dedicated 2026 research pass across five search angles found no counted, sample-sized pull-rate study for ANY XY set. The most-cited community source, PokeBeach's 'English Booster Box Pull Rates' thread, is a stream of self-reported single-box tallies with no maintained running total, no spreadsheet and no statistical write-up - anecdotes, not a study. theexpectedvalue.com, the natural candidate, publishes ZERO per-pack rates for any pre-2020 set as a matter of stated policy, because the odds were never officially disclosed. The rates below are therefore a MODEL, not a measurement: EX ~1:6 packs, full-art ultra rare ~1:12, secret rare ~1:72, folded onto this set's tiers as ultra_rare 0.25/pack and hyper_rare 0.014/pack. Treat them as the site's own estimate. They are the least-evidenced numbers on the site and the ones most likely to be wrong; a set here reading close to break-even should be read as 'unknown', not as a finding. BREAK cards sit outside EV. Neither Wizards of the Coast nor The Pokemon Company has ever published odds for any set of this period, so there is no authoritative figure to calibrate against.",
   "confidence": "low",
   "slots": [
     {

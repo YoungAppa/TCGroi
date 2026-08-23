@@ -1,10 +1,10 @@
 {
   "game": "pokemon",
   "setCode": "pl1",
-  "version": 1,
+  "version": 2,
   "sampleSizePacks": null,
-  "sourceUrl": "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg-part-two",
-  "sourceNote": "Platinum: Diamond & Pearl / Platinum-era model, confidence LOW. The era's chases are the Pokémon Lv.X (ultra_rare) and, in the Platinum sub-series, gold-star Secret Rares. Lv.X pulled at roughly 1-2 per 36-pack box (~0.04/pack); secret rares ~1:72 (~0.014/pack). Regular holos are bulk. PRICE CAVEAT: sealed DP/Platinum boxes trade in a very thin, ask-skewed vintage market; the PriceCharting box figure is indicative, not a firm transaction price. ROI is deeply negative across the whole plausible range.",
+  "sourceUrl": "https://www.pokebeach.com/forums/threads/pull-rates-for-every-set.104477/",
+  "sourceNote": "NO PRIMARY DATA EXISTS FOR THIS ERA. A dedicated 2026 research pass found no counted pull-rate study for any Diamond & Pearl or Platinum set. The widely repeated '1 Lv.X per box' figure traces to a 2010 PokeBeach forum guide that SELF-DECLARES 'these are estimations, not exact ratios', cites no sample or method anywhere, and was demonstrably revised in response to single-box anecdotes, with its author admitting he averaged rumours to produce the headline numbers. A competing unsourced claim puts Lv.X at ~1:36 packs in early DP improving to ~1:18 later, which CONTRADICTS '1 per box' on a 36-pack box - and neither side has a sample. The rates below (ultra_rare ~0.04/pack for Lv.X, hyper_rare 0.014/pack for gold-star secrets) are the site's own model sitting between those unsourced claims. Regular holos are treated as bulk. PRICE CAVEAT: sealed DP and Platinum boxes trade as vintage collectables well above what their contents support.",
   "confidence": "low",
   "slots": [
     {

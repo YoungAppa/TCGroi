@@ -1,10 +1,10 @@
 {
   "game": "pokemon",
   "setCode": "base5",
-  "version": 1,
+  "version": 2,
   "sampleSizePacks": null,
-  "sourceUrl": "https://www.pricecharting.com/",
-  "sourceNote": "Team Rocket: WOTC vintage (1999–2002) model, confidence LOW. A pack of this era is 11 cards with a single rare slot; the only chase is the HOLO rare (Charizard, Lugia, …), which appears roughly 1 in 3 packs — so ultra_rare (Rare Holo) is set to ~0.33/pack, non-holo rares and below are bulk. Card + box prices are PriceCharting's UNLIMITED-print market (1st Edition / Shadowless trade far higher and are NOT modelled here). PRICE CAVEAT: sealed vintage boxes trade in an extremely thin, ask-skewed collector market — the box figure is indicative, not a firm transaction price. ROI is deeply negative across the whole plausible range.",
+  "sourceUrl": "https://www.pokebeach.com/forums/threads/pull-rates-for-every-set.104477/",
+  "sourceNote": "NO PRIMARY DATA EXISTS FOR THIS ERA. The '1 in 3 packs' holo rate is NOT established by any primary measurement. A dedicated 2026 research pass traced its canonical statement to a single 2010 PokeBeach forum guide - a blanket, era-blind, uncounted line reading 'HOLO (ANY SET): One in every three packs (1:3), about twelve per box', with no set breakdown and no sample. Several apparently precise per-set holo tallies (Fossil 1st Edition 120 holos in 360 packs, Base Unlimited 96/288, Jungle 1st Edition 65/216, Gym Heroes 1st Edition 68/216) were checked and REFUTED - they could not be traced to a real counted source and must not be used. Critically, NO source was found documenting ANY pack-composition difference between 1st Edition, Shadowless and Unlimited print runs, so this table cannot distinguish them and does not try. What IS solid is composition: a 1999-2000 pack is 11 cards - 1 rare, 3 uncommon, 7 common - with NO reverse-holo slot (the reverse slot arrives with Legendary Collection in May 2002), and a single rare slot from which any holo must come. ultra_rare (Rare Holo) is set to ~0.33/pack on the unverified 1:3 figure; non-holo rares and below are bulk. Card and box prices are PriceCharting's Unlimited-print figures. Neither Wizards of the Coast nor The Pokemon Company ever published odds for these sets.",
   "confidence": "low",
   "slots": [
     {

@@ -42,7 +42,7 @@ export const STRINGS = {
       "Pull rates are community estimates, not official odds — every EV here is a projection, not a promise.",
     "rankings.title": "Sealed product rankings",
     "rankings.subtitle":
-      "Expected value of opening, from community pull rates × live card prices. Sets without real community data are hidden until they have it.",
+      "Expected value of opening, from pull rates × live card prices. The badge on each set says how well-evidenced its odds are — from measured studies down to eras where no primary data exists at all.",
     "filter.sources": "Sources",
     "filter.blend": "blend",
     "filter.show": "Show",
@@ -87,7 +87,7 @@ export const STRINGS = {
       "封入率は公式の確率ではなくコミュニティの推定値です。期待値はあくまで予測であり、保証ではありません。",
     "rankings.title": "未開封商品ランキング",
     "rankings.subtitle":
-      "コミュニティの封入率 × 最新カード価格から算出した開封時の期待値。信頼できるデータがないセットは表示されません。",
+      "封入率 × 最新カード価格から算出した開封時の期待値。各セットのバッジは根拠の強さを示します — 実測データに基づくものから、一次データが存在しない時代のものまで。",
     "filter.sources": "価格ソース",
     "filter.blend": "統合方法",
     "filter.show": "表示",
@@ -131,7 +131,7 @@ export const STRINGS = {
       "抽卡率为社群估算值，并非官方公布的概率——所有期望值均为推算，不构成保证。",
     "rankings.title": "未拆封商品排行榜",
     "rankings.subtitle":
-      "以社群抽卡率 × 实时卡价计算的开封期望值。没有可靠数据的系列不会显示。",
+      "以抽卡率 × 实时卡价计算的开封期望值。每个系列的标签表示其概率依据的可靠程度——从实测研究，到根本不存在一手数据的时代。",
     "filter.sources": "价格来源",
     "filter.blend": "汇总方式",
     "filter.show": "显示",

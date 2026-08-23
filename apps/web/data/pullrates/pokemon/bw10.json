@@ -1,10 +1,10 @@
 {
   "game": "pokemon",
   "setCode": "bw10",
-  "version": 1,
+  "version": 2,
   "sampleSizePacks": null,
   "sourceUrl": "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg-part-two",
-  "sourceNote": "Plasma Blast: Black & White EX-era aggregate model, confidence LOW. BW's Pokémon-EX (from Next Destinies on) pulled at ~1:6-8 packs with full-art UR ~1:12 and secret rare ~1:72 (community EX-era studies). Folded: ultra_rare (Rare Holo EX + Rare Ultra full arts) ~0.25/pack, hyper_rare (Rare Secret) ~0.014/pack. PRICE CAVEAT: sealed BW-era boxes trade in a very thin, volatile, ask-skewed vintage market; the PriceCharting box figure is indicative, not a firm transaction price. ROI is deeply negative across the whole plausible range.",
+  "sourceNote": "NO PRIMARY DATA EXISTS FOR THIS ERA. A dedicated 2026 research pass found no counted pull-rate study for any Black & White set. The only figures in circulation trace to a single 2017 retailer hobby blog which gives ultra rares ~1:36 packs in Black & White improving to ~1:18 by Noble Victories and secret rares ~1:72, with no sample, no method and no attribution - folklore. Nothing primary was found either to support or to contradict it. The rates below (ultra_rare 0.05/pack, hyper_rare 0.014/pack) are the site's own model built on that folklore. The era's chase pool is genuinely thin - the 2011 base-era sets had no Pokemon-EX - so the EV here rests on very few cards, which makes it sensitive to any single price. PRICE CAVEAT: sealed Black & White boxes trade as vintage; their market price reflects scarcity and nostalgia, not pack contents.",
   "confidence": "low",
   "slots": [
     {
