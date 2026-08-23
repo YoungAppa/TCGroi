@@ -8,7 +8,10 @@ import { useMemo, useState } from "react";
 
 import { computeProduct, type ProductComputation } from "@/lib/data/compute";
 import type { ProductPayload } from "@/lib/data/types";
-import { formatCents, formatProbability, formatRoi } from "@packroi/ev/format";
+import {formatProbability, formatRoi} from "@packroi/ev/format";
+
+import { useI18n } from "@/lib/i18n/context";
+import { useMoney } from "@/lib/money/context";
 
 import { ConfidenceBadge, RoiCell } from "./badges";
 import { SourceFilter } from "./SourceFilter";
@@ -118,6 +121,8 @@ export function RankingsTable({
   products: ProductPayload[];
   availableSources: { id: string; displayName: string }[];
 }) {
+  const { money } = useMoney();
+  const { t } = useI18n();
   // Only products that can produce a real EV or ROI belong in the rankings (and
   // in the game tabs derived from them). A freshly-scaffolded game with no price
   // source yet — CS2 before Skinport — is thus hidden from the public list while
@@ -332,11 +337,11 @@ export function RankingsTable({
                     </span>
                   </Link>
                 </td>
-                <td className="tabular px-3 py-2">{formatCents(c.ev.evProductCents)}</td>
+                <td className="tabular px-3 py-2">{money(c.ev.evProductCents)}</td>
                 {retailOn && (
                   <>
                     <td className="tabular border-l border-border/60 px-3 py-2 text-muted">
-                      {payload.msrpCents !== null ? formatCents(payload.msrpCents) : "—"}
+                      {payload.msrpCents !== null ? money(payload.msrpCents) : "—"}
                     </td>
                     <td className="tabular px-3 py-2">
                       <RoiCell roi={c.roiRetail} />
@@ -346,7 +351,7 @@ export function RankingsTable({
                 {marketOn && (
                   <>
                     <td className={`tabular border-l border-border/60 px-3 py-2 ${MARKET_TINT}`}>
-                      {payload.market.priceCents !== null ? formatCents(payload.market.priceCents) : "—"}
+                      {payload.market.priceCents !== null ? money(payload.market.priceCents) : "—"}
                       {payload.market.isManual && (
                         <span
                           title={`Hand-tracked ${payload.market.asOf ?? ""} — ${payload.market.source ?? ""}. Replaced automatically once a sealed price source is connected.`}
@@ -431,8 +436,8 @@ export function RankingsTable({
           />
           {/* Price toggles: which denominator to show (hides the other page-wide). */}
           <span className="ml-1 text-xs uppercase tracking-wide text-muted">Show</span>
-          <ColumnPill label="Retail (MSRP)" on={retailOn} onClick={toggleRetail} />
-          <ColumnPill label="Market" on={marketOn} onClick={toggleMarket} />
+          <ColumnPill label={t("filter.retail")} on={retailOn} onClick={toggleRetail} />
+          <ColumnPill label={t("filter.market")} on={marketOn} onClick={toggleMarket} />
         </div>
         <div className="flex items-center gap-3">
           {/* List / Icon view toggle — a calm segmented control */}
@@ -486,7 +491,7 @@ export function RankingsTable({
           type="search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search set or product…"
+          placeholder={t("filter.search")}
           aria-label="Search products"
           className="w-52 rounded-md bg-surface-raised px-3 py-1.5 text-foreground placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-accent/40"
         />
@@ -496,7 +501,7 @@ export function RankingsTable({
           className="rounded-md bg-surface-raised px-2.5 py-1.5 text-foreground focus:outline-none focus:ring-1 focus:ring-accent/40"
           aria-label="Filter by product type"
         >
-          <option value="all">All product types</option>
+          <option value="all">{t("filter.allTypes")}</option>
           {productTypes.map((t) => (
             <option key={t} value={t}>
               {TYPE_LABEL[t]}
@@ -510,7 +515,7 @@ export function RankingsTable({
             className="rounded-md bg-surface-raised px-2.5 py-1.5 text-foreground focus:outline-none focus:ring-1 focus:ring-accent/40"
             aria-label="Filter by generation"
           >
-            <option value="all">All generations</option>
+            <option value="all">{t("filter.allGenerations")}</option>
             {generations.map((g) => (
               <option key={g} value={g}>
                 {g}
@@ -524,13 +529,13 @@ export function RankingsTable({
           className="rounded-md bg-surface-raised px-2.5 py-1.5 text-foreground focus:outline-none focus:ring-1 focus:ring-accent/40"
           aria-label="Filter by data confidence"
         >
-          <option value="all">Any confidence</option>
+          <option value="all">{t("filter.anyConfidence")}</option>
           <option value="high">HIGH data</option>
           <option value="medium">Medium data</option>
           <option value="low">Low data</option>
         </select>
         <ColumnPill
-          label="Worth opening (+ROI)"
+          label={t("filter.worthOpening")}
           title="Products whose average unbox beats today's market price — the price you can actually buy at. Retail/MSRP ROI is shown but doesn't decide this."
           on={positiveOnly}
           onClick={() => setPositiveOnly((v) => !v)}
@@ -624,6 +629,7 @@ function IconTile({
   retailOn: boolean;
   marketOn: boolean;
 }) {
+  const { money } = useMoney();
   const { payload, c } = row;
   const chase = c.ev.chase
     .slice(0, 3)
@@ -721,7 +727,7 @@ function IconTile({
             <div title="Retail (MSRP)">
               <div className="text-[9px] uppercase tracking-wide text-muted">Retail</div>
               <div className={`text-[13px] ${useMarket ? "text-muted" : "font-semibold text-foreground"}`}>
-                {retailPrice !== null ? formatCents(retailPrice) : "—"}
+                {retailPrice !== null ? money(retailPrice) : "—"}
               </div>
             </div>
           )}
@@ -729,14 +735,14 @@ function IconTile({
             <div title="Current market price">
               <div className="text-[9px] uppercase tracking-wide text-muted">Market</div>
               <div className={`text-[13px] ${useMarket ? "font-semibold text-foreground" : "text-muted"}`}>
-                {marketPrice !== null ? formatCents(marketPrice) : "—"}
+                {marketPrice !== null ? money(marketPrice) : "—"}
               </div>
             </div>
           )}
           <div className="text-right" title="Average value if you open it (expected value)">
             <div className="text-[9px] uppercase tracking-wide text-muted">Avg. unbox</div>
             <div className={`text-[13px] font-semibold ${roiColorClass}`}>
-              {formatCents(c.ev.evProductCents)}
+              {money(c.ev.evProductCents)}
             </div>
             {roi !== null && (
               <div className={`text-[10px] font-semibold ${roiColorClass}`}>{formatRoi(roi)}</div>

@@ -1,6 +1,8 @@
 "use client";
 
-import { formatCents } from "@packroi/ev/format";
+
+
+import { useMoney } from "@/lib/money/context";
 
 interface Point {
   date: string;
@@ -22,6 +24,7 @@ export function Sparkline({
   height?: number;
   emptyLabel?: string;
 }) {
+  const { money } = useMoney();
   if (data.length < 2) {
     return <p className="py-6 text-center text-xs text-muted">{emptyLabel}</p>;
   }
@@ -58,10 +61,10 @@ export function Sparkline({
       </svg>
       <div className="mt-1 flex justify-between text-[11px] text-muted">
         <span className="tabular">
-          {first.date} · {formatCents(first.cents)}
+          {first.date} · {money(first.cents)}
         </span>
         <span className="tabular">
-          {last.date} · {formatCents(last.cents)}
+          {last.date} · {money(last.cents)}
         </span>
       </div>
     </div>

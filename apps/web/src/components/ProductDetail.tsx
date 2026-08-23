@@ -4,18 +4,14 @@
    are not configured for next/image yet; plain img is deliberate here. */
 
 import Link from "next/link";
+import { useMoney } from "@/lib/money/context";
 import { useMemo, useState } from "react";
 
 import { rarityDescription, rarityLabel } from "@/lib/catalog/rarities";
 import { computeProduct } from "@/lib/data/compute";
 import type { ProductPayload } from "@/lib/data/types";
 import { blendPrices, median, packsForProbability } from "@packroi/ev";
-import {
-  formatCents,
-  formatOneIn,
-  formatPerPackChance,
-  formatProbability,
-} from "@packroi/ev/format";
+import {formatOneIn, formatPerPackChance, formatProbability} from "@packroi/ev/format";
 import { effectiveSources } from "@packroi/ev/url-state";
 import { computeDisagreements } from "@/lib/pullrates/disagreement";
 import { pullRateFileSchema } from "@/lib/pullrates/schema";
@@ -44,6 +40,7 @@ export function ProductDetail({
   payload: ProductPayload;
   availableSources: { id: string; displayName: string }[];
 }) {
+  const { money } = useMoney();
   const { state, setState, withFilter } = useFilterState();
   const availableIds = useMemo(() => availableSources.map((s) => s.id), [availableSources]);
   // The graded toggle is offered only when at least one EV-pool card actually
@@ -113,12 +110,12 @@ export function ProductDetail({
         <div className="rounded-xl border border-border bg-surface p-4">
           <div className="text-xs uppercase tracking-wide text-muted">Expected value</div>
           <div className="tabular mt-1 text-2xl font-semibold">
-            {formatCents(ev.evProductCents)}
+            {money(ev.evProductCents)}
           </div>
           <div className="mt-1 text-xs text-muted">
-            {formatCents(ev.evPackCents)} per pack × {payload.packsContained}
+            {money(ev.evPackCents)} per pack × {payload.packsContained}
             {ev.productExtrasValueCents > 0 &&
-              ` + ${formatCents(ev.productExtrasValueCents)} guaranteed extras`}
+              ` + ${money(ev.productExtrasValueCents)} guaranteed extras`}
           </div>
         </div>
 
@@ -127,7 +124,7 @@ export function ProductDetail({
             <div className="text-xs uppercase tracking-wide text-muted">Retail (MSRP)</div>
             <div className="tabular mt-1 flex items-baseline gap-3">
               <span className="text-2xl font-semibold">
-                {payload.msrpCents !== null ? formatCents(payload.msrpCents) : "—"}
+                {payload.msrpCents !== null ? money(payload.msrpCents) : "—"}
               </span>
               <span className="text-xl">
                 <RoiCell roi={roiRetail} />
@@ -152,7 +149,7 @@ export function ProductDetail({
               <div className="tabular mt-1 flex items-baseline gap-3">
                 <span className="text-2xl font-semibold">
                   {payload.market.priceCents !== null
-                    ? formatCents(payload.market.priceCents)
+                    ? money(payload.market.priceCents)
                     : "—"}
                 </span>
                 <span className="text-xl">
@@ -195,7 +192,7 @@ export function ProductDetail({
                     {p.name} <span className="text-muted">#{p.number}</span>
                   </div>
                   <div className="tabular text-lg">
-                    {p.priceCents !== null ? formatCents(p.priceCents) : "unpriced"}
+                    {p.priceCents !== null ? money(p.priceCents) : "unpriced"}
                   </div>
                 </div>
               </div>
@@ -219,7 +216,7 @@ export function ProductDetail({
               return (
                 <div
                   key={t.rarity}
-                  title={`${rarityLabel(t.rarity)}: ${formatCents(t.evContributionCents)}/pack (${pct.toFixed(0)}%)`}
+                  title={`${rarityLabel(t.rarity)}: ${money(t.evContributionCents)}/pack (${pct.toFixed(0)}%)`}
                   className={`${BAR_COLORS[i % BAR_COLORS.length]} h-full`}
                   style={{ width: `${pct}%` }}
                 />
@@ -261,8 +258,8 @@ export function ProductDetail({
                 <td className="tabular py-1.5 pr-3">
                   {formatProbability(t.perPackProbability)}
                 </td>
-                <td className="tabular py-1.5 pr-3">{formatCents(t.avgValueCents)}</td>
-                <td className="tabular py-1.5 pr-3">{formatCents(t.evContributionCents)}</td>
+                <td className="tabular py-1.5 pr-3">{money(t.avgValueCents)}</td>
+                <td className="tabular py-1.5 pr-3">{money(t.evContributionCents)}</td>
                 <td className="tabular py-1.5 pr-3 text-muted">
                   {t.pricedCardCount}/{t.totalCardCount}
                 </td>
@@ -347,7 +344,7 @@ export function ProductDetail({
                       </div>
                     )}
                     <span className="tabular absolute right-1.5 top-1.5 rounded-md bg-black/75 px-1.5 py-0.5 text-sm font-semibold text-emerald-300 shadow-sm backdrop-blur-sm">
-                      {formatCents(c.valueCents)}
+                      {money(c.valueCents)}
                     </span>
                   </div>
                   <div className="flex flex-1 flex-col gap-1 p-2.5">
@@ -423,7 +420,7 @@ export function ProductDetail({
                       </div>
                     )}
                     <span className="tabular absolute right-1.5 top-1.5 rounded-md bg-black/75 px-1.5 py-0.5 text-sm font-semibold text-emerald-300 shadow-sm backdrop-blur-sm">
-                      {formatCents(val(c.raw))}
+                      {money(val(c.raw))}
                     </span>
                   </div>
                   <div className="flex flex-1 flex-col gap-1 p-2.5">
@@ -536,6 +533,7 @@ function PacksCalculator({
   ev: ReturnType<typeof computeProduct>["ev"];
   roiMarket: number | null;
 }) {
+  const { money } = useMoney();
   const [cardId, setCardId] = useState(ev.chase[0]?.cardId ?? "");
   const card = ev.chase.find((c) => c.cardId === cardId) ?? ev.chase[0];
   if (!card) return null;
@@ -553,7 +551,7 @@ function PacksCalculator({
       >
         {ev.chase.map((c) => (
           <option key={c.cardId} value={c.cardId}>
-            {c.name} #{c.number} ({formatCents(c.valueCents)})
+            {c.name} #{c.number} ({money(c.valueCents)})
           </option>
         ))}
       </select>

@@ -1,5 +1,7 @@
 import { gradingCost, PSA_FEES_AS_OF } from "@/lib/grading/fees";
-import { formatCents } from "@packroi/ev/format";
+
+
+import { useMoney } from "@/lib/money/context";
 
 interface ChaseLike {
   cardId: string;
@@ -38,6 +40,7 @@ export function GradingGuide({
    */
   promos?: ChaseLike[];
 }) {
+  const { money } = useMoney();
   const GRADEABLE_MIN = 1000; // $10 raw — the fee ($80+) dwarfs anything cheaper
   const promoRows = promos
     .filter((c) => c.valueCents >= GRADEABLE_MIN)
@@ -89,14 +92,14 @@ export function GradingGuide({
                       </span>
                     )}
                   </td>
-                  <td className="tabular py-1.5 pr-3">{formatCents(c.valueCents)}</td>
+                  <td className="tabular py-1.5 pr-3">{money(c.valueCents)}</td>
                   <td className="tabular py-1.5 pr-3 text-muted">
-                    {formatCents(g.feeCents)}{" "}
+                    {money(g.feeCents)}{" "}
                     <span className="text-[11px]">({g.service})</span>
                   </td>
                   <td className="tabular py-1.5 pr-3 font-medium">
                     {c.psa10Cents !== null ? (
-                      formatCents(c.psa10Cents)
+                      money(c.psa10Cents)
                     ) : (
                       <span
                         className="text-muted/60"
@@ -110,7 +113,7 @@ export function GradingGuide({
                     {net !== null ? (
                       <span className={net > 0 ? "text-roi-pos" : "text-roi-neg"}>
                         {net > 0 ? "+" : ""}
-                        {formatCents(net)}
+                        {money(net)}
                       </span>
                     ) : (
                       <span className="text-muted/60">—</span>

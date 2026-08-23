@@ -1,5 +1,9 @@
+"use client";
+
 import type { MarketHistoryPoint } from "@/lib/data";
-import { formatCents } from "@packroi/ev/format";
+
+
+import { useMoney } from "@/lib/money/context";
 
 /**
  * Market-price sparkline for a sealed product, from daily snapshots. Purely
@@ -8,13 +12,14 @@ import { formatCents } from "@packroi/ev/format";
  * says so rather than drawing a meaningless dot.
  */
 export function PriceHistory({ data }: { data: MarketHistoryPoint[] }) {
+  const { money } = useMoney();
   if (data.length < 2) {
     return (
       <section className="rounded-xl border border-border bg-surface p-4">
         <h2 className="text-lg font-semibold">Market price history</h2>
         <p className="mt-1 text-xs text-muted">
           {data.length === 1
-            ? `One data point so far (${formatCents(data[0]!.cents)} on ${data[0]!.date}). `
+            ? `One data point so far (${money(data[0]!.cents)} on ${data[0]!.date}). `
             : "No history yet. "}
           The chart fills in as the daily price job accumulates snapshots.
         </p>
@@ -53,12 +58,12 @@ export function PriceHistory({ data }: { data: MarketHistoryPoint[] }) {
       </div>
 
       <div className="mt-2 flex items-baseline gap-3">
-        <span className="tabular text-xl font-semibold">{formatCents(last.cents)}</span>
+        <span className="tabular text-xl font-semibold">{money(last.cents)}</span>
         <span className={`tabular text-sm ${trendClass}`}>
-          {flat ? "no change" : `${up ? "▲" : "▼"} ${formatCents(Math.abs(change))} (${changePct.toFixed(1)}%)`}
+          {flat ? "no change" : `${up ? "▲" : "▼"} ${money(Math.abs(change))} (${changePct.toFixed(1)}%)`}
         </span>
         <span className="ml-auto text-xs text-muted">
-          range {formatCents(min)}–{formatCents(max)}
+          range {money(min)}–{money(max)}
         </span>
       </div>
 
@@ -66,7 +71,7 @@ export function PriceHistory({ data }: { data: MarketHistoryPoint[] }) {
         viewBox={`0 0 ${W} ${H}`}
         preserveAspectRatio="none"
         role="img"
-        aria-label={`Market price from ${formatCents(first.cents)} on ${first.date} to ${formatCents(last.cents)} on ${last.date}`}
+        aria-label={`Market price from ${money(first.cents)} on ${first.date} to ${money(last.cents)} on ${last.date}`}
         className="mt-2 h-28 w-full"
       >
         <defs>

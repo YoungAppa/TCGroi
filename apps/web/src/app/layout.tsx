@@ -2,6 +2,11 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
 
+import { SiteBanner, SiteFooter, SiteNav } from "@/components/SiteChrome";
+import { I18nProvider } from "@/lib/i18n/context";
+import { MoneyProvider } from "@/lib/money/context";
+import { fetchFxRates } from "@/lib/money/rates";
+
 import "./globals.css";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
@@ -38,15 +43,21 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  // Fetched on the server so the browser makes no third-party request and the
+  // page's CSP stays clean. An empty table simply leaves every price in USD.
+  const fxRates = await fetchFxRates();
+
   return (
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        <I18nProvider>
+        <MoneyProvider rates={fxRates}>
         <header className="border-b border-border bg-surface">
           <nav className="mx-auto flex max-w-7xl items-center gap-6 px-4 py-3">
             <Link href="/" className="group flex items-center gap-2">
@@ -61,64 +72,17 @@ export default function RootLayout({
                 TCG<span className="text-accent">ROI</span>
               </span>
             </Link>
-            {/* -my-2 py-2 grows the tap target to ~40px (WCAG 2.5.8) without
-                changing the header's visual height. */}
-            <div className="flex items-center gap-2 text-sm text-muted">
-              <Link
-                href="/"
-                className="-my-2 inline-flex items-center px-2 py-2 hover:text-foreground"
-              >
-                Rankings
-              </Link>
-              <Link
-                href="/collection"
-                className="-my-2 inline-flex items-center px-2 py-2 hover:text-foreground"
-              >
-                Collection
-              </Link>
-              <Link
-                href="/methodology"
-                className="-my-2 inline-flex items-center px-2 py-2 hover:text-foreground"
-              >
-                Methodology
-              </Link>
-            </div>
+            <SiteNav />
           </nav>
         </header>
 
-        {/* Sitewide honesty note. The −EV thesis leads large on the home hero;
-            what must ride along on every page is this disclaimer. */}
-        <div className="border-b border-border bg-surface-raised">
-          <p className="mx-auto max-w-7xl px-4 py-2 text-xs text-muted">
-            Pull rates are community estimates, not official odds — every EV
-            here is a projection, not a promise.
-          </p>
-        </div>
+        <SiteBanner />
 
         <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6">{children}</main>
 
-        <footer className="border-t border-border bg-surface">
-          <div className="mx-auto max-w-7xl space-y-1 px-4 py-4 text-xs text-muted">
-            <p>
-              Card and price data via the{" "}
-              <a
-                href="https://pokemontcg.io"
-                className="underline"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                pokemontcg.io
-              </a>{" "}
-              API, Scrydex, PriceCharting, and PokemonPriceTracker. Not endorsed
-              by or affiliated with any of them, nor with TCGplayer, eBay, PSA,
-              The Pokémon Company, or Bandai.
-            </p>
-            <p>
-              Not financial or gambling advice. Estimates carry real error —
-              see <Link href="/methodology" className="underline">methodology</Link>.
-            </p>
-          </div>
-        </footer>
+        <SiteFooter />
+        </MoneyProvider>
+        </I18nProvider>
       </body>
     </html>
   );

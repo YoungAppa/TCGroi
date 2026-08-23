@@ -7,7 +7,9 @@ import { rarityLabel } from "@/lib/catalog/rarities";
 import { computeProduct } from "@/lib/data/compute";
 import type { ProductPayload } from "@/lib/data/types";
 import { blendPrices } from "@packroi/ev";
-import { formatCents } from "@packroi/ev/format";
+
+
+import { useMoney } from "@/lib/money/context";
 import { effectiveSources } from "@packroi/ev/url-state";
 
 import { ConfidenceBadge, RoiCell } from "./badges";
@@ -22,6 +24,7 @@ export function SetDetail({
   products: ProductPayload[];
   availableSources: { id: string; displayName: string }[];
 }) {
+  const { money } = useMoney();
   const { state, setState, withFilter } = useFilterState();
   const [sortByPrice, setSortByPrice] = useState(true);
   const availableIds = useMemo(() => availableSources.map((s) => s.id), [availableSources]);
@@ -93,16 +96,16 @@ export function SetDetail({
                       {payload.productName}
                     </Link>
                   </td>
-                  <td className="tabular px-3 py-2">{formatCents(c.ev.evProductCents)}</td>
+                  <td className="tabular px-3 py-2">{money(c.ev.evProductCents)}</td>
                   <td className="tabular px-3 py-2 text-muted">
-                    {payload.msrpCents !== null ? formatCents(payload.msrpCents) : "—"}
+                    {payload.msrpCents !== null ? money(payload.msrpCents) : "—"}
                   </td>
                   <td className="tabular px-3 py-2">
                     <RoiCell roi={c.roiRetail} />
                   </td>
                   <td className="tabular px-3 py-2">
                     {payload.market.priceCents !== null
-                      ? formatCents(payload.market.priceCents)
+                      ? money(payload.market.priceCents)
                       : "—"}
                     {payload.market.isManual && (
                       <span className="ml-1 text-amber-400" title="Hand-tracked market price">
@@ -150,7 +153,7 @@ export function SetDetail({
                   <td className="px-3 py-1">{c.name}</td>
                   <td className="px-3 py-1 text-muted">{rarityLabel(c.rarity)}</td>
                   <td className="tabular px-3 py-1">
-                    {c.priceCents !== null ? formatCents(c.priceCents) : <span className="text-muted">—</span>}
+                    {c.priceCents !== null ? money(c.priceCents) : <span className="text-muted">—</span>}
                   </td>
                 </tr>
               ))}

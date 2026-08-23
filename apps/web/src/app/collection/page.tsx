@@ -5,7 +5,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { Sparkline } from "@/components/Sparkline";
-import { formatCents, formatRoi } from "@packroi/ev/format";
+import {formatRoi} from "@packroi/ev/format";
+
+import { useMoney } from "@/lib/money/context";
 
 interface CardHit {
   id: string;
@@ -71,6 +73,7 @@ function gainOf(h: Holding): number {
 }
 
 export default function CollectionPage() {
+  const { money } = useMoney();
   const [tab, setTab] = useState<Tab>("collection");
   const [holdings, setHoldings] = useState<Holding[]>([]);
   const [wishlist, setWishlist] = useState<Holding[]>([]);
@@ -188,11 +191,11 @@ export default function CollectionPage() {
       {/* Portfolio summary */}
       <div className="grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-4">
         <Stat label="Cards held" value={totals.cards.toLocaleString("en-US")} />
-        <Stat label="Current value" value={formatCents(totals.value)} />
-        <Stat label="Cost basis" value={totals.cost > 0 ? formatCents(totals.cost) : "—"} />
+        <Stat label="Current value" value={money(totals.value)} />
+        <Stat label="Cost basis" value={totals.cost > 0 ? money(totals.cost) : "—"} />
         <Stat
           label="Gain / loss"
-          value={totals.cost > 0 ? `${totals.gain >= 0 ? "+" : ""}${formatCents(totals.gain)}${totals.roi !== null ? `  (${formatRoi(totals.roi)})` : ""}` : "—"}
+          value={totals.cost > 0 ? `${totals.gain >= 0 ? "+" : ""}${money(totals.gain)}${totals.roi !== null ? `  (${formatRoi(totals.roi)})` : ""}` : "—"}
           tone={totals.cost > 0 ? (totals.gain >= 0 ? "pos" : "neg") : "default"}
         />
       </div>
@@ -303,6 +306,7 @@ function Row({
   onRemove: (id: string) => void;
   wishlist: boolean;
 }) {
+  const { money } = useMoney();
   const [open, setOpen] = useState(false);
   const [history, setHistory] = useState<HistoryPoint[] | null>(null);
   const gainEa = h.paidCents !== null && h.valueCents !== null ? h.valueCents - h.paidCents : null;
@@ -356,14 +360,14 @@ function Row({
             className="tabular w-20 rounded-md bg-surface-raised px-2 py-1 placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-accent/40"
           />
         </td>
-        <td className="tabular px-3 py-2">{h.valueCents !== null ? formatCents(h.valueCents) : "—"}</td>
+        <td className="tabular px-3 py-2">{h.valueCents !== null ? money(h.valueCents) : "—"}</td>
         <td className="tabular px-3 py-2">
           {gainEa === null ? (
             <span className="text-muted">—</span>
           ) : (
             <span className={gainEa >= 0 ? "text-roi-pos" : "text-roi-neg"}>
               {gainEa >= 0 ? "+" : ""}
-              {formatCents(gainEa * h.qty)}
+              {money(gainEa * h.qty)}
             </span>
           )}
         </td>
@@ -390,6 +394,7 @@ function Row({
 }
 
 function CardSearch({ onAdd, addLabel }: { onAdd: (c: CardHit) => void; addLabel: string }) {
+  const { money } = useMoney();
   const [q, setQ] = useState("");
   const [results, setResults] = useState<CardHit[]>([]);
   const [loading, setLoading] = useState(false);
@@ -456,7 +461,7 @@ function CardSearch({ onAdd, addLabel }: { onAdd: (c: CardHit) => void; addLabel
               <div className="flex items-baseline justify-between gap-1">
                 <span className="tabular text-[10px] uppercase text-muted">{c.setCode}</span>
                 <span className="tabular text-xs font-semibold">
-                  {c.priceCents !== null ? formatCents(c.priceCents) : "—"}
+                  {c.priceCents !== null ? money(c.priceCents) : "—"}
                 </span>
               </div>
             </button>
