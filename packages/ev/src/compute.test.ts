@@ -550,7 +550,12 @@ describe("computeEv — warnings", () => {
       },
       opts(),
     );
-    expect(r.warnings.join(" ")).toContain("extrapolation");
+    const w = r.warnings.join(" ");
+    expect(w).toContain("1/3");
+    // The direction matters as much as the fact: unpriced cards are usually
+    // the cheap ones, so a partly-priced tier reads HIGH rather than merely
+    // uncertain. This is what turned a Japanese One Piece box into +413%.
+    expect(w).toContain("OVERSTATES");
   });
 });
 

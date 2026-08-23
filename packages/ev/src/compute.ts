@@ -96,8 +96,16 @@ export function computeEv(input: EvInput, opts: EvOptions): EvResult {
         `No priced cards for rarity "${slot.rarity}" — its EV contribution is counted as zero.`,
       );
     } else if (tv.pricedCardCount < tv.totalCardCount / 2) {
+      // Say which WAY it is wrong. Price sources list the cards people search
+      // for, so the unpriced remainder is disproportionately the cheap ones —
+      // an average taken over the priced subset therefore runs HIGH, not
+      // merely uncertain. A Japanese One Piece set priced 2 of 6 leaders
+      // averaged $47.13 where the fully-priced English set averaged $0.21, and
+      // that one tier turned a -66% box into +413%.
       warnings.push(
-        `Only ${tv.pricedCardCount}/${tv.totalCardCount} cards priced for rarity "${slot.rarity}" — its value is an extrapolation.`,
+        `Only ${tv.pricedCardCount}/${tv.totalCardCount} cards priced for rarity "${slot.rarity}" — ` +
+          `its value is extrapolated from the priced few, which typically OVERSTATES the tier ` +
+          `because unpriced cards are usually the cheap ones.`,
       );
     }
 
