@@ -426,6 +426,39 @@ export const priceSnapshotsRelations = relations(priceSnapshots, ({ one }) => ({
   }),
 }));
 
+/**
+ * PSA population census per card printing — how many slabs exist at each grade.
+ *
+ * This is what turns "grade it and hope" into a number: the share of a card's
+ * graded population that came back a 10 is the best public proxy for the odds
+ * YOUR copy grades a 10. It replaces a single site-wide gem-rate assumption
+ * that is wrong in both directions — a 2021 Umbreon VMAX alt gems 69% of the
+ * time, a 1999 Unlimited Charizard 0.5%.
+ *
+ * One row per (card, company). Counts, not prices, so it lives apart from
+ * latest_prices. Kept as a projection of the latest fetch rather than history:
+ * populations only ever grow, and the current census is what the odds need.
+ */
+export const cardPopulations = pgTable(
+  "card_populations",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    cardId: uuid("card_id")
+      .notNull()
+      .references(() => cards.id, { onDelete: "cascade" }),
+    /** PSA / BGS / CGC — only PSA is modelled today. */
+    company: text("company").notNull(),
+    /** Every slab of this printing, including qualified and half grades. */
+    total: integer("total").notNull(),
+    /** Slabs graded exactly 10, and exactly 9. */
+    gemCount: integer("gem_count").notNull(),
+    grade9Count: integer("grade9_count").notNull(),
+    capturedAt: timestamp("captured_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [uniqueIndex("card_populations_card_company_uq").on(t.cardId, t.company)],
+);
+
 export const latestPricesRelations = relations(latestPrices, ({ one }) => ({
   card: one(cards, { fields: [latestPrices.cardId], references: [cards.id] }),
   sealedProduct: one(sealedProducts, {

@@ -45,7 +45,10 @@ export function effectiveCardValue(
     // Both legs are required: half the formula is not an estimate worth
     // showing. When graded data is absent the card just sells raw.
     if (psa10 !== null && psa9 !== null) {
-      const { gemRate, grade9Rate, gradingFeeCents } = opts.grading;
+      const { gradingFeeCents } = opts.grading;
+      // This card's own PSA census beats the site-wide assumption whenever we
+      // have one — see gradeRatesFor.
+      const { gemRate, grade9Rate } = gradeRatesFor(card, opts);
 
       // NOTE(model): gemRate + grade9Rate is 0.80 by default, so the ~20% of
       // submissions grading 8 or lower contribute nothing here. Those cards
@@ -70,4 +73,35 @@ export function effectiveCardValue(
   }
 
   return { valueCents: raw, isBulk: false, isGraded: false };
+}
+
+/**
+ * The odds this card grades a 10 and a 9.
+ *
+ * Prefers the card's own PSA population — of every copy that has been graded,
+ * what share came back a 10 — and falls back to the configured site-wide
+ * assumption when we have no census for it. The difference is not a detail: a
+ * single fixed gem rate is simultaneously far too low for modern cards (an
+ * Umbreon VMAX alt art gems ~69%) and catastrophically too high for vintage
+ * (an Unlimited Base Charizard, ~0.5%), and it is multiplied by the PSA 10
+ * price, which is exactly where the value is.
+ *
+ * A tiny population is not evidence — five slabs of which two are tens does
+ * not mean 40% — so a census below MIN_POPULATION_FOR_RATES is ignored in
+ * favour of the assumption.
+ */
+export const MIN_POPULATION_FOR_RATES = 50;
+
+function gradeRatesFor(
+  card: CardPriceData,
+  opts: EvOptions,
+): { gemRate: number; grade9Rate: number } {
+  const pop = card.population;
+  if (!pop || pop.total < MIN_POPULATION_FOR_RATES) {
+    return { gemRate: opts.grading.gemRate, grade9Rate: opts.grading.grade9Rate };
+  }
+  return {
+    gemRate: pop.gemCount / pop.total,
+    grade9Rate: pop.grade9Count / pop.total,
+  };
 }

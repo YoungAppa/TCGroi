@@ -1,6 +1,7 @@
 import { and, eq, inArray, or } from "drizzle-orm";
 
 import {
+  cardPopulations,
   cards,
   games,
   getDb,
@@ -173,6 +174,29 @@ export async function loadRankingsFromDb(): Promise<RankingsPayload> {
     .from(latestPrices)
     .where(inArray(latestPrices.sealedProductId, productIds));
 
+  // --- PSA populations (per-card grading odds) ---------------------------------
+  const popByCard = new Map<string, { total: number; gemCount: number; grade9Count: number }>();
+  if (cardIds.length > 0) {
+    const popRows = await db
+      .select({
+        cardId: cardPopulations.cardId,
+        total: cardPopulations.total,
+        gemCount: cardPopulations.gemCount,
+        grade9Count: cardPopulations.grade9Count,
+      })
+      .from(cardPopulations)
+      .where(
+        and(eq(cardPopulations.company, "PSA"), inArray(cardPopulations.cardId, cardIds)),
+      );
+    for (const r of popRows) {
+      popByCard.set(r.cardId, {
+        total: r.total,
+        gemCount: r.gemCount,
+        grade9Count: r.grade9Count,
+      });
+    }
+  }
+
   const sealedByProduct = new Map<string, PriceBySource>();
   for (const p of sealedPriceRows) {
     if (!p.sealedProductId) continue;
@@ -196,6 +220,8 @@ export async function loadRankingsFromDb(): Promise<RankingsPayload> {
     const psa10 = psa10ByCard.get(c.id);
     if (psa9) entry.psa9 = psa9;
     if (psa10) entry.psa10 = psa10;
+    const pop = popByCard.get(c.id);
+    if (pop) entry.population = pop;
     return entry;
   };
 

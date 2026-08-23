@@ -459,6 +459,11 @@ export function ProductDetail({
               valueCents: p.priceCents!,
               // Graded price is its own market, like the chase table's.
               psa10Cents: median(Object.values(card?.psa10 ?? {})),
+              gemRate:
+                card?.population && card.population.total >= 50
+                  ? card.population.gemCount / card.population.total
+                  : null,
+              populationTotal: card?.population?.total ?? null,
             };
           })}
       />

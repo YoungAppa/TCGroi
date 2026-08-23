@@ -33,6 +33,25 @@ export interface CardPriceData {
   raw: PriceBySource;
   psa9?: PriceBySource;
   psa10?: PriceBySource;
+  /**
+   * This card's own PSA census, when we have it — the share of graded copies
+   * that came back a 10 and a 9.
+   *
+   * Present, it replaces the site-wide gemRate/grade9Rate assumption for this
+   * card. That assumption is a single number applied to every card, and real
+   * populations are nowhere near it in either direction: a 2021 Umbreon VMAX
+   * alt art gems 69% of the time, a 1999 Unlimited Charizard 0.5%.
+   *
+   * Caveat worth remembering: PSA population is a census of cards people CHOSE
+   * to submit, not of packs opened, so it is biased upward by submitters
+   * self-selecting good copies. It is much closer to the truth than one fixed
+   * rate, and for modern sets the population is dominated by fresh pulls.
+   */
+  population?: {
+    total: number;
+    gemCount: number;
+    grade9Count: number;
+  };
 }
 
 export interface PullRateSlot {
@@ -176,6 +195,13 @@ export interface ChaseCard {
   probPerProduct: number;
   /** Best PSA 10 sale price in cents, or null when we have no graded data. */
   psa10Cents: number | null;
+  /**
+   * Share of this card's PSA population graded 10, or null when we hold no
+   * census for it. The odds half of "is it worth grading?".
+   */
+  gemRate: number | null;
+  /** Size of that population, so the UI can show what the rate rests on. */
+  populationTotal: number | null;
 }
 
 export interface EvResult {

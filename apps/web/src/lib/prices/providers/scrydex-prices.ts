@@ -72,10 +72,21 @@ const priceEntry = z
   })
   .passthrough();
 
+const popReportSchema = z
+  .object({
+    company: z.string().nullish(), // PSA / BGS / CGC / ...
+    total: z.number().nullish(),
+    grades: z
+      .array(z.object({ grade: z.string(), count: z.number() }).passthrough())
+      .nullish(),
+  })
+  .passthrough();
+
 const variantSchema = z
   .object({
     name: z.string().nullish(),
     prices: z.array(priceEntry).nullish(),
+    pop_reports: z.array(popReportSchema).nullish(),
   })
   .passthrough();
 
@@ -265,6 +276,22 @@ function gradedDollars(
   return null;
 }
 
+/** The printing whose GRADED PRICES belong to our row. */
+function pickPokemonVariant(
+  variants: z.infer<typeof variantSchema>[],
+  ourRawCents: number | null | undefined,
+) {
+  return pickPrintingVariant(variants, ourRawCents, (v) => hasGraded(v.prices));
+}
+
+/** The printing whose PSA POPULATION belongs to our row — same rule, different payload. */
+function pickPopulationVariant(
+  variants: z.infer<typeof variantSchema>[],
+  ourRawCents: number | null | undefined,
+) {
+  return pickPrintingVariant(variants, ourRawCents, (v) => (v.pop_reports?.length ?? 0) > 0);
+}
+
 /** The graded kinds we model, in the order they are emitted. */
 const GRADED_KINDS = [
   { kind: "psa10" as const, company: "PSA", grade: "10" },
@@ -321,11 +348,12 @@ const MAX_PSA10_OVER_PSA9 = 12;
  * safe error, since a missing graded price only hides the grading upside while
  * a wrong one inflates it.
  */
-function pickPokemonVariant(
+function pickPrintingVariant(
   variants: z.infer<typeof variantSchema>[],
   ourRawCents: number | null | undefined,
+  carriesData: (v: z.infer<typeof variantSchema>) => boolean,
 ): z.infer<typeof variantSchema> | null {
-  const candidates = variants.filter((v) => hasGraded(v.prices));
+  const candidates = variants.filter(carriesData);
   if (candidates.length === 0) return null;
   // Only one printing carries graded prices — no ambiguity to resolve.
   if (candidates.length === 1) return candidates[0]!;
@@ -344,6 +372,36 @@ function pickPokemonVariant(
     }
   }
   return bestRatio <= PRINTING_MATCH_MAX_RATIO ? best : null;
+}
+
+/** A card's PSA census, reduced to what the grading odds need. */
+export interface CardPopulation {
+  externalCardId: string;
+  company: string;
+  total: number;
+  gemCount: number;
+  grade9Count: number;
+}
+
+/**
+ * PSA population for one variant, or null when it carries none.
+ *
+ * `total` is every slab of the printing — whole, half and qualified grades
+ * alike — so gemCount/total answers the question a buyer actually asks: of all
+ * the copies that have been graded, what share came back a 10? Half and
+ * qualified grades stay in the denominator precisely because they are real
+ * outcomes that were not a 10.
+ */
+function psaPopulation(
+  reports: z.infer<typeof popReportSchema>[] | null | undefined,
+): { total: number; gemCount: number; grade9Count: number } | null {
+  const psa = (reports ?? []).find((r) => (r.company ?? "").toUpperCase() === "PSA");
+  if (!psa?.grades?.length) return null;
+  const total = psa.total ?? psa.grades.reduce((n, g) => n + (g.count ?? 0), 0);
+  if (!total || total <= 0) return null;
+  const at = (grade: string) =>
+    psa.grades!.find((g) => String(g.grade).trim() === grade)?.count ?? 0;
+  return { total, gemCount: at("10"), grade9Count: at("9") };
 }
 
 export const scrydexPriceProvider = {
@@ -598,6 +656,99 @@ export const scrydexPriceProvider = {
         `[scrydex] ${set.code}: dropped ${implausible} PSA 10 price(s) exceeding ${MAX_PSA10_OVER_PSA9}x their PSA 9.`,
       );
     }
+    return out;
+  },
+
+  /**
+   * PSA populations for a set's cards, from the same per-expansion paged
+   * endpoint as prices (`include=pop_reports`). One request per page, never
+   * per card.
+   *
+   * Uses the SAME printing picker as graded prices, for the same reason: Base
+   * Charizard's 1st-Edition population (123 tens of 5,598) and its Unlimited
+   * population (488 of 103,282) describe different cards, and our row is one
+   * of them.
+   */
+  async fetchPopulations(
+    set: CatalogSet,
+    cards: PriceableCard[],
+  ): Promise<CardPopulation[]> {
+    const creds = credentials();
+    if (!creds) return [];
+
+    const game = gameOf(set);
+    const path = GAME_PATH[game];
+    if (!path) return [];
+    if (set.language !== "EN") return [];
+    if (game === "pokemon" && !set.externalIds["pokemontcg_io"]) return [];
+
+    const pokemonByExternalId = new Map<string, PriceableCard>();
+    const opByNumberTreatment = new Map<string, PriceableCard>();
+    for (const c of cards) {
+      const ext = c.externalIds["pokemontcg_io"];
+      if (ext) pokemonByExternalId.set(ext, c);
+      opByNumberTreatment.set(`${c.number}|${c.treatment}`, c);
+    }
+
+    const headers = { "X-Api-Key": creds.key, "X-Team-ID": creds.teamId };
+    const expansionId =
+      game === "pokemon"
+        ? (set.externalIds["pokemontcg_io"] ?? set.code)
+        : set.code.replace(/-/g, "");
+
+    const out: CardPopulation[] = [];
+    for (let page = 1; ; page++) {
+      const res = await fetchJson(
+        `${BASE}/${path}/v1/expansions/${encodeURIComponent(expansionId)}/cards?include=prices,pop_reports&page=${page}&page_size=${PAGE_SIZE}`,
+        cardsResponse,
+        { provider: "scrydex", headers },
+      );
+
+      const rows = res.data ?? [];
+      for (const card of rows) {
+        const targets: { match: PriceableCard; variant: z.infer<typeof variantSchema> }[] = [];
+
+        if (game === "pokemon") {
+          const match = pokemonByExternalId.get(card.id);
+          if (match) {
+            const v = pickPopulationVariant(card.variants ?? [], match.rawCents);
+            if (v) targets.push({ match, variant: v });
+          }
+        } else {
+          const variantsByName = new Map<string, z.infer<typeof variantSchema>>();
+          for (const v of card.variants ?? []) if (v.name) variantsByName.set(v.name, v);
+          const consider = (treatment: string, variantName: string | undefined) => {
+            if (!variantName) return;
+            const match = opByNumberTreatment.get(`${card.id}|${treatment}`);
+            const v = variantsByName.get(variantName);
+            if (match && v) targets.push({ match, variant: v });
+          };
+          consider("base", variantsByName.has("normal") ? "normal" : "foil");
+          for (const [variantName, { treatment }] of Object.entries(SCRYDEX_TREATMENT_VARIANTS)) {
+            consider(treatment, variantName);
+          }
+          for (const [variantName, { treatment }] of Object.entries(SCRYDEX_DISPLAY_VARIANTS)) {
+            consider(treatment, variantName);
+          }
+        }
+
+        for (const { match, variant } of targets) {
+          const pop = psaPopulation(variant.pop_reports);
+          if (!pop) continue;
+          out.push({
+            externalCardId:
+              match.externalIds["pokemontcg_io"] ?? match.externalIds["scrydex"] ?? card.id,
+            company: "PSA",
+            ...pop,
+          });
+        }
+      }
+
+      const total = res.total_count;
+      const size = res.page_size ?? PAGE_SIZE;
+      if (rows.length === 0 || total == null || page * size >= total) break;
+    }
+
     return out;
   },
 

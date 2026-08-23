@@ -64,6 +64,13 @@
       "when": 1785530316754,
       "tag": "0008_organic_terror",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1787508040663,
+      "tag": "0009_green_vulture",
+      "breakpoints": true
     }
   ]
 }

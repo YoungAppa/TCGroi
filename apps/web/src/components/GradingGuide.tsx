@@ -7,6 +7,10 @@ interface ChaseLike {
   number: string;
   valueCents: number;
   psa10Cents: number | null;
+  /** Share of this card's PSA population graded 10, or null with no census. */
+  gemRate?: number | null;
+  /** Size of that population, so the reader can judge the rate. */
+  populationTotal?: number | null;
   /** Guaranteed promo (ETB/box insert) rather than a card pulled from a pack. */
   isPromo?: boolean;
 }
@@ -62,9 +66,7 @@ export function GradingGuide({
               <th className="py-1.5 pr-3">PSA fee</th>
               <th className="py-1.5 pr-3">PSA 10 value</th>
               <th className="py-1.5 pr-3">Net if 10</th>
-              <th className="py-1.5">
-                Chance of 10 <span className="text-[10px] normal-case">· soon</span>
-              </th>
+              <th className="py-1.5">Chance of 10</th>
             </tr>
           </thead>
           <tbody>
@@ -114,11 +116,33 @@ export function GradingGuide({
                       <span className="text-muted/60">—</span>
                     )}
                   </td>
-                  <td
-                    className="tabular py-1.5 text-muted/60"
-                    title="Odds this card grades a PSA 10 — pending PSA population data (Business tier)"
-                  >
-                    —
+                  <td className="tabular py-1.5">
+                    {c.gemRate != null ? (
+                      <span
+                        className={
+                          c.gemRate >= 0.5
+                            ? "text-roi-pos"
+                            : c.gemRate >= 0.2
+                              ? "text-amber-400"
+                              : "text-roi-neg"
+                        }
+                        title={`Of ${c.populationTotal?.toLocaleString() ?? "?"} PSA-graded copies, ${Math.round((c.gemRate ?? 0) * 100)}% came back a 10. A census of cards people chose to submit, so treat it as a ceiling rather than the odds for a random copy.`}
+                      >
+                        {(c.gemRate * 100).toFixed(0)}%
+                        {c.populationTotal != null && (
+                          <span className="ml-1 text-[10px] text-muted">
+                            n={c.populationTotal.toLocaleString()}
+                          </span>
+                        )}
+                      </span>
+                    ) : (
+                      <span
+                        className="text-muted/60"
+                        title="Too few PSA-graded copies to quote a rate"
+                      >
+                        —
+                      </span>
+                    )}
                   </td>
                 </tr>
               );
@@ -129,10 +153,13 @@ export function GradingGuide({
       <p className="text-[11px] text-muted">
         <span className="text-foreground">Net if 10</span> = PSA 10 value − raw −
         fee, the gain assuming a perfect grade (an upper bound — most cards
-        won&apos;t 10). <span className="text-foreground">Chance of 10</span> needs
-        PSA population data and is still pending. PSA 10 prices are eBay-sold via
-        PokemonPriceTracker; a &ldquo;—&rdquo; means we haven&apos;t fetched that
-        card yet. Fees exclude shipping and use the cheapest PSA tier for each
+        won&apos;t 10). <span className="text-foreground">Chance of 10</span> is this
+        card&apos;s own PSA population — of every copy graded, the share that came
+        back a 10 — and it drives the graded EV toggle instead of one flat
+        assumption. Read it as a ceiling, not a coin flip: it counts cards people
+        CHOSE to submit, which skews toward good copies, and a card pulled from a
+        pack today may fare worse. A &ldquo;—&rdquo; means too few graded copies
+        to quote. PSA 10 prices come from Scrydex and PokemonPriceTracker. Fees exclude shipping and use the cheapest PSA tier for each
         card&apos;s declared (graded) value. PSA paused its cheaper Value tiers
         in June 2026 under a grading backlog, so Regular ($79.99) is the current
         floor — grading a card much under ~$100 rarely makes sense.

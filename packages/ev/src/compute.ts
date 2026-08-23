@@ -1,6 +1,6 @@
 import { blendPrices, median } from "./blend";
 import { groupByRarity, tierValue, type TierValue } from "./tiers";
-import { effectiveCardValue } from "./value";
+import { effectiveCardValue, MIN_POPULATION_FOR_RATES } from "./value";
 import type {
   CardPriceData,
   ChaseCard,
@@ -262,6 +262,13 @@ function buildChaseTable(
       // Graded price is its own market, independent of the raw source toggle,
       // so it blends across whatever graded sources exist (currently one).
       psa10Cents: median(Object.values(card.psa10 ?? {})),
+      // Odds this card grades a 10, from its own PSA census. Null below the
+      // engine's minimum population — a handful of slabs is not a rate.
+      gemRate:
+        card.population && card.population.total >= MIN_POPULATION_FOR_RATES
+          ? card.population.gemCount / card.population.total
+          : null,
+      populationTotal: card.population?.total ?? null,
     });
   }
 
