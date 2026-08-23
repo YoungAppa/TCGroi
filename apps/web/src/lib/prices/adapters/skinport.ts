@@ -1,7 +1,8 @@
 import { getEnv } from "@/lib/env";
 
+import type { CatalogSet } from "@/lib/catalog/types";
+
 import type {
-  CatalogSet,
   PriceableCard,
   PriceSnapshotInput,
   PriceSourceAdapter,

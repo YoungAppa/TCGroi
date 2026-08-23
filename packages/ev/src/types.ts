@@ -77,7 +77,7 @@ export interface PullRateTable {
   sampleSizePacks: number;
   sourceUrl: string;
   sourceNote: string;
-  confidence: "high" | "medium" | "low" | "placeholder";
+  confidence: "official" | "high" | "medium" | "low" | "placeholder";
   slots: PullRateSlot[];
   guaranteedSlots: GuaranteedSlot[];
 }

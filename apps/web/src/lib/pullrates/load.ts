@@ -17,13 +17,16 @@ export interface LoadedPullRate {
    * they live in different folders (which also dodges case-insensitive-FS
    * clashes like SV3.json vs sv3.json).
    */
-  language: string;
+  language: PullRateLanguage;
   /** Path relative to the repo root, for error messages and admin display. */
   path: string;
 }
 
+/** Matches the sets.language pgEnum — typed so DB comparisons take it directly. */
+export type PullRateLanguage = "EN" | "JP" | "ZH";
+
 /** Sub-folder name -> set_language value. Extend as more languages are added. */
-const LANG_DIRS: Record<string, string> = { jp: "JP", zh: "ZH" };
+const LANG_DIRS: Record<string, PullRateLanguage> = { jp: "JP", zh: "ZH" };
 
 /**
  * Reads and validates every pull-rate file on disk.
@@ -80,7 +83,7 @@ export async function loadAllPullRates(dir = PULLRATE_DIR): Promise<LoadedPullRa
 async function loadOne(
   out: LoadedPullRate[],
   game: string,
-  language: string,
+  language: PullRateLanguage,
   fileDir: string,
   filename: string,
   rel: string,
