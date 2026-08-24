@@ -222,7 +222,22 @@ export function RankingsTable({
   const gameName = (slug: string) => products.find((p) => p.gameSlug === slug)?.gameName ?? slug;
   // Product-type options are game-specific: One Piece has no ETBs or UPCs, so
   // the filter must only offer the types the selected game actually has.
-  const productTypes = [...new Set(products.filter((p) => p.gameSlug === game).map((p) => p.productType))];
+  // Types present for the current game+language, in fixed pack->box->etb order,
+  // with live counts so the pills read "Booster Box · 47" before you click.
+  const TYPE_ORDER = ["booster_pack", "booster_box", "etb", "bundle", "display", "case"];
+  const typeCounts = useMemo(() => {
+    const wantLang = lang === "ja" ? "JP" : lang === "zh" ? "ZH" : "EN";
+    const pool = products.filter(
+      (p) =>
+        p.gameSlug === game &&
+        p.setLanguage === wantLang &&
+        p.pullRates.confidence !== "placeholder",
+    );
+    const byType = new Map<string, number>();
+    for (const p of pool) byType.set(p.productType, (byType.get(p.productType) ?? 0) + 1);
+    return { total: pool.length, byType };
+  }, [products, game, lang]);
+  const productTypes = TYPE_ORDER.filter((pt) => (typeCounts.byType.get(pt) ?? 0) > 0);
   const anyManualMarket = rows.some((r) => r.payload.market.isManual);
   // Generation options for the selected game, newest era first (Pokémon only —
   // One Piece/Magic use set codes without a familiar generation vocabulary).
@@ -233,8 +248,9 @@ export function RankingsTable({
     );
     return GENERATION_ORDER.filter((g) => present.has(g));
   }, [products, game]);
+  // Counts only the filters the mobile disclosure HIDES — search moved into
+  // the always-visible toolbar, so an active query is never a surprise.
   const activeFilterCount =
-    (query.trim() !== "" ? 1 : 0) +
     (typeFilter !== "all" ? 1 : 0) +
     (confFilter !== "all" ? 1 : 0) +
     (genFilter !== "all" ? 1 : 0) +
@@ -253,9 +269,12 @@ export function RankingsTable({
     setPositiveOnly(false);
   }
 
+  // xl gets a fifth grid column — at 300+ products the extra density is worth
+  // more than the larger tiles, and the footer was rebuilt to stay legible at
+  // that width.
   function renderGrid(sectionRows: Row[]) {
     return (
-      <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 xl:gap-5">
         {sectionRows.map((row) => (
           <IconTile
             key={row.payload.productId}
@@ -437,63 +456,19 @@ export function RankingsTable({
         </label>
       </div>
 
-      {/* On a phone these two rows stacked into six, pushing the first product
-          ~1,350px down the page — the rankings became a filter form with the
-          rankings below the fold. They collapse behind a button there, with the
-          active count visible so a hidden filter is never a surprise. On sm+
-          the panel is always open and this renders exactly as before. */}
-      <button
-        type="button"
-        onClick={() => setFiltersOpen((v) => !v)}
-        aria-expanded={filtersOpen}
-        className="flex items-center gap-2 self-start rounded-md border border-border px-3 py-1.5 text-xs text-muted hover:text-foreground sm:hidden"
-      >
-        {filtersOpen ? "Hide filters" : "Filters"}
-        {activeFilterCount > 0 && (
-          <span className="rounded-full bg-accent/15 px-1.5 py-0.5 text-[10px] font-bold text-accent">
-            {activeFilterCount}
-          </span>
-        )}
-        <span className="text-muted">· {rows.length} shown</span>
-      </button>
-
-      <div className={`${filtersOpen ? "flex" : "hidden"} flex-col gap-3 sm:flex`}>
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-wrap items-center gap-2">
-          <SourceFilter
-            available={availableSources}
-            state={state}
-            onChange={setState}
-            gradedAvailable={gradedAvailable}
-          />
-          {/* Price toggles: which denominator to show (hides the other page-wide). */}
-          <span className="ml-1 text-xs uppercase tracking-wide text-muted">Show</span>
-          <ColumnPill label={t("filter.retail")} on={retailOn} onClick={toggleRetail} />
-          <ColumnPill label={t("filter.market")} on={marketOn} onClick={toggleMarket} />
-        </div>
-        <div className="flex items-center gap-3">
-          {/* List / Icon view toggle — a calm segmented control */}
-          <div className="flex gap-0.5 rounded-md bg-surface-raised p-0.5 text-xs">
-            <button
-              onClick={() => setUserView("list")}
-              aria-pressed={view === "list"}
-              className={`rounded px-2.5 py-1 transition-colors ${view === "list" ? "bg-surface text-foreground" : "text-muted hover:text-foreground"}`}
-            >
-              ▤ List
-            </button>
-            <button
-              onClick={() => setUserView("icons")}
-              aria-pressed={view === "icons"}
-              className={`rounded px-2.5 py-1 transition-colors ${view === "icons" ? "bg-surface text-foreground" : "text-muted hover:text-foreground"}`}
-            >
-              ▦ Icons
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Search + filters */}
+      {/* Toolbar — the controls used constantly (search, sort, view) stay
+          visible at every width. With 300+ products, search is the fastest
+          path to anything; hiding it behind the mobile Filters button was a
+          mistake at 150 products and would be worse now. */}
       <div className="flex flex-wrap items-center gap-2 text-xs">
+        <input
+          type="search"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder={t("filter.search")}
+          aria-label="Search products"
+          className="min-w-0 basis-full rounded-md bg-surface-raised px-3 py-1.5 text-foreground placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-accent/40 sm:max-w-xs sm:basis-auto"
+        />
         <label className="flex items-center gap-1.5 text-muted">
           Sort
           <select
@@ -519,66 +494,116 @@ export function RankingsTable({
             )}
           </select>
         </label>
-        <input
-          type="search"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder={t("filter.search")}
-          aria-label="Search products"
-          className="w-52 rounded-md bg-surface-raised px-3 py-1.5 text-foreground placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-accent/40"
-        />
-        <select
-          value={typeFilter}
-          onChange={(e) => setTypeFilter(e.target.value)}
-          className="rounded-md bg-surface-raised px-2.5 py-1.5 text-foreground focus:outline-none focus:ring-1 focus:ring-accent/40"
-          aria-label="Filter by product type"
-        >
-          <option value="all">{t("filter.allTypes")}</option>
-          {productTypes.map((t) => (
-            <option key={t} value={t}>
-              {TYPE_LABEL[t]}
-            </option>
-          ))}
-        </select>
-        {generations.length > 1 && (
-          <select
-            value={genFilter}
-            onChange={(e) => setGenFilter(e.target.value)}
-            className="rounded-md bg-surface-raised px-2.5 py-1.5 text-foreground focus:outline-none focus:ring-1 focus:ring-accent/40"
-            aria-label="Filter by generation"
+        {/* List / Icon view toggle — a calm segmented control */}
+        <div className="flex gap-0.5 rounded-md bg-surface-raised p-0.5">
+          <button
+            onClick={() => setUserView("list")}
+            aria-pressed={view === "list"}
+            className={`rounded px-2.5 py-1 transition-colors ${view === "list" ? "bg-surface text-foreground" : "text-muted hover:text-foreground"}`}
           >
-            <option value="all">{t("filter.allGenerations")}</option>
-            {generations.map((g) => (
-              <option key={g} value={g}>
-                {g}
-              </option>
-            ))}
-          </select>
-        )}
-        <select
-          value={confFilter}
-          onChange={(e) => setConfFilter(e.target.value)}
-          className="rounded-md bg-surface-raised px-2.5 py-1.5 text-foreground focus:outline-none focus:ring-1 focus:ring-accent/40"
-          aria-label="Filter by data confidence"
-        >
-          <option value="all">{t("filter.anyConfidence")}</option>
-          <option value="high">HIGH data</option>
-          <option value="medium">Medium data</option>
-          <option value="low">Low data</option>
-        </select>
-        <ColumnPill
-          label={t("filter.worthOpening")}
-          title="Products whose average unbox beats today's market price — the price you can actually buy at. Retail/MSRP ROI is shown but doesn't decide this."
-          on={positiveOnly}
-          onClick={() => setPositiveOnly((v) => !v)}
-        />
-        {filtersActive && (
-          <button onClick={clearFilters} className="text-muted underline hover:text-foreground">
-            clear
+            ▤ List
           </button>
-        )}
-        <span className="ml-auto text-muted">{rows.length} shown</span>
+          <button
+            onClick={() => setUserView("icons")}
+            aria-pressed={view === "icons"}
+            className={`rounded px-2.5 py-1 transition-colors ${view === "icons" ? "bg-surface text-foreground" : "text-muted hover:text-foreground"}`}
+          >
+            ▦ Icons
+          </button>
+        </div>
+        <span className="tabular ml-auto text-muted">{rows.length} shown</span>
+        <button
+          type="button"
+          onClick={() => setFiltersOpen((v) => !v)}
+          aria-expanded={filtersOpen}
+          className="flex items-center gap-1.5 rounded-md border border-border px-2.5 py-1.5 text-muted hover:text-foreground sm:hidden"
+        >
+          {filtersOpen ? "Hide filters" : "Filters"}
+          {activeFilterCount > 0 && (
+            <span className="rounded-full bg-accent/15 px-1.5 py-0.5 text-[10px] font-bold text-accent">
+              {activeFilterCount}
+            </span>
+          )}
+        </button>
       </div>
+
+      <div className={`${filtersOpen ? "flex" : "hidden"} flex-col gap-3 sm:flex`}>
+        {/* WHAT to show — one-click type pills (with live counts), then the
+            narrower filters. Pills replaced a dropdown once the catalog grew
+            past 300 products: the counts orient ("11 ETBs here") and switching
+            type is the most common filter action after search. */}
+        <div className="flex flex-wrap items-center gap-1.5 text-xs">
+          <TypePill
+            label="All"
+            count={typeCounts.total}
+            on={typeFilter === "all"}
+            onClick={() => setTypeFilter("all")}
+          />
+          {productTypes.map((pt) => (
+            <TypePill
+              key={pt}
+              label={TYPE_LABEL[pt as keyof typeof TYPE_LABEL] ?? pt}
+              count={typeCounts.byType.get(pt) ?? 0}
+              on={typeFilter === pt}
+              onClick={() => setTypeFilter(typeFilter === pt ? "all" : pt)}
+            />
+          ))}
+          <span className="mx-1 h-4 w-px bg-border" aria-hidden />
+          {generations.length > 1 && (
+            <select
+              value={genFilter}
+              onChange={(e) => setGenFilter(e.target.value)}
+              className="rounded-md bg-surface-raised px-2.5 py-1.5 text-foreground focus:outline-none focus:ring-1 focus:ring-accent/40"
+              aria-label="Filter by generation"
+            >
+              <option value="all">{t("filter.allGenerations")}</option>
+              {generations.map((g) => (
+                <option key={g} value={g}>
+                  {g}
+                </option>
+              ))}
+            </select>
+          )}
+          <select
+            value={confFilter}
+            onChange={(e) => setConfFilter(e.target.value)}
+            className="rounded-md bg-surface-raised px-2.5 py-1.5 text-foreground focus:outline-none focus:ring-1 focus:ring-accent/40"
+            aria-label="Filter by data confidence"
+          >
+            <option value="all">{t("filter.anyConfidence")}</option>
+            <option value="high">HIGH data</option>
+            <option value="medium">Medium data</option>
+            <option value="low">Low data</option>
+          </select>
+          <ColumnPill
+            label={t("filter.worthOpening")}
+            title="Products whose average unbox beats today's market price — the price you can actually buy at. Retail/MSRP ROI is shown but doesn't decide this."
+            on={positiveOnly}
+            onClick={() => setPositiveOnly((v) => !v)}
+          />
+          {filtersActive && (
+            <button onClick={clearFilters} className="text-muted underline hover:text-foreground">
+              clear
+            </button>
+          )}
+        </div>
+
+        {/* HOW the numbers are computed — sources, blend, graded, and which
+            price column leads. Boxed and labelled apart from the filters above
+            because these change every EV on the page, not which products are
+            listed; mixing the two made both harder to find. */}
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-lg border border-border/60 bg-surface px-3 py-2">
+          <SourceFilter
+            available={availableSources}
+            state={state}
+            onChange={setState}
+            gradedAvailable={gradedAvailable}
+          />
+          {/* Price toggles: which denominator to show (hides the other page-wide). */}
+          <span className="ml-1 text-xs uppercase tracking-wide text-muted">Show</span>
+          <ColumnPill label={t("filter.retail")} on={retailOn} onClick={toggleRetail} />
+          <ColumnPill label={t("filter.market")} on={marketOn} onClick={toggleMarket} />
+        </div>
       </div>
 
       {/* What the Japanese data does and does not cover. Shown above the
@@ -616,6 +641,36 @@ export function RankingsTable({
           " Market prices marked * are hand-tracked with a source and date — a live sealed price source replaces them automatically."}
       </p>
     </div>
+  );
+}
+
+/** A one-click product-type filter with its live count. */
+function TypePill({
+  label,
+  count,
+  on,
+  onClick,
+}: {
+  label: string;
+  count: number;
+  on: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      aria-pressed={on}
+      className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+        on
+          ? "bg-accent/15 text-accent"
+          : "text-muted hover:bg-surface-raised hover:text-foreground"
+      }`}
+    >
+      {label}
+      <span className={`tabular text-[10px] ${on ? "text-accent/70" : "text-muted/70"}`}>
+        {count}
+      </span>
+    </button>
   );
 }
 
