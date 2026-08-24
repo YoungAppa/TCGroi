@@ -32,6 +32,18 @@ export function isLocale(v: string | null | undefined): v is Locale {
 /** Every translatable string, keyed by a stable English-ish identifier. */
 export const STRINGS = {
   en: {
+    "hero.kicker.cards": "cards",
+    "hero.kicker.products": "sealed products",
+    "hero.kicker.odds": "measured odds",
+    "hero.headline.a": "The chase is",
+    "hero.headline.b": "beautiful.",
+    "hero.headline.c": "The math isn't.",
+    "hero.body.lead": "That chase card is real — and it's",
+    "hero.body.oneIn": "1 in",
+    "hero.body.packs": "packs",
+    "hero.body.rest": "We price every pull against measured odds, so you know what a box is really worth before you tear the shrink.",
+    "hero.stat.of": "of",
+    "hero.stat.lose": "ranked products lose money when opened.",
     "filter.cardLanguage": "Card language",
     "jp.about.title": "About Japanese sets.",
     "jp.about.body":
@@ -78,6 +90,18 @@ export const STRINGS = {
   },
 
   ja: {
+    "hero.kicker.cards": "枚のカード",
+    "hero.kicker.products": "件の未開封商品",
+    "hero.kicker.odds": "実測された確率",
+    "hero.headline.a": "当たりは",
+    "hero.headline.b": "美しい。",
+    "hero.headline.c": "数字はそうでもない。",
+    "hero.body.lead": "あの当たりカードは実在します。ただし確率は",
+    "hero.body.oneIn": "",
+    "hero.body.packs": "パックに1枚",
+    "hero.body.rest": "すべての封入を実測データに基づいて評価しているので、開封する前にそのボックスの本当の価値がわかります。",
+    "hero.stat.of": "件中",
+    "hero.stat.lose": "件は、開封すると損をします。",
     "filter.cardLanguage": "カードの言語",
     "jp.about.title": "日本語セットについて",
     "jp.about.body":
@@ -123,6 +147,18 @@ export const STRINGS = {
   },
 
   zh: {
+    "hero.kicker.cards": "张卡牌",
+    "hero.kicker.products": "款未拆商品",
+    "hero.kicker.odds": "实测概率",
+    "hero.headline.a": "追逐很",
+    "hero.headline.b": "美好。",
+    "hero.headline.c": "数学并不。",
+    "hero.body.lead": "那张神卡是真的 —— 但概率是",
+    "hero.body.oneIn": "",
+    "hero.body.packs": "包抽一张",
+    "hero.body.rest": "我们用实测概率为每一次开卡定价，让你在拆封之前就知道一盒到底值多少。",
+    "hero.stat.of": "款中有",
+    "hero.stat.lose": "款拆开就亏钱。",
     "filter.cardLanguage": "卡牌语言",
     "jp.about.title": "关于日文系列",
     "jp.about.body":
@@ -168,6 +204,18 @@ export const STRINGS = {
   },
 
   es: {
+    "hero.kicker.cards": "cartas",
+    "hero.kicker.products": "productos sellados",
+    "hero.kicker.odds": "probabilidades medidas",
+    "hero.headline.a": "La caza es",
+    "hero.headline.b": "preciosa.",
+    "hero.headline.c": "Las cuentas no.",
+    "hero.body.lead": "Esa carta estrella existe — y sale",
+    "hero.body.oneIn": "1 de cada",
+    "hero.body.packs": "sobres",
+    "hero.body.rest": "Valoramos cada tirada con probabilidades medidas, para que sepas cuánto vale de verdad una caja antes de abrirla.",
+    "hero.stat.of": "de",
+    "hero.stat.lose": "productos pierden dinero al abrirlos.",
     "filter.cardLanguage": "Idioma de las cartas",
     "nav.rankings": "Clasificación",
     "nav.collection": "Colección",
@@ -212,6 +260,18 @@ export const STRINGS = {
   },
 
   fr: {
+    "hero.kicker.cards": "cartes",
+    "hero.kicker.products": "produits scellés",
+    "hero.kicker.odds": "probabilités mesurées",
+    "hero.headline.a": "La chasse est",
+    "hero.headline.b": "magnifique.",
+    "hero.headline.c": "Les maths non.",
+    "hero.body.lead": "Cette carte vedette existe — et elle sort",
+    "hero.body.oneIn": "1 fois sur",
+    "hero.body.packs": "boosters",
+    "hero.body.rest": "Nous évaluons chaque tirage avec des probabilités mesurées, pour que vous sachiez ce que vaut vraiment une boîte avant de l'ouvrir.",
+    "hero.stat.of": "sur",
+    "hero.stat.lose": "produits font perdre de l'argent à l'ouverture.",
     "filter.cardLanguage": "Langue des cartes",
     "nav.rankings": "Classement",
     "nav.collection": "Collection",
@@ -256,6 +316,18 @@ export const STRINGS = {
   },
 
   de: {
+    "hero.kicker.cards": "Karten",
+    "hero.kicker.products": "versiegelte Produkte",
+    "hero.kicker.odds": "gemessene Chancen",
+    "hero.headline.a": "Die Jagd ist",
+    "hero.headline.b": "wunderschön.",
+    "hero.headline.c": "Die Mathematik nicht.",
+    "hero.body.lead": "Diese Chase-Karte gibt es wirklich — mit einer Chance von",
+    "hero.body.oneIn": "1 zu",
+    "hero.body.packs": "Packs",
+    "hero.body.rest": "Wir bewerten jeden Zug mit gemessenen Wahrscheinlichkeiten, damit du weißt, was eine Box wirklich wert ist, bevor du sie öffnest.",
+    "hero.stat.of": "von",
+    "hero.stat.lose": "Produkten verlieren beim Öffnen Geld.",
     "filter.cardLanguage": "Kartensprache",
     "nav.rankings": "Rangliste",
     "nav.collection": "Sammlung",

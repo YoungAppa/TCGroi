@@ -773,7 +773,14 @@ function IconTile({
   return (
     <Link
       href={withFilter(`/${payload.gameSlug}/${payload.setCode}/${payload.productSlug}`)}
-      className="group relative flex flex-col overflow-hidden rounded-xl bg-surface p-3 ring-1 ring-white/5 transition hover:shadow-lg hover:shadow-black/30 hover:ring-accent/50"
+      className={`group relative flex flex-col overflow-hidden rounded-2xl p-3 transition duration-200 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/40 ${
+        // The foil marks the rarest verdict on the site: a product that pays
+        // for itself. Everything else gets the plain border, so the gradient
+        // never becomes decoration.
+        roi !== null && roi >= 0
+          ? "holo-ring"
+          : "border border-border bg-surface hover:border-accent/40"
+      }`}
     >
       <div className="mb-2 flex items-center justify-between gap-2">
         <span className="rounded bg-surface-raised px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted">
@@ -794,13 +801,13 @@ function IconTile({
           narrow (164px on a phone) and the art is width-bound instead, so the
           hero stays at 160px there rather than leaving a band of dead space
           above and below the picture. */}
-      <div className="relative flex h-40 items-center justify-center rounded-lg bg-surface-raised/40 lg:h-50">
+      <div className="relative flex h-40 items-center justify-center overflow-hidden rounded-xl bg-[radial-gradient(80%_90%_at_50%_10%,var(--surface-raised),transparent_80%)] lg:h-50">
         {heroImg ? (
           <img
             src={heroImg}
             alt={payload.setName}
             loading="lazy"
-            className={`${heroIsCard ? "h-full" : "max-h-36 max-w-[90%] lg:max-h-46"} w-auto object-contain transition-opacity duration-200 group-hover:opacity-0`}
+            className={`${heroIsCard ? "h-full" : "max-h-36 max-w-[90%] lg:max-h-46"} w-auto object-contain drop-shadow-[0_10px_22px_rgba(0,0,0,.6)] transition-opacity duration-200 group-hover:opacity-0`}
           />
         ) : (
           <span className="px-2 text-center text-sm font-semibold text-muted transition-opacity group-hover:opacity-0">
@@ -825,7 +832,7 @@ function IconTile({
       </div>
 
       <div className="mt-2.5 min-w-0">
-        <div className="truncate text-sm font-medium" title={payload.setName}>
+        <div className="truncate font-display text-sm font-bold" title={payload.setName}>
           {payload.setName}
           {payload.gameSlug === "one-piece" && (
             <span className="tabular font-normal text-muted"> ({payload.setCode})</span>
@@ -834,7 +841,7 @@ function IconTile({
         <div className="truncate text-xs text-muted" title={payload.productName}>
           {payload.productName}
         </div>
-        <div className="tabular mt-2 border-t border-border pt-2">
+        <div className="tabular mt-2 border-t border-border/70 pt-2">
           {/* The price you pay leads, the average unbox is its caption, and
               the ROI is a pill your eye lands on. Previously the ROI — the one
               number the whole site exists to give — was the SMALLEST text on
