@@ -161,6 +161,7 @@ export function RankingsTable({
   const [confFilter, setConfFilter] = useState<string>("all");
   const [genFilter, setGenFilter] = useState<string>("all");
   const [positiveOnly, setPositiveOnly] = useState(false);
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   const availableIds = useMemo(() => availableSources.map((s) => s.id), [availableSources]);
   // Offer the graded toggle once any product has a card with both PSA legs.
@@ -232,6 +233,12 @@ export function RankingsTable({
     );
     return GENERATION_ORDER.filter((g) => present.has(g));
   }, [products, game]);
+  const activeFilterCount =
+    (query.trim() !== "" ? 1 : 0) +
+    (typeFilter !== "all" ? 1 : 0) +
+    (confFilter !== "all" ? 1 : 0) +
+    (genFilter !== "all" ? 1 : 0) +
+    (positiveOnly ? 1 : 0);
   const filtersActive =
     query.trim() !== "" ||
     typeFilter !== "all" ||
@@ -412,8 +419,12 @@ export function RankingsTable({
             );
           })}
         </div>
+        {/* "Card language", not "Language": the header already carries a
+            language select for the SITE's own words, and two adjacent controls
+            both labelled Language gave no way to tell which did what. This one
+            picks which printing of a set to rank. */}
         <label className="flex items-center gap-1.5 pb-1 text-xs text-muted">
-          Language
+          {t("filter.cardLanguage")}
           <select
             value={lang}
             onChange={(e) => setLang(e.target.value as "en" | "ja" | "zh")}
@@ -426,6 +437,27 @@ export function RankingsTable({
         </label>
       </div>
 
+      {/* On a phone these two rows stacked into six, pushing the first product
+          ~1,350px down the page — the rankings became a filter form with the
+          rankings below the fold. They collapse behind a button there, with the
+          active count visible so a hidden filter is never a surprise. On sm+
+          the panel is always open and this renders exactly as before. */}
+      <button
+        type="button"
+        onClick={() => setFiltersOpen((v) => !v)}
+        aria-expanded={filtersOpen}
+        className="flex items-center gap-2 self-start rounded-md border border-border px-3 py-1.5 text-xs text-muted hover:text-foreground sm:hidden"
+      >
+        {filtersOpen ? "Hide filters" : "Filters"}
+        {activeFilterCount > 0 && (
+          <span className="rounded-full bg-accent/15 px-1.5 py-0.5 text-[10px] font-bold text-accent">
+            {activeFilterCount}
+          </span>
+        )}
+        <span className="text-muted">· {rows.length} shown</span>
+      </button>
+
+      <div className={`${filtersOpen ? "flex" : "hidden"} flex-col gap-3 sm:flex`}>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-2">
           <SourceFilter
@@ -547,6 +579,7 @@ export function RankingsTable({
         )}
         <span className="ml-auto text-muted">{rows.length} shown</span>
       </div>
+      </div>
 
       {/* What the Japanese data does and does not cover. Shown above the
           results, not as an empty state, because the caveat matters most when
@@ -658,16 +691,23 @@ function IconTile({
   const retailPrice = payload.msrpCents;
   const useMarket = marketOn && (marketPrice !== null || !retailOn);
   const roi = useMarket ? c.roiMarket : c.roiRetail;
-  const roiColorClass =
+  // Which price the tile leads with: whichever column the reader has on, market
+  // first when both are. That price is also what the ROI pill is measured
+  // against, so the two can never disagree.
+  const headlineIsRetail = !useMarket;
+  const headlinePrice = headlineIsRetail ? retailPrice : marketPrice;
+
+  // Same green -> amber -> orange -> red ramp as before, as a pill.
+  const roiPillClass =
     roi === null
-      ? "text-muted"
+      ? "bg-surface-raised text-muted"
       : roi >= 0
-        ? "text-roi-pos"
+        ? "bg-roi-pos/15 text-roi-pos"
         : roi >= -0.25
-          ? "text-amber-400"
+          ? "bg-amber-400/15 text-amber-400"
           : roi >= -0.5
-            ? "text-orange-400"
-            : "text-roi-neg";
+            ? "bg-orange-400/15 text-orange-400"
+            : "bg-roi-neg/15 text-roi-neg";
 
   // Set logo when we have one; otherwise the top chase card is the hero.
   const heroImg = payload.imageUrl ?? chase[0]?.img ?? null;
@@ -729,34 +769,41 @@ function IconTile({
         <div className="truncate text-xs text-muted" title={payload.productName}>
           {payload.productName}
         </div>
-        <div
-          className={`tabular mt-2 grid gap-1 border-t border-border pt-2 ${
-            retailOn && marketOn ? "grid-cols-3" : "grid-cols-2"
-          }`}
-        >
-          {retailOn && (
-            <div title="Retail (MSRP)">
-              <div className="text-[9px] uppercase tracking-wide text-muted">Retail</div>
-              <div className={`text-[13px] ${useMarket ? "text-muted" : "font-semibold text-foreground"}`}>
-                {retailPrice !== null ? money(retailPrice) : "—"}
+        <div className="tabular mt-2 border-t border-border pt-2">
+          {/* The price you pay leads, the average unbox is its caption, and
+              the ROI is a pill your eye lands on. Previously the ROI — the one
+              number the whole site exists to give — was the SMALLEST text on
+              the card, under two larger figures that matter less. */}
+          <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1">
+            <div>
+              <div className="text-[15px] font-semibold leading-tight sm:text-[17px]">
+                {headlinePrice !== null ? money(headlinePrice) : "—"}
+                {headlineIsRetail && (
+                  <span className="ml-1 text-[10px] font-medium text-muted">MSRP</span>
+                )}
+              </div>
+              <div className="text-[10.5px] text-muted">
+                opens for{" "}
+                <span className="font-semibold text-foreground">
+                  {money(c.ev.evProductCents)}
+                </span>
               </div>
             </div>
-          )}
-          {marketOn && (
-            <div title="Current market price">
-              <div className="text-[9px] uppercase tracking-wide text-muted">Market</div>
-              <div className={`text-[13px] ${useMarket ? "font-semibold text-foreground" : "text-muted"}`}>
-                {marketPrice !== null ? money(marketPrice) : "—"}
-              </div>
-            </div>
-          )}
-          <div className="text-right" title="Average value if you open it (expected value)">
-            <div className="text-[9px] uppercase tracking-wide text-muted">Avg. unbox</div>
-            <div className={`text-[13px] font-semibold ${roiColorClass}`}>
-              {money(c.ev.evProductCents)}
-            </div>
-            {roi !== null && (
-              <div className={`text-[10px] font-semibold ${roiColorClass}`}>{formatRoi(roi)}</div>
+            {roi !== null ? (
+              <span
+                className={`flex-none rounded-full px-2.5 py-1 text-[12.5px] font-bold ${roiPillClass}`}
+                title={
+                  headlineIsRetail
+                    ? "Return if you buy at retail price"
+                    : "Return at today's market price"
+                }
+              >
+                {formatRoi(roi)}
+              </span>
+            ) : (
+              <span className="flex-none rounded-full bg-surface-raised px-2.5 py-1 text-[12.5px] font-bold text-muted">
+                —
+              </span>
             )}
           </div>
         </div>

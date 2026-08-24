@@ -32,6 +32,7 @@ export function isLocale(v: string | null | undefined): v is Locale {
 /** Every translatable string, keyed by a stable English-ish identifier. */
 export const STRINGS = {
   en: {
+    "filter.cardLanguage": "Card language",
     "jp.about.title": "About Japanese sets.",
     "jp.about.body":
       "Cards, rarities and prices come from Scrydex — real Japanese tiers, not a translation of the English ones — and prices are converted from the USD figures Scrydex quotes. Card and set names stay in Japanese; they are never machine translated. Only a few Japanese sets are ranked so far, because ranking one needs a pull-rate study for that set, and Japanese odds are far less documented than English ones. Japanese boxes also often carry published per-box guarantees (Terastal Festival ex guarantees one SAR per box), which are modelled per set rather than assumed era-wide. Sets without that research stay unranked instead of being given invented odds.",
@@ -42,7 +43,7 @@ export const STRINGS = {
       "Pull rates are community estimates, not official odds — every EV here is a projection, not a promise.",
     "rankings.title": "Sealed product rankings",
     "rankings.subtitle":
-      "Expected value of opening, from pull rates × live card prices. The badge on each set says how well-evidenced its odds are — from measured studies down to eras where no primary data exists at all.",
+      "What a sealed product is worth to open, from pull rates × live card prices. Each set carries a badge showing how well-evidenced its odds are.",
     "filter.sources": "Sources",
     "filter.blend": "blend",
     "filter.show": "Show",
@@ -60,7 +61,7 @@ export const STRINGS = {
     "col.market": "Market",
     "col.avgUnbox": "Avg. unbox",
     "col.roi": "ROI",
-    "col.language": "Language",
+    "col.language": "Site language",
     "col.currency": "Currency",
     "product.expectedValue": "Expected value",
     "product.retailMsrp": "Retail (MSRP)",
@@ -77,6 +78,7 @@ export const STRINGS = {
   },
 
   ja: {
+    "filter.cardLanguage": "カードの言語",
     "jp.about.title": "日本語セットについて",
     "jp.about.body":
       "カード・レアリティ・価格は Scrydex から取得しています。英語版レアリティの翻訳ではなく、実際の日本語レアリティ（ダブルレア／アートレア／スーパーレア／スペシャルアートレア）です。価格は Scrydex が提示する米ドル建ての数値を換算したものです。カード名・セット名は機械翻訳せず日本語のまま表示します。現時点でランキング対象の日本語セットが少ないのは、ランキングに載せるにはそのセット固有の封入率データが必要で、日本語版の確率は英語版ほど公開されていないためです。また日本語のボックスには公表された「1BOXにSAR1枚」といった保証（テラスタルフェスex など）があることが多く、これは時代ごとの一律推定ではなくセット単位でモデル化しています。根拠のないセットには推測値を与えず、未ランキングのままにしています。",
@@ -87,7 +89,7 @@ export const STRINGS = {
       "封入率は公式の確率ではなくコミュニティの推定値です。期待値はあくまで予測であり、保証ではありません。",
     "rankings.title": "未開封商品ランキング",
     "rankings.subtitle":
-      "封入率 × 最新カード価格から算出した開封時の期待値。各セットのバッジは根拠の強さを示します — 実測データに基づくものから、一次データが存在しない時代のものまで。",
+      "封入率 × 最新カード価格から算出した開封時の期待値。各セットのバッジが根拠の強さを示します。",
     "filter.sources": "価格ソース",
     "filter.blend": "統合方法",
     "filter.show": "表示",
@@ -105,7 +107,7 @@ export const STRINGS = {
     "col.market": "市場",
     "col.avgUnbox": "平均開封額",
     "col.roi": "ROI",
-    "col.language": "言語",
+    "col.language": "サイトの言語",
     "col.currency": "通貨",
     "product.expectedValue": "期待値",
     "product.retailMsrp": "定価 (MSRP)",
@@ -121,6 +123,7 @@ export const STRINGS = {
   },
 
   zh: {
+    "filter.cardLanguage": "卡牌语言",
     "jp.about.title": "关于日文系列",
     "jp.about.body":
       "卡牌、稀有度与价格均来自 Scrydex——采用真实的日文稀有度分级，而非英文分级的翻译；价格由 Scrydex 提供的美元数值换算而来。卡牌与系列名称保留日文原文，不做机器翻译。目前仅有少数日文系列进入排行榜，因为排名需要该系列自身的抽卡率研究，而日文版的概率公开程度远不如英文版。日文原盒通常还带有官方公布的每盒保底（例如「太晶祭 ex」保证每盒 1 张 SAR），我们按系列单独建模，而不套用整个世代的估算。缺乏研究依据的系列宁可不排名，也不会使用凭空推测的概率。",
@@ -131,7 +134,7 @@ export const STRINGS = {
       "抽卡率为社群估算值，并非官方公布的概率——所有期望值均为推算，不构成保证。",
     "rankings.title": "未拆封商品排行榜",
     "rankings.subtitle":
-      "以抽卡率 × 实时卡价计算的开封期望值。每个系列的标签表示其概率依据的可靠程度——从实测研究，到根本不存在一手数据的时代。",
+      "以抽卡率 × 实时卡价计算的开封期望值。每个系列的标签显示其概率依据的可靠程度。",
     "filter.sources": "价格来源",
     "filter.blend": "汇总方式",
     "filter.show": "显示",
@@ -149,7 +152,7 @@ export const STRINGS = {
     "col.market": "市场",
     "col.avgUnbox": "平均开封值",
     "col.roi": "回报率",
-    "col.language": "语言",
+    "col.language": "网站语言",
     "col.currency": "货币",
     "product.expectedValue": "期望值",
     "product.retailMsrp": "官方定价 (MSRP)",
@@ -165,6 +168,7 @@ export const STRINGS = {
   },
 
   es: {
+    "filter.cardLanguage": "Idioma de las cartas",
     "nav.rankings": "Clasificación",
     "nav.collection": "Colección",
     "nav.methodology": "Metodología",
@@ -190,7 +194,7 @@ export const STRINGS = {
     "col.market": "Mercado",
     "col.avgUnbox": "Valor medio",
     "col.roi": "ROI",
-    "col.language": "Idioma",
+    "col.language": "Idioma del sitio",
     "col.currency": "Moneda",
     "product.expectedValue": "Valor esperado",
     "product.retailMsrp": "Precio de tienda (MSRP)",
@@ -208,6 +212,7 @@ export const STRINGS = {
   },
 
   fr: {
+    "filter.cardLanguage": "Langue des cartes",
     "nav.rankings": "Classement",
     "nav.collection": "Collection",
     "nav.methodology": "Méthodologie",
@@ -233,7 +238,7 @@ export const STRINGS = {
     "col.market": "Marché",
     "col.avgUnbox": "Valeur moyenne",
     "col.roi": "ROI",
-    "col.language": "Langue",
+    "col.language": "Langue du site",
     "col.currency": "Devise",
     "product.expectedValue": "Valeur attendue",
     "product.retailMsrp": "Prix conseillé (MSRP)",
@@ -251,6 +256,7 @@ export const STRINGS = {
   },
 
   de: {
+    "filter.cardLanguage": "Kartensprache",
     "nav.rankings": "Rangliste",
     "nav.collection": "Sammlung",
     "nav.methodology": "Methodik",
@@ -276,7 +282,7 @@ export const STRINGS = {
     "col.market": "Markt",
     "col.avgUnbox": "Ø Öffnungswert",
     "col.roi": "ROI",
-    "col.language": "Sprache",
+    "col.language": "Website-Sprache",
     "col.currency": "Währung",
     "product.expectedValue": "Erwartungswert",
     "product.retailMsrp": "UVP",

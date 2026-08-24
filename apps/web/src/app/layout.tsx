@@ -59,7 +59,10 @@ export default async function RootLayout({
         <I18nProvider>
         <MoneyProvider rates={fxRates}>
         <header className="border-b border-border bg-surface">
-          <nav className="mx-auto flex max-w-7xl items-center gap-6 px-4 py-3">
+          {/* Wraps rather than overflows: at 375px the old single row pushed the
+              language and currency selects off-screen entirely, making them
+              unreachable on a phone. */}
+          <nav className="mx-auto flex max-w-7xl flex-wrap items-center gap-x-6 gap-y-2 px-4 py-3">
             <Link href="/" className="group flex items-center gap-2">
               {/* The mark carries the thesis: open the pack, the value goes down. */}
               <span

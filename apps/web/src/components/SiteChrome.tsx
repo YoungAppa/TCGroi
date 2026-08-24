@@ -21,7 +21,7 @@ export function SiteNav() {
 
   return (
     <>
-      <div className="flex items-center gap-2 text-sm text-muted">
+      <div className="order-2 flex items-center gap-1 text-sm text-muted sm:order-none sm:gap-2">
         <Link href="/" className={link}>
           {t("nav.rankings")}
         </Link>
@@ -32,7 +32,9 @@ export function SiteNav() {
           {t("nav.methodology")}
         </Link>
       </div>
-      <div className="ml-auto">
+      {/* ml-auto only once there is room for it; on a phone the preferences sit
+          on their own line instead of being pushed past the right edge. */}
+      <div className="order-1 ml-auto sm:order-none">
         <SitePreferences />
       </div>
     </>
