@@ -81,6 +81,91 @@ function purchasableMsrpCents(
   return marketCents > msrpCents * MSRP_STALE_MARKET_RATIO ? null : msrpCents;
 }
 
+/**
+ * How far a product's per-pack price may sit from its set's median before we
+ * stop believing it.
+ *
+ * Loose single packs genuinely carry a lottery premium over the same pack
+ * bought inside a box — measured across this catalog it runs about 2.5-3.5x,
+ * and Japanese packs sit at the top of that. Six is comfortably clear of the
+ * real premium while still catching the failure this exists for.
+ */
+export const SEALED_PER_PACK_OUTLIER_RATIO = 6;
+
+/**
+ * Drop sealed prices that cannot be true, judged against the set's own siblings.
+ *
+ * PriceCharting is matched by product name, and for single packs that match
+ * sometimes lands on a sealed box, case or multi-pack lot instead. The result
+ * is not subtly wrong, it is nonsense: Sword & Shield's Japanese base set had a
+ * "booster pack" at $1,724.80 next to its own 30-pack box at $148.50, and
+ * Battle Partners had a $222.93 pack beside a $79.00 box. Published, those read
+ * as a site that does not check its own numbers.
+ *
+ * Two independent tests, both internal to the set. First, dominance: nothing may
+ * cost more in total than a sibling holding several times the packs. Second, a
+ * per-pack median check.
+ *
+ * The second test is internal consistency rather than an absolute band, because a real
+ * price range spans three orders of magnitude across this catalog: reduce every
+ * priced product in a set to a per-pack figure, take the median, and discard
+ * anything more than SEALED_PER_PACK_OUTLIER_RATIO away from it in either
+ * direction. A set needs at least three priced products to vote — with two, the
+ * median is just the pair and there is no way to tell which one is lying, so
+ * both are left alone rather than guessing.
+ *
+ * Discarded prices fall back to the hand-tracked market figure or to "—", the
+ * same as a product nobody has priced. That is the safe direction: it removes a
+ * claim rather than inventing one.
+ */
+export function dropImplausibleSealedPrices(
+  products: { productId: string; packsContained: number }[],
+  sealedByProduct: Map<string, PriceBySource>,
+): void {
+  const perPack: { productId: string; pp: number }[] = [];
+  for (const p of products) {
+    if (p.packsContained <= 0) continue;
+    const values = Object.values(sealedByProduct.get(p.productId) ?? {});
+    if (values.length === 0) continue;
+    const median = [...values].sort((a, b) => a - b)[Math.floor((values.length - 1) / 2)]!;
+    perPack.push({ productId: p.productId, pp: median / p.packsContained });
+  }
+  // Rule 1, and it needs no median: a product cannot cost more than a sibling
+  // that contains several times as many of the same packs. Buying the bigger
+  // one and splitting it would strictly dominate, so the cheaper-per-pack
+  // product being *dearer in total* is an arbitrage that does not exist. This
+  // is what catches a two-product set, where the median below has nothing to
+  // arbitrate with -- Battle Partners listed a $222.93 single pack beside its
+  // own $79.00 thirty-pack box. The 3x margin keeps it well away from real
+  // cases where a scarce small product genuinely outruns a larger one.
+  const priced = perPack.map((x) => ({
+    ...x,
+    packs: products.find((p) => p.productId === x.productId)!.packsContained,
+    total: x.pp * products.find((p) => p.productId === x.productId)!.packsContained,
+  }));
+  for (const small of priced) {
+    const dominated = priced.some(
+      (big) => big.packs >= small.packs * 3 && big.total < small.total,
+    );
+    if (dominated) sealedByProduct.delete(small.productId);
+  }
+
+  // Rule 2 needs at least three priced products to vote: with two, the median
+  // is just the pair and there is no way to tell which one is lying.
+  if (perPack.length < 3) return;
+
+  const sorted = [...perPack].map((x) => x.pp).sort((a, b) => a - b);
+  const median = sorted[Math.floor((sorted.length - 1) / 2)]!;
+  if (median <= 0) return;
+
+  for (const { productId, pp } of perPack) {
+    const ratio = pp / median;
+    if (ratio > SEALED_PER_PACK_OUTLIER_RATIO || ratio < 1 / SEALED_PER_PACK_OUTLIER_RATIO) {
+      sealedByProduct.delete(productId);
+    }
+  }
+}
+
 export async function loadRankingsFromDb(): Promise<RankingsPayload> {
   const db = getDb();
 
@@ -233,6 +318,18 @@ export async function loadRankingsFromDb(): Promise<RankingsPayload> {
     const existing = sealedByProduct.get(p.sealedProductId) ?? {};
     existing[p.sourceId] = p.priceCents;
     sealedByProduct.set(p.sealedProductId, existing);
+  }
+
+  // Sanity-check sealed prices against their own set before anything reads them,
+  // so a mismatched source price cannot reach EV, the market column or the chart.
+  {
+    const bySet = new Map<string, { productId: string; packsContained: number }[]>();
+    for (const p of productRows) {
+      const list = bySet.get(p.setId) ?? [];
+      list.push({ productId: p.productId, packsContained: p.packsContained });
+      bySet.set(p.setId, list);
+    }
+    for (const list of bySet.values()) dropImplausibleSealedPrices(list, sealedByProduct);
   }
 
   // --- assemble ----------------------------------------------------------------
