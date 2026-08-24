@@ -1,19 +1,19 @@
 {
   "game": "pokemon",
   "setCode": "swsh10",
-  "version": 2,
-  "sampleSizePacks": null,
-  "sourceUrl": "https://www.tcgplayer.com/content/article/Pok%C3%A9mon-TCG-Evolving-Skies-Pull-Rates/6a743d7b-e5ee-4fd6-9d18-64a636990e8c/",
-  "sourceNote": "Sword & Shield era estimate, RECALIBRATED against the two large primary studies that exist for this era: the TCGplayer Authentication Center's 8,000+-pack openings of Evolving Skies (swsh7, Aug 2021) and Lost Origin (swsh11, Sep 2022). Those two independent samples agree closely tier by tier - plain V 10.56% and 11.63%, the VMAX plus full-art/alt-art band 9.48% and 8.32%, and the secret rainbow/gold band 2.05% in BOTH - so this set uses their midpoints: double_rare 11.0%, ultra_rare 8.9%, hyper_rare 2.05%. This REPLACES an earlier community-aggregate guess that put hyper_rare at 4.2%, roughly double what both measured studies found, which inflated every Sword & Shield set's EV. Confidence stays LOW deliberately: the numbers are now anchored to real measurements, but they are measurements of two OTHER sets in the same era, not of this one - per-set rates do vary, and no primary study of this set has been found. Tier averages also assume every card in a tier is equally likely, which understates the headline chases (in Evolving Skies the Umbreon VMAX alt is about 1 in 2,000 packs, far rarer than a uniform tier implies), so the residual error runs conservative.",
-  "confidence": "low",
+  "version": 1,
+  "sampleSizePacks": 8000,
+  "sourceUrl": "https://www.tcgplayer.com/content/article/Pok%C3%A9mon-TCG-Astral-Radiance-Pull-Rates/10da749f-9c8b-45c0-b80a-dbd86ca5dcde/",
+  "sourceNote": "PRIMARY MEASURED STUDY, read directly from the primary article (Peter Day, TCGplayer Authentication Center, for the 2022-05-27 release): more than 8,000 Astral Radiance packs opened. Their published figures: Ultra Rare 20.03% = normal V 12.77% (1 in 8), VMAX/VSTAR 3.47% (1 in 29), full-art V 2.13% (1 in 47), full-art Trainer 1.08% (1 in 93), alt-art V 0.74% (1 in 135); Secret Rare 2.05% (1 in 49) = rainbow 1.28% + gold 0.76%; Trainer Gallery 12.58%. Mapped by inspecting tier membership: ultra_rare = 20.03 - 12.77 = 7.26%; hyper_rare = 2.05%. ONE BORROWED NUMBER, STATED PLAINLY: this catalog's double_rare tier (22 cards) holds the 19 normal V PLUS 3 Radiant Pokemon (Radiant Heatran/Greninja/Hawlucha), but TCGplayer's Astral Radiance table has NO Radiant row -- this was the set that introduced Radiants and they did not break the rate out. The same Authentication Center measured Radiant at 5.01% in Lost Origin and 4.55% in Silver Tempest, the sets either side of this one with the identical Radiant slot; the midpoint 4.78% is used here, so double_rare = 12.77 + 4.78 = 17.55%. Any true value inside that measured 4.55-5.01 bracket moves double_rare by at most 0.23pp. The remaining tiers are measured directly. KNOWN CONSERVATIVE GAP: the 12.58% Trainer Gallery subset is not carried, so this set's EV is UNDERSTATED.",
+  "confidence": "high",
   "slots": [
     {
       "rarity": "double_rare",
-      "perPackProbability": 0.11
+      "perPackProbability": 0.1755
     },
     {
       "rarity": "ultra_rare",
-      "perPackProbability": 0.089
+      "perPackProbability": 0.0726
     },
     {
       "rarity": "hyper_rare",

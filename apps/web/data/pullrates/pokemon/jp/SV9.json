@@ -2,14 +2,14 @@
   "game": "pokemon",
   "setCode": "SV9",
   "version": 1,
-  "sampleSizePacks": null,
-  "sourceUrl": "https://pokemon-infomation.com/pull-rates-nightwanderer/",
-  "sourceNote": "バトルパートナーズ: Scarlet & Violet era set, 30 packs x 5 cards. ANCHORED, not set-measured: pokemon-infomation.com has published independent box tallies for EIGHT sibling SV-era sets (黒炎の支配者, レイジングサーフ, クリムゾンヘイズ, ナイトワンダラー, 熱風のアリーナ and the High Class sets), 600-2,000 boxes each, and the regular/enhanced sets agree tier by tier: SAR ~20%/box, 3 AR guaranteed, SR ~75-80%/box, UR ~10%/box, with one SR-or-better per box. This set applies those sibling figures (SR at the 77.5% midpoint). Confidence stays LOW deliberately: these are measurements of OTHER sets in the same product line, not of this one. RR at ~4.5/box comes from the same tallies' box breakdowns. Guarantees are folded into the rates, not modelled as floors.",
-  "confidence": "low",
+  "sampleSizePacks": 30000,
+  "sourceUrl": "https://pokemon-infomation.com/pull-rates-battlepartner/",
+  "sourceNote": "バトルパートナーズ: MEASURED by pokemon-infomation.com across 1,000 aggregated boxes (30,000 packs). Their per-BOX figures: SR(ポケモン) ~55.0%, SR(サポート) ~25.0%, SAR ~20.0%, UR ~10.0%; AR 3枚確定; RR 4-5枚; one SR-or-better per box with ~10% of boxes carrying two. Mapped to this catalog's tiers: ultra_rare takes the whole SR band (55+25=80%/box), special_illustration_rare the SAR, hyper_rare the UR, illustration_rare the guaranteed 3 AR, double_rare the 4-5 RR (4.5 used). Rates come from ポケゲトちゃんねる (pokemon-infomation.com), which aggregates real box-opening tallies from card shops and individuals — the closest thing Japanese sets have to a primary study, since neither The Pokemon Company nor any English source publishes Japanese odds. Confidence is MEDIUM: the sample is large and the methodology is consistent across sets, but the tallies are not independently auditable. Per-pack probabilities are the site's per-BOX figures divided by this box's 30 packs. NOTE ON GUARANTEES: per-box guarantees (3 AR/box, 1 ACE SPEC/box, ~1 SR-or-better/box) are FOLDED INTO the slot rates rather than modelled as engine floors — a floor attaches to a PRODUCT, so a single-pack product would inherit the whole box's guarantee and read absurdly positive. A box's EV already reflects every guarantee.",
+  "confidence": "medium",
   "slots": [
     {
-      "rarity": "special_illustration_rare",
-      "perPackProbability": 0.00667
+      "rarity": "double_rare",
+      "perPackProbability": 0.15
     },
     {
       "rarity": "illustration_rare",
@@ -17,15 +17,15 @@
     },
     {
       "rarity": "ultra_rare",
-      "perPackProbability": 0.02583
+      "perPackProbability": 0.026667
+    },
+    {
+      "rarity": "special_illustration_rare",
+      "perPackProbability": 0.006667
     },
     {
       "rarity": "hyper_rare",
-      "perPackProbability": 0.00333
-    },
-    {
-      "rarity": "double_rare",
-      "perPackProbability": 0.15
+      "perPackProbability": 0.003333
     }
   ],
   "alternateEstimates": [],

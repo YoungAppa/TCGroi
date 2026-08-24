@@ -2,14 +2,14 @@
   "game": "pokemon",
   "setCode": "M4",
   "version": 1,
-  "sampleSizePacks": null,
-  "sourceUrl": "https://pokemon-infomation.com/pull-rates-nightwanderer/",
-  "sourceNote": "ニンジャスピナー: Mega era set, 30 packs x 5 cards. ANCHORED to the same site's direct measurements of メガシンフォニア and インフェルノX (~1,000 boxes each): SAR ~28%/box, 3 AR guaranteed, SR ~1.8/box (including the guaranteed Trainer-line SR), MUR ~1.5%/box, RR 4-5/box. Confidence LOW: sibling measurements, not this set's own. Guarantees are folded into the rates, not modelled as floors.",
-  "confidence": "low",
+  "sampleSizePacks": 30000,
+  "sourceUrl": "https://pokemon-infomation.com/pull-rates-ninjaspiner/",
+  "sourceNote": "ニンジャスピナー: MEASURED by pokemon-infomation.com across ~1,000 aggregated boxes (30,000 packs). Their per-BOX figures: SR(ポケモン/サポート) ~80.0%; Trainer-line SR (グッズ/ポケモンのどうぐ/スタジアム) 1枚確定; SAR ~28.0%; MUR ~1.0-2.0%; AR 3枚確定; RR 4-5枚; ~10% of boxes carry two SR-or-better. Mapped: ultra_rare takes the 0.8 SR band PLUS the 1.0 guaranteed Trainer SR = 1.8/box; special_illustration_rare the 28% SAR; mega_hyper_rare the MUR at the 1.5% midpoint of the stated 1-2% range (this catalog holds exactly one MUR card); illustration_rare the guaranteed 3 AR; double_rare the 4-5 RR (4.5 used). Rates come from ポケゲトちゃんねる (pokemon-infomation.com), which aggregates real box-opening tallies from card shops and individuals — the closest thing Japanese sets have to a primary study, since neither The Pokemon Company nor any English source publishes Japanese odds. Confidence is MEDIUM: the sample is large and the methodology is consistent across sets, but the tallies are not independently auditable. Per-pack probabilities are the site's per-BOX figures divided by this box's 30 packs. NOTE ON GUARANTEES: per-box guarantees are FOLDED INTO the slot rates rather than modelled as engine floors — a floor attaches to a PRODUCT, so a single-pack product would inherit the whole box's guarantee and read absurdly positive.",
+  "confidence": "medium",
   "slots": [
     {
-      "rarity": "special_illustration_rare",
-      "perPackProbability": 0.00933
+      "rarity": "double_rare",
+      "perPackProbability": 0.15
     },
     {
       "rarity": "illustration_rare",
@@ -20,12 +20,12 @@
       "perPackProbability": 0.06
     },
     {
-      "rarity": "mega_hyper_rare",
-      "perPackProbability": 0.0005
+      "rarity": "special_illustration_rare",
+      "perPackProbability": 0.009333
     },
     {
-      "rarity": "double_rare",
-      "perPackProbability": 0.15
+      "rarity": "mega_hyper_rare",
+      "perPackProbability": 0.0005
     }
   ],
   "alternateEstimates": [],

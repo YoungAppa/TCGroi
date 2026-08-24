@@ -1,0 +1,35 @@
+{
+  "game": "pokemon",
+  "setCode": "me5",
+  "version": 1,
+  "sampleSizePacks": 4000,
+  "sourceUrl": "https://www.tcgplayer.com/content/article/Pok%C3%A9mon-TCG-Pitch-Black-Pull-Rates/069a5fda-2d1f-44a1-97de-b6dcdc5abfb8/",
+  "sourceNote": "TCGplayer Authentication Center study, read directly from the primary article (Peter Day, published 2026-07-21 for the 2026-07-17 release): more than 4,000 Pitch Black booster packs opened, per-tier rates with 95% confidence intervals computed by normal approximation - Double Rare 21.02% +/-1.21, Ultra Rare 8.30% +/-0.82, Illustration Rare 11.01% +/-0.93, Special Illustration Rare 1.25% +/-0.33, Mega Hyper Rare 0.09% +/-0.09. TCGplayer's own reading: the rates are effectively identical to the earlier Mega Evolution Series sets (Phantasmal Flames, Perfect Order, Chaos Rising), which are all similar sizes, so odds on a specific card at a given rarity are near-identical across the four. The Mega Hyper Rare interval (+/-0.09 on 0.09%) is as wide as the estimate itself - at roughly 1 in 1,081 packs this tier is barely resolved by a 4,000-pack sample, so treat that single card's rate as the loosest number in the table. One Mega Hyper Rare card; no ACE SPEC or regular Hyper Rare tier.",
+  "confidence": "high",
+  "slots": [
+    {
+      "rarity": "double_rare",
+      "perPackProbability": 0.2102
+    },
+    {
+      "rarity": "ultra_rare",
+      "perPackProbability": 0.083
+    },
+    {
+      "rarity": "illustration_rare",
+      "perPackProbability": 0.1101
+    },
+    {
+      "rarity": "special_illustration_rare",
+      "perPackProbability": 0.0125
+    },
+    {
+      "rarity": "mega_hyper_rare",
+      "perPackProbability": 0.0009
+    }
+  ],
+  "alternateEstimates": [],
+  "guaranteedSlots": [],
+  "boxGuarantees": [],
+  "showWhenPlaceholder": false
+}

@@ -2,10 +2,10 @@
   "game": "pokemon",
   "setCode": "SWSH11",
   "version": 1,
-  "sampleSizePacks": null,
-  "sourceUrl": "https://pokemon-infomation.com/pull-rates-paradimtriger/",
-  "sourceNote": "ロストアビス: Sword & Shield era Japanese set, 30 packs x 5 cards. ANCHORED to the same site's measured tally of パラダイムトリガー (500 boxes): SR band (SR + special-art SR) ~75%/box, HR+UR ~30%/box, one SR-or-better per box, RR/RRR (V and VMAX/VSTAR) ~4.5/box from the box breakdowns. Confidence LOW: sibling-era measurement, not this set's own. Character Rares (CHR/CSR), where this set has them, are catalogued but NOT given a pull slot — no tallied rate exists, so they contribute zero EV rather than a guessed amount (conservative). Guarantees are folded into the rates, not modelled as floors.",
-  "confidence": "low",
+  "sampleSizePacks": 9000,
+  "sourceUrl": "https://pokemon-infomation.com/pull-rates-lostabys/",
+  "sourceNote": "ロストアビス: MEASURED by pokemon-infomation.com across 300 aggregated boxes (9,000 packs). Their per-BOX figures: SR(ポケモン) ~35.0%, SR(サポート) ~25.0%, SA(特別なアート) ~15.0%, HR(ポケモン) ~10.0%, HR(サポート) ~10.0%, UR ~10.0%; one SR-or-better guaranteed per box (~10% of boxes carry two). This era's catalog has no AR or SAR tier, so the bands map as the sibling パラダイムトリガー file already does: ultra_rare = SR + SA = 35+25+15=75%/box; hyper_rare = HR + UR = 10+10+10=30%/box; double_rare = the RR/RRR band at ~4.5/box. Rates come from ポケゲトちゃんねる (pokemon-infomation.com), which aggregates real box-opening tallies from card shops and individuals — the closest thing Japanese sets have to a primary study, since neither The Pokemon Company nor any English source publishes Japanese odds. Confidence is MEDIUM: the sample is large and the methodology is consistent across sets, but the tallies are not independently auditable. Per-pack probabilities are the site's per-BOX figures divided by this box's 30 packs. NOTE ON GUARANTEES: per-box guarantees (3 AR/box, 1 ACE SPEC/box, ~1 SR-or-better/box) are FOLDED INTO the slot rates rather than modelled as engine floors — a floor attaches to a PRODUCT, so a single-pack product would inherit the whole box's guarantee and read absurdly positive. A box's EV already reflects every guarantee.",
+  "confidence": "medium",
   "slots": [
     {
       "rarity": "ultra_rare",

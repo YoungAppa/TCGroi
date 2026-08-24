@@ -4,12 +4,12 @@
   "version": 2,
   "sampleSizePacks": 8000,
   "sourceUrl": "https://www.tcgplayer.com/content/article/Pok%C3%A9mon-TCG-Lost-Origin-Pull-Rates/ba20ac4d-9448-45ce-b919-d856d107c744/",
-  "sourceNote": "PRIMARY MEASURED STUDY: the TCGplayer Authentication Center opened more than 8,000 Lost Origin packs (September 2022) and published per-pack rates. Their figures: Ultra Rare 19.95% overall, made up of normal V 11.63% (1 in 9), VMAX/VSTAR 4.42% (1 in 23), full-art V 1.98% (1 in 51), full-art Trainer 1.42% (1 in 70) and alt-art V 0.50% (1 in 201); Secret Rare 2.05% (1 in 49) split into rainbow 1.28% and gold 0.76%. Mapped onto this set's tiers by what each contains: double_rare = plain V (#27-146) = 11.63%; ultra_rare = plain VMAX/VSTAR plus the full-art/alt-art secret range (#166-196) = 19.95-11.63 = 8.32%; hyper_rare = the #197+ rainbow and gold range = 2.05%. The tiers sum to 22.00%, exactly TCGplayer's 19.95+2.05. KNOWN CONSERVATIVE GAP: their headline 32% hit rate also counts Trainer Gallery cards, which are a separate TG01-TG30 subset this catalog does not carry, so roughly 10 percentage points of pack contents are unmodelled and this set's EV is understated rather than inflated. Replaces a Sword & Shield era-generic estimate whose 4.2% hyper_rare was about double the measured 2.05%.",
+  "sourceNote": "PRIMARY MEASURED STUDY: the TCGplayer Authentication Center opened more than 8,000 Lost Origin packs (September 2022) and published per-pack rates. Their figures: Ultra Rare 19.95% overall = normal V 11.63% (1 in 9), VMAX/VSTAR 4.42% (1 in 23), full-art V 1.98% (1 in 51), full-art Trainer 1.42% (1 in 70), alt-art V 0.50% (1 in 201); Radiant Rare 5.01% (1 in 20); Secret Rare 2.05% (1 in 49) = rainbow 1.28% + gold 0.76%; Trainer Gallery 12.31%. Mapped onto this catalog's tiers by INSPECTING which cards each tier holds. double_rare (15 cards) = the 12 normal V PLUS the 3 Radiant Pokemon (Radiant Hisuian Sneasler/Steelix/Gardevoir), so it takes 11.63 + 5.01 = 16.64%. CORRECTION 2026-08-25: this tier previously carried 11.63%, the plain-V rate alone -- the three Radiant cards sat in the tier with their 5.01% slot uncounted, which understated the tier by 5.01 percentage points and understated this set's EV. ultra_rare (32 cards) = plain VMAX/VSTAR plus the #172-196 full-art, alt-art and Trainer range = 19.95 - 11.63 = 8.32%. hyper_rare (21 cards) = the #197+ rainbow and gold range = 2.05%. KNOWN CONSERVATIVE GAP: the 12.31% Trainer Gallery subset (TG01-TG30) is not carried in this catalog, so roughly 12 percentage points of pack contents are unmodelled and this set's EV is UNDERSTATED.",
   "confidence": "high",
   "slots": [
     {
       "rarity": "double_rare",
-      "perPackProbability": 0.1163
+      "perPackProbability": 0.1664
     },
     {
       "rarity": "ultra_rare",
