@@ -1554,10 +1554,10 @@
     },
     {
       "setCode": "SV4a",
-      "name": "Booster Box (30 packs)",
+      "name": "Booster Box (10 packs)",
       "slug": "booster-box",
       "type": "booster_box",
-      "packsContained": 30,
+      "packsContained": 10,
       "marketCents": 9700,
       "marketAsOf": "2026-07-30",
       "marketSource": "PriceCharting (eBay sold), 2026-07-30",

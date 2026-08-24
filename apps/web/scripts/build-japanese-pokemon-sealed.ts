@@ -46,22 +46,28 @@ const SEALED_TYPES: Record<string, { our: string; slug: string; mustNot: RegExp 
   "booster pack": { our: "booster_pack", slug: "booster-pack", mustNot: /\bcase\b|sleeved|set\b/i },
 };
 
-/** Packs per box, by our product type. Japanese boxes are NOT 36 packs. */
-const DEFAULT_PACKS: Record<string, number> = { booster_box: 30, booster_pack: 1 };
-
 /**
- * Japanese box sizes that are not the 30-pack default.
+ * Packs per box, read from Scrydex's own product description.
  *
- * Japanese boxes vary far more than English ones: a High Class set ships 10
- * packs of 10 cards, a regular expansion 30 packs of 5. Getting this wrong
- * scales the whole EV, so anything not listed here falls back to 30 and is
- * reported, rather than being silently assumed.
+ * Japanese box sizes vary in a way English ones do not — a regular expansion
+ * ships 30 packs of 5 cards, a High Class set 10 packs of 10 — and pack count
+ * scales EV linearly, so a remembered number is not good enough. Scrydex states
+ * it per product: "Each Japanese Terastal Fest ex Booster Box contains 10
+ * booster packs containing 10 random cards each."
+ *
+ * Parsing that is the difference between a sourced fact and a guess. An
+ * unparseable description yields null, and the product is created WITHOUT a
+ * pack count rather than defaulting to a number — a wrong count silently
+ * multiplies the whole EV, so no count is safer than a plausible one.
  */
-const PACKS_PER_BOX: Record<string, number> = {
-  // High Class / "fes" sets — 10 packs per box.
-  SV8A: 10, SV4A: 10, SV2A: 20, S12A: 10, SV6A: 10, SV5A: 10,
-  SV1A: 10, S8B: 10, S6A: 10, S4A: 10,
-};
+const PACKS_RE = /contains\s+(\d+)\s+booster\s+packs?/i;
+
+function packsFromDescription(description: string | null | undefined): number | null {
+  const m = PACKS_RE.exec(description ?? "");
+  if (!m) return null;
+  const n = Number(m[1]);
+  return Number.isFinite(n) && n > 0 && n <= 100 ? n : null;
+}
 
 interface PcProduct {
   "product-name"?: string;
@@ -118,11 +124,16 @@ async function main() {
 
   let productsMade = 0;
   let pricesMade = 0;
-  let assumedPacks = 0;
+  const unsourcedPacks: string[] = [];
   const noPrice: string[] = [];
 
   for (const s of targets) {
-    let items: { name?: string; type?: string; images?: { large?: string; medium?: string }[] }[];
+    let items: {
+      name?: string;
+      type?: string;
+      description?: string;
+      images?: { large?: string; medium?: string }[];
+    }[];
     try {
       const b = await getJson(
         `${BASE}/pokemon/v1/expansions/${encodeURIComponent(s.externalIds["scrydex"]!)}/sealed?page=1&page_size=100`,
@@ -146,12 +157,14 @@ async function main() {
         .replace(/\s*Booster\s+(Box|Pack).*$/i, "")
         .trim();
 
-      const packs =
-        rule.our === "booster_pack"
-          ? 1
-          : (PACKS_PER_BOX[s.code.toUpperCase()] ?? DEFAULT_PACKS.booster_box!);
-      if (rule.our === "booster_box" && PACKS_PER_BOX[s.code.toUpperCase()] === undefined) {
-        assumedPacks++;
+      let packs = 1;
+      if (rule.our === "booster_box") {
+        const sourced = packsFromDescription(item.description);
+        if (sourced === null) {
+          unsourcedPacks.push(`${s.code} (${name})`);
+          continue; // no sourced pack count => no product, rather than a guess
+        }
+        packs = sourced;
       }
 
       const [prod] = await db
@@ -223,12 +236,12 @@ async function main() {
     `\nDone. ${productsMade} sealed products, ${pricesMade} priced. ` +
       `${noPrice.length} products found no Japanese price.`,
   );
-  if (assumedPacks > 0) {
+  if (unsourcedPacks.length > 0) {
     console.log(
-      `WARNING: ${assumedPacks} boxes fell back to the 30-pack default because the set is not in ` +
-        `PACKS_PER_BOX. Japanese box sizes vary (High Class sets are 10 packs), and pack count ` +
-        `scales EV directly — verify these before ranking those sets.`,
+      `\n${unsourcedPacks.length} boxes SKIPPED — Scrydex states no pack count for them, and a ` +
+        `guessed count would scale their whole EV:`,
     );
+    for (const u of unsourcedPacks.slice(0, 12)) console.log(`   ${u}`);
   }
   process.exit(0);
 }
