@@ -1,0 +1,27 @@
+{
+  "game": "pokemon",
+  "setCode": "SWSH12",
+  "version": 1,
+  "sampleSizePacks": 15000,
+  "sourceUrl": "https://pokemon-infomation.com/pull-rates-paradimtriger/",
+  "sourceNote": "パラダイムトリガー: MEASURED by pokemon-infomation.com across 500 aggregated boxes: SR(Pokemon) ~35%/box + SR(Supporter) ~25%/box + special-art SR ~15%/box = 0.75 SR-band/box; HR ~20%/box; UR ~10%/box; one SR-or-better guaranteed per box (~10% of boxes carry two). RR/RRR ~4.5/box from the box breakdowns. Guarantees folded into rates, not floors.",
+  "confidence": "medium",
+  "slots": [
+    {
+      "rarity": "ultra_rare",
+      "perPackProbability": 0.025
+    },
+    {
+      "rarity": "hyper_rare",
+      "perPackProbability": 0.01
+    },
+    {
+      "rarity": "double_rare",
+      "perPackProbability": 0.15
+    }
+  ],
+  "alternateEstimates": [],
+  "guaranteedSlots": [],
+  "boxGuarantees": [],
+  "showWhenPlaceholder": false
+}

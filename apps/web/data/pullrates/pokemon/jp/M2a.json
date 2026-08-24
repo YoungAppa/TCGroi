@@ -1,0 +1,35 @@
+{
+  "game": "pokemon",
+  "setCode": "M2a",
+  "version": 1,
+  "sampleSizePacks": 20000,
+  "sourceUrl": "https://pokemon-infomation.com/pull-rates-megadreamex/",
+  "sourceNote": "MEGAドリームex: High Class style box, 10 packs. DIRECTLY MEASURED by pokemon-infomation.com across 2,000 aggregated boxes: 3 AR guaranteed/box; 1 Mega Attack Rare guaranteed/box; 1 Trainer SR guaranteed/box plus ~10% for a Pokemon SR (1.10 SR total); SAR ~40%/box; MUR ~2%/box. Mirror-print variants are print styles, not tiers, and are not modelled. Guarantees are folded into the rates, not modelled as floors, so single-pack products price at exactly box/packs.",
+  "confidence": "medium",
+  "slots": [
+    {
+      "rarity": "illustration_rare",
+      "perPackProbability": 0.3
+    },
+    {
+      "rarity": "mega_attack_rare",
+      "perPackProbability": 0.1
+    },
+    {
+      "rarity": "ultra_rare",
+      "perPackProbability": 0.11
+    },
+    {
+      "rarity": "special_illustration_rare",
+      "perPackProbability": 0.04
+    },
+    {
+      "rarity": "mega_hyper_rare",
+      "perPackProbability": 0.002
+    }
+  ],
+  "alternateEstimates": [],
+  "guaranteedSlots": [],
+  "boxGuarantees": [],
+  "showWhenPlaceholder": false
+}

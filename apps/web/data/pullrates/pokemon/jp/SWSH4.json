@@ -1,0 +1,27 @@
+{
+  "game": "pokemon",
+  "setCode": "SWSH4",
+  "version": 1,
+  "sampleSizePacks": null,
+  "sourceUrl": "https://pokemon-infomation.com/pull-rates-paradimtriger/",
+  "sourceNote": "仰天のボルテッカー: Sword & Shield era Japanese set, 30 packs x 5 cards. ANCHORED to the same site's measured tally of パラダイムトリガー (500 boxes): SR band (SR + special-art SR) ~75%/box, HR+UR ~30%/box, one SR-or-better per box, RR/RRR (V and VMAX/VSTAR) ~4.5/box from the box breakdowns. Confidence LOW: sibling-era measurement, not this set's own. Character Rares (CHR/CSR), where this set has them, are catalogued but NOT given a pull slot — no tallied rate exists, so they contribute zero EV rather than a guessed amount (conservative). Guarantees are folded into the rates, not modelled as floors.",
+  "confidence": "low",
+  "slots": [
+    {
+      "rarity": "ultra_rare",
+      "perPackProbability": 0.025
+    },
+    {
+      "rarity": "hyper_rare",
+      "perPackProbability": 0.01
+    },
+    {
+      "rarity": "double_rare",
+      "perPackProbability": 0.15
+    }
+  ],
+  "alternateEstimates": [],
+  "guaranteedSlots": [],
+  "boxGuarantees": [],
+  "showWhenPlaceholder": false
+}

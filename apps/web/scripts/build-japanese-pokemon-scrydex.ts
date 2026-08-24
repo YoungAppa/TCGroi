@@ -63,6 +63,23 @@ const JP_RARITY: Record<string, string> = {
   PROMO: "promo",
   "SHINY RARE": "shiny_rare",
   K: "shiny_rare",
+  // --- Sword & Shield / Sun & Moon era codes (second pass) -----------------
+  // RRR is the VMAX/VSTAR tier; English sets fold VMAX into their higher
+  // bands, but JP tallies count it with RR as the guaranteed-multiple band,
+  // so it lives with double_rare here and the pull tables treat them as one.
+  RRR: "double_rare",
+  // HR (rainbow) and the era's gold UR both map onto the hyper band, exactly
+  // as the English catalog does.
+  HR: "hyper_rare",
+  // Character rares: CHR plays the illustration-rare role, CSR the special-
+  // illustration role, a generation before those names existed.
+  CHR: "illustration_rare",
+  CSR: "special_illustration_rare",
+  // Amazing Rare — a one-per-box-ish chase folded into the ultra band.
+  A: "ultra_rare",
+  // Mega Attack Rare (ME era), already in the vocabulary.
+  MA: "mega_attack_rare",
+  TR: "ultra_rare",
 };
 
 function credentials() {
