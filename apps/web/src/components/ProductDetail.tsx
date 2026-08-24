@@ -99,6 +99,26 @@ export function ProductDetail({
         gradedAvailable={gradedAvailable}
       />
 
+      {/* Graded mode is deliberately withheld where the pull rate is a guess —
+          graded tier values run ~16x raw, so they amplify rate error by the
+          same factor (an XY-era box once read +81% purely from a guessed
+          0.25/pack meeting four-figure PSA 10s). But a toggle that lights up
+          and changes nothing reads as broken, so when the gate fires, SAY SO. */}
+      {state.graded &&
+        (payload.pullRates.confidence === "low" ||
+          payload.pullRates.confidence === "placeholder") && (
+          <div className="rounded-lg border border-amber-400/30 bg-amber-400/5 px-3 py-2 text-xs text-muted">
+            <span className="font-medium text-amber-400">
+              Graded mode is not applied to this set.
+            </span>{" "}
+            Its pull rate is a {payload.pullRates.confidence}-confidence estimate, and graded
+            valuation multiplies card values by an order of magnitude — applied to a guessed
+            rate, that manufactures a verdict. The numbers below are raw-card EV; the
+            &ldquo;Is it worth grading?&rdquo; table further down still shows per-card PSA 10
+            prices and odds.
+          </div>
+        )}
+
       {/* ---- the split: EV once, the selected denominator(s) ---- */}
       <div
         className={`grid gap-3 ${
