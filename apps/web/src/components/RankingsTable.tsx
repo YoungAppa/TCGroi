@@ -269,12 +269,14 @@ export function RankingsTable({
     setPositiveOnly(false);
   }
 
-  // xl gets a fifth grid column — at 300+ products the extra density is worth
-  // more than the larger tiles, and the footer was rebuilt to stay legible at
-  // that width.
+  // Four columns is the widest this grid goes. A fifth was tried and reverted:
+  // the page is capped at max-w-7xl, so a fifth column cannot take width from
+  // the screen — it takes it from the tiles, shrinking them to 234px and
+  // squeezing the price against its ROI pill. Four gives 297px, which the
+  // hero height below is sized to fill.
   function renderGrid(sectionRows: Row[]) {
     return (
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 xl:gap-5">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:gap-5">
         {sectionRows.map((row) => (
           <IconTile
             key={row.payload.productId}
@@ -784,13 +786,21 @@ function IconTile({
       </div>
 
       {/* Hero: set logo or top chase card, overlaid on hover by the chase trio. */}
-      <div className="relative flex h-40 items-center justify-center rounded-lg bg-surface-raised/40">
+      {/* The hero grows with the tile, because box art is portrait and its
+          HEIGHT is what binds: widening the tile alone left the image at
+          exactly 146x144px and merely added empty space beside it. At lg+,
+          where the grid is four columns and tiles are ~297px, a 200px hero
+          takes the art to ~187x184 — about 28% larger. Below lg the tiles are
+          narrow (164px on a phone) and the art is width-bound instead, so the
+          hero stays at 160px there rather than leaving a band of dead space
+          above and below the picture. */}
+      <div className="relative flex h-40 items-center justify-center rounded-lg bg-surface-raised/40 lg:h-50">
         {heroImg ? (
           <img
             src={heroImg}
             alt={payload.setName}
             loading="lazy"
-            className={`${heroIsCard ? "h-full" : "max-h-36 max-w-[90%]"} w-auto object-contain transition-opacity duration-200 group-hover:opacity-0`}
+            className={`${heroIsCard ? "h-full" : "max-h-36 max-w-[90%] lg:max-h-46"} w-auto object-contain transition-opacity duration-200 group-hover:opacity-0`}
           />
         ) : (
           <span className="px-2 text-center text-sm font-semibold text-muted transition-opacity group-hover:opacity-0">
@@ -806,7 +816,7 @@ function IconTile({
                 src={ch.img!}
                 alt=""
                 loading="lazy"
-                className="h-24 w-auto rounded-sm border border-border object-contain shadow-md"
+                className="h-24 w-auto rounded-sm border border-border object-contain shadow-md lg:h-32"
                 style={{ transform: `rotate(${(i - 1) * 7}deg) translateY(${i === 1 ? -2 : 4}px)` }}
               />
             ))}
