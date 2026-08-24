@@ -17,7 +17,7 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://packroi.vercel.app
 
 const TITLE = "TCGROI — TCG pack & box expected value";
 const DESCRIPTION =
-  "Expected value and ROI for sealed Pokémon and One Piece TCG products, from community pull rates and live market prices. Opening sealed product is almost always -EV; this site shows exactly how much.";
+  "Expected value and ROI for sealed Pokémon (EN/JP/中文), One Piece and Magic products, from measured pull rates and live market prices — each set badged by how well-evidenced its odds are. Opening sealed product is almost always -EV; this site shows exactly how much.";
 
 export const metadata: Metadata = {
   // Resolves relative OG images and per-page canonical URLs against the site
