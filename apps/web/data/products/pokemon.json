@@ -619,6 +619,46 @@
       "msrpCents": 449
     },
     {
+      "setCode": "me5",
+      "name": "Booster Pack",
+      "slug": "booster-pack",
+      "type": "booster_pack",
+      "packsContained": 1,
+      "msrpCents": 449
+    },
+    {
+      "setCode": "me5",
+      "name": "Booster Box (36 packs)",
+      "slug": "booster-box",
+      "type": "booster_box",
+      "packsContained": 36,
+      "msrpCents": 16164
+    },
+    {
+      "setCode": "me5",
+      "name": "Elite Trainer Box (9 packs)",
+      "slug": "elite-trainer-box",
+      "type": "etb",
+      "packsContained": 9,
+      "msrpCents": 4999
+    },
+    {
+      "setCode": "me5",
+      "name": "Elite Trainer Box — Pokémon Center (11 packs)",
+      "slug": "elite-trainer-box-pokemon-center",
+      "type": "etb",
+      "packsContained": 11,
+      "msrpCents": 5999
+    },
+    {
+      "setCode": "me5",
+      "name": "Booster Bundle (6 packs)",
+      "slug": "booster-bundle",
+      "type": "bundle",
+      "packsContained": 6,
+      "msrpCents": 2694
+    },
+    {
       "setCode": "zsv10pt5",
       "name": "Elite Trainer Box (9 packs)",
       "slug": "elite-trainer-box",
