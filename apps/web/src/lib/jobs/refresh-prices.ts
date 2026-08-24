@@ -257,14 +257,61 @@ async function writeSnapshots(
 // caps at 300s. `excluded` refers to the incoming row on conflict.
 const CHUNK = 500;
 
+/**
+ * Collapse rows that share a conflict key, keeping the median price.
+ *
+ * `ON CONFLICT DO UPDATE` cannot touch the same row twice inside one statement:
+ * Postgres rejects the whole INSERT rather than picking a winner. So a single
+ * duplicated key does not lose one price, it loses the entire chunk — and
+ * because the append-only snapshot insert runs first and succeeds, the failure
+ * is silent and the site keeps serving the previous day's numbers for that set.
+ * Jungle hit exactly this: sixteen PriceCharting rows (holo, non-holo, 1st
+ * Edition, shadowless) all legitimately matched one card in our catalog, and
+ * every base2 price was dropped on every run.
+ *
+ * The median is the same rule the ETB and Pokemon Center importers already use
+ * when several source products describe one of ours, and it is the right one
+ * here for the same reason: a 1st Edition print sits far above the others, and
+ * a median ignores it where a mean or a first-wins would not.
+ *
+ * Only `latest_prices` needs this. `price_snapshots` is an append-only history
+ * with no unique index, so every row it receives is kept.
+ */
+export function dedupeByKey<T extends { sourceId: string; priceCents: number; kind: string }>(
+  rows: T[],
+  keyOf: (row: T) => string,
+): T[] {
+  const groups = new Map<string, T[]>();
+  for (const row of rows) {
+    const key = `${keyOf(row)}|${row.sourceId}|${row.kind}`;
+    const list = groups.get(key);
+    if (list) list.push(row);
+    else groups.set(key, [row]);
+  }
+  const out: T[] = [];
+  for (const list of groups.values()) {
+    if (list.length === 1) {
+      out.push(list[0]!);
+      continue;
+    }
+    const sorted = [...list].sort((a, b) => a.priceCents - b.priceCents);
+    out.push(sorted[Math.floor((sorted.length - 1) / 2)]!);
+  }
+  return out;
+}
+
 async function writeCardChunks(
   rows: { cardId: string; sourceId: string; priceCents: number; kind: PriceSnapshotInput["kind"]; capturedAt: Date }[],
 ): Promise<number> {
   const db = getDb();
   let written = 0;
+  // Snapshots keep every row; latest_prices takes one per conflict key.
   for (let i = 0; i < rows.length; i += CHUNK) {
-    const chunk = rows.slice(i, i + CHUNK);
-    await db.insert(priceSnapshots).values(chunk);
+    await db.insert(priceSnapshots).values(rows.slice(i, i + CHUNK));
+  }
+  const latest = dedupeByKey(rows, (r) => r.cardId);
+  for (let i = 0; i < latest.length; i += CHUNK) {
+    const chunk = latest.slice(i, i + CHUNK);
     await db
       .insert(latestPrices)
       .values(chunk)
@@ -284,8 +331,11 @@ async function writeSealedChunks(
   const db = getDb();
   let written = 0;
   for (let i = 0; i < rows.length; i += CHUNK) {
-    const chunk = rows.slice(i, i + CHUNK);
-    await db.insert(priceSnapshots).values(chunk);
+    await db.insert(priceSnapshots).values(rows.slice(i, i + CHUNK));
+  }
+  const latest = dedupeByKey(rows, (r) => r.sealedProductId);
+  for (let i = 0; i < latest.length; i += CHUNK) {
+    const chunk = latest.slice(i, i + CHUNK);
     await db
       .insert(latestPrices)
       .values(chunk)
