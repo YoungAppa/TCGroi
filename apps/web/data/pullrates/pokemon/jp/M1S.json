@@ -1,0 +1,35 @@
+{
+  "game": "pokemon",
+  "setCode": "M1S",
+  "version": 4,
+  "sampleSizePacks": 30000,
+  "sourceUrl": "https://pokemon-infomation.com/pull-rates-megasymphonia/",
+  "sourceNote": "Mega-era main expansion, 30 packs x 5 cards (same box structure the site tallies for Inferno X, whose 30-pack count Scrydex states directly; both sets share the series' ~150-card box with 3 guaranteed AR). Site sample: ~1,000 BOX. Per box: SAR ~28%; 3 AR GUARANTEED; SR ~80% for Pokemon/Supporter PLUS 1 GUARANTEED Trainer-line SR (1.8 total); MUR ~1-2% (0.015 used). RR at ~4.5/box is carried over from the identical tally structure the same site reports for sibling sets (Night Wanderer, Inferno X) rather than stated for this set — RR averages under a dollar in Japanese sets, so the EV riding on this extrapolation is a few dollars a box. Rates come from ポケゲトちゃんねる (pokemon-infomation.com), which aggregates real box-opening tallies from card shops and individuals — the closest thing Japanese sets have to a primary study, since neither The Pokemon Company nor any English source publishes Japanese odds. Confidence is MEDIUM: the samples are large (hundreds to thousands of boxes) and the methodology is consistent across sets, but the underlying tallies are not independently auditable. Per-pack probabilities are the site's per-BOX figures divided by the box's pack count, which is separately sourced. NOTE ON GUARANTEES: the per-box guarantees (1 SAR/box on High Class, 3 AR/box, 1 ACE/box etc.) are folded into the slot rates above rather than modelled as engine floors — a floor attaches to a PRODUCT, so a single-pack product would inherit the whole box's guarantee and read absurdly positive. The rates are per-box tallies divided by pack count, so a box's EV already reflects every guarantee.",
+  "confidence": "medium",
+  "slots": [
+    {
+      "rarity": "special_illustration_rare",
+      "perPackProbability": 0.00933
+    },
+    {
+      "rarity": "illustration_rare",
+      "perPackProbability": 0.1
+    },
+    {
+      "rarity": "ultra_rare",
+      "perPackProbability": 0.06
+    },
+    {
+      "rarity": "mega_hyper_rare",
+      "perPackProbability": 0.0005
+    },
+    {
+      "rarity": "double_rare",
+      "perPackProbability": 0.15
+    }
+  ],
+  "alternateEstimates": [],
+  "guaranteedSlots": [],
+  "boxGuarantees": [],
+  "showWhenPlaceholder": false
+}
