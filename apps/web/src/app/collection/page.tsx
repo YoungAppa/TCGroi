@@ -221,7 +221,10 @@ export default function CollectionPage() {
             </button>
           ))}
         </div>
-        <div className="flex items-center gap-2 pb-1 text-xs">
+        {/* Wraps: unwrapped, the game pills plus the sort select came to 377px
+            on a 375px phone, so the whole page scrolled 2px sideways — enough
+            to feel like a rubber-band bug on touch. */}
+        <div className="flex flex-wrap items-center gap-2 pb-1 text-xs">
           <div className="flex gap-0.5 rounded-md bg-surface-raised p-0.5">
             {(["all", "one-piece", "pokemon", "mtg"] as GameFilter[]).map((g) => (
               <button

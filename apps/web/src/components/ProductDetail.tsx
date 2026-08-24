@@ -248,12 +248,12 @@ export function ProductDetail({
         <div className="overflow-x-auto">
         <table className="w-full min-w-[22rem] text-sm">
           <thead>
-            <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted">
+            <tr className="border-b border-border whitespace-nowrap text-left text-xs uppercase tracking-wide text-muted">
               <th className="py-1.5 pr-3">Tier</th>
               <th className="py-1.5 pr-3">Odds / pack</th>
               <th className="py-1.5 pr-3">Avg card value</th>
               <th className="py-1.5 pr-3">EV / pack</th>
-              <th className="py-1.5 pr-3">Priced</th>
+              <th className="hidden py-1.5 pr-3 sm:table-cell">Priced</th>
               <th className="py-1.5">P(≥1) / product</th>
             </tr>
           </thead>
@@ -280,7 +280,7 @@ export function ProductDetail({
                 </td>
                 <td className="tabular py-1.5 pr-3">{money(t.avgValueCents)}</td>
                 <td className="tabular py-1.5 pr-3">{money(t.evContributionCents)}</td>
-                <td className="tabular py-1.5 pr-3 text-muted">
+                <td className="tabular hidden py-1.5 pr-3 text-muted sm:table-cell">
                   {t.pricedCardCount}/{t.totalCardCount}
                 </td>
                 <td className="tabular py-1.5">
@@ -297,7 +297,7 @@ export function ProductDetail({
                 <td className="tabular py-1.5 pr-3">{formatProbability(bulkOdds)}</td>
                 <td className="tabular py-1.5 pr-3">≈ $0.01</td>
                 <td className="tabular py-1.5 pr-3">—</td>
-                <td className="tabular py-1.5 pr-3">—</td>
+                <td className="tabular hidden py-1.5 pr-3 sm:table-cell">—</td>
                 <td className="tabular py-1.5">—</td>
               </tr>
             )}
