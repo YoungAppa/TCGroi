@@ -113,7 +113,10 @@ const SEALED_LABELS: Record<string, string[]> = {
 };
 
 /** Everything parsed from one category CSV: card prices and sealed prices. */
-type CategoryData = { cards: Map<string, number>; sealed: Map<string, number> };
+type CategoryData = {
+  cards: Map<string, number>;
+  sealed: { exact: Map<string, number>; variants: Map<string, { bracket: string; cents: number }[]> };
+};
 
 const OP_CODE = /\b([A-Z]{1,3}\d{2}-\d{3})\b/;
 const BRACKET = /\[([^\]]+)\]/;
@@ -267,24 +270,52 @@ export class PriceChartingAdapter implements PriceSourceAdapter {
 
   /**
    * Sealed products (Booster Box, ETB, …). Same CSV as the cards; we keep the
-   * rows that are NOT singles (no "#123" / "OP07-002") and not bracketed
-   * variants, keyed by console-name + exact product-name.
+   * rows that are NOT singles (no "#123" / "OP07-002"), keyed by console-name +
+   * exact product-name.
+   *
+   * Bracketed rows used to be dropped wholesale, because a bracket usually
+   * marks a card treatment ("Charizard [Reverse Holo]"). But many sets ship
+   * their Elite Trainer Box ONLY as named variants — Paradox Rift has
+   * "Elite Trainer Box [Iron Valiant]" and "[Roaring Moon]" and no plain row —
+   * so those sets silently had no ETB price at all. A bracketed row is now kept
+   * when the text BEFORE the bracket is itself a known sealed label, which
+   * admits the variants without admitting cards. They are indexed separately,
+   * under the base label, so the exact-name lookup is unchanged.
    */
-  private buildSealedIndex(csv: string): Map<string, number> {
-    const index = new Map<string, number>();
+  private buildSealedIndex(csv: string): {
+    exact: Map<string, number>;
+    variants: Map<string, { bracket: string; cents: number }[]>;
+  } {
+    const exact = new Map<string, number>();
+    const variants = new Map<string, { bracket: string; cents: number }[]>();
+    const knownLabels = new Set(
+      Object.values(SEALED_LABELS).flat().map((l) => l.toLowerCase()),
+    );
+
     const lines = csv.split("\n");
     for (let i = 1; i < lines.length; i++) {
       const line = lines[i];
       if (line === undefined) continue;
       const row = PriceChartingAdapter.splitRow(line);
       if (!row) continue;
-      if (PK_NUMBER.test(row.product) || OP_CODE.test(row.product) || BRACKET.test(row.product)) {
+      if (PK_NUMBER.test(row.product) || OP_CODE.test(row.product)) continue;
+
+      const product = row.product.trim();
+      const bracket = BRACKET.exec(product)?.[1];
+      if (bracket === undefined) {
+        const key = `${row.console}|${product}`;
+        if (!exact.has(key)) exact.set(key, row.cents);
         continue;
       }
-      const key = `${row.console}|${row.product.trim()}`;
-      if (!index.has(key)) index.set(key, row.cents);
+
+      const base = product.slice(0, product.indexOf("[")).trim();
+      if (!knownLabels.has(base.toLowerCase())) continue; // a card, not a sealed variant
+      const key = `${row.console}|${base}`;
+      const list = variants.get(key) ?? [];
+      list.push({ bracket, cents: row.cents });
+      variants.set(key, list);
     }
-    return index;
+    return { exact, variants };
   }
 
   private getOpData(): Promise<CategoryData> {
@@ -358,9 +389,28 @@ export class PriceChartingAdapter implements PriceSourceAdapter {
     for (const [type, labels] of Object.entries(SEALED_LABELS)) {
       let cents: number | undefined;
       for (const label of labels) {
-        cents = data.sealed.get(`${consoleName}|${label}`);
+        cents = data.sealed.exact.get(`${consoleName}|${label}`);
         if (cents !== undefined && cents > 0) break;
       }
+
+      // No plain row: the set ships this product only under named variants
+      // (Paradox Rift's two ETBs). Price the STANDARD product from them, with
+      // Pokemon Center editions excluded — those are a pricier retail-exclusive
+      // SKU, not the box on a shelf, and folding them in would overstate. The
+      // remaining variants are the same product in different art, so the median
+      // is the honest figure rather than whichever happened to sort first.
+      if (cents === undefined || cents <= 0) {
+        for (const label of labels) {
+          const vs = (data.sealed.variants.get(`${consoleName}|${label}`) ?? []).filter(
+            (v) => !/pokemon\s*center/i.test(v.bracket),
+          );
+          if (vs.length === 0) continue;
+          const sorted = vs.map((v) => v.cents).sort((a, b) => a - b);
+          cents = sorted[Math.floor((sorted.length - 1) / 2)]!;
+          if (cents > 0) break;
+        }
+      }
+
       if (cents === undefined || cents <= 0) continue;
       // externalProductId is our product-type; the job resolves it to the set's
       // sealed product of that type.

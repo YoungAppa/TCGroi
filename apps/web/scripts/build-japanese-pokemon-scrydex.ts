@@ -144,8 +144,23 @@ async function main() {
   let skippedRarity = 0;
   const failures: { set: string; error: string }[] = [];
 
+  // Existing Japanese set codes, by lower-case form. Japanese codes are
+  // mixed-case by convention ("SV4a", "SM11b", "neo1") while Scrydex ids are
+  // lower ("sv4a_ja"), so upper-casing blindly MINTS A DUPLICATE SET beside the
+  // real one — which is exactly what happened on the first run: 28 of them,
+  // splitting a set's cards, products and pull table across two rows. Reuse the
+  // existing casing whenever the set is already known.
+  const existingCode = new Map<string, string>();
+  for (const row of await db
+    .select({ code: sets.code })
+    .from(sets)
+    .where(and(eq(sets.gameId, game.id), eq(sets.language, "JP")))) {
+    existingCode.set(row.code.toLowerCase(), row.code);
+  }
+
   for (const [i, exp] of targets.entries()) {
-    const code = exp.id.replace(/_ja$/i, "").toUpperCase();
+    const bare = exp.id.replace(/_ja$/i, "");
+    const code = existingCode.get(bare.toLowerCase()) ?? bare.toUpperCase();
     try {
       const cardRows: Record<string, never>[] = [];
       for (let page = 1; ; page++) {

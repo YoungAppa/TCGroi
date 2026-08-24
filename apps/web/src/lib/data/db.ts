@@ -32,6 +32,23 @@ import type { ProductPayload, RankingsPayload } from "./types";
 const MSRP_STALE_MARKET_RATIO = 2;
 
 /**
+ * How long a set's MSRP stays a real price after release.
+ *
+ * While a set is still being printed and distributed, its retail price is
+ * something a buyer can actually pay — hard to find at MSRP is not the same as
+ * impossible, and "what if I get it at retail" is a question worth answering
+ * for anything still on shelves. Current Elite Trainer Boxes routinely sit at
+ * 2.5-3x MSRP on the secondary market while remaining $49.99 in a shop, so a
+ * pure ratio rule hides exactly the products where retail matters most.
+ *
+ * Once a set is out of print the MSRP becomes history: nobody is selling
+ * Evolving Skies at $143.64, and quoting a retail ROI against it invents a
+ * purchase. Pokémon sets leave print roughly two years after release, which is
+ * where this sits.
+ */
+const MSRP_IN_PRINT_MONTHS = 24;
+
+/**
  * MSRP, but only when it is still a price someone could actually pay.
  *
  * The printed retail price is real history and stays in the data files, yet
@@ -47,8 +64,20 @@ const MSRP_STALE_MARKET_RATIO = 2;
 function purchasableMsrpCents(
   msrpCents: number | null,
   marketCents: number | null,
+  releaseDate: string | Date | null,
 ): number | null {
   if (msrpCents === null || marketCents === null) return msrpCents;
+
+  // Still in print: retail is a real price point even at a steep premium.
+  if (releaseDate !== null) {
+    const released = releaseDate instanceof Date ? releaseDate : new Date(releaseDate);
+    if (!Number.isNaN(released.getTime())) {
+      const monthsOld =
+        (Date.now() - released.getTime()) / (1000 * 60 * 60 * 24 * 30.44);
+      if (monthsOld <= MSRP_IN_PRINT_MONTHS) return msrpCents;
+    }
+  }
+
   return marketCents > msrpCents * MSRP_STALE_MARKET_RATIO ? null : msrpCents;
 }
 
@@ -339,7 +368,7 @@ export async function loadRankingsFromDb(): Promise<RankingsPayload> {
       packsContained: p.packsContained,
       // Prefer the actual box/pack photo; fall back to the set logo.
       imageUrl: p.productImageUrl ?? p.logoUrl,
-      msrpCents: purchasableMsrpCents(p.msrpCents, market.priceCents),
+      msrpCents: purchasableMsrpCents(p.msrpCents, market.priceCents, p.releaseDate),
       market,
       sealed,
       guaranteedCardIds: p.guaranteedCardIds,
