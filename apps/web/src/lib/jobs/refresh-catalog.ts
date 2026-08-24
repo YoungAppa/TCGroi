@@ -9,6 +9,7 @@ import { PokemonTcgIoAdapter } from "@/lib/catalog/providers/pokemontcgio";
 import { ScrydexCatalogAdapter } from "@/lib/catalog/providers/scrydex";
 import type { CatalogAdapter, CatalogSet } from "@/lib/catalog/types";
 import { fetchScrydexSealedImages } from "@/lib/prices/providers/scrydex-prices";
+import { CANONICAL_SEALED_SLUG } from "@/lib/prices/sources";
 import { cards, games, getDb, pullRateTables, sealedProducts, sets } from "@/lib/db";
 import { loadAllPullRates } from "@/lib/pullrates/load";
 
@@ -174,7 +175,15 @@ export async function refreshSealedImages(): Promise<number> {
         const rows = await db
           .update(sealedProducts)
           .set({ imageUrl: url, updatedAt: new Date() })
-          .where(and(eq(sealedProducts.setId, s.id), eq(sealedProducts.type, type as never)))
+          // By SLUG, not type: two products can share a type (a standard ETB
+          // and its Pokémon Center edition), and matching on type stamped the
+          // standard box art onto the variant.
+          .where(
+            and(
+              eq(sealedProducts.setId, s.id),
+              eq(sealedProducts.slug, CANONICAL_SEALED_SLUG[type] ?? type),
+            ),
+          )
           .returning({ id: sealedProducts.id });
         updated += rows.length;
       }

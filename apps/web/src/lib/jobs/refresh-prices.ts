@@ -12,6 +12,7 @@ import {
   sets,
 } from "@/lib/db";
 import { enabledPriceAdapters } from "@/lib/prices/registry";
+import { CANONICAL_SEALED_SLUG } from "@/lib/prices/sources";
 import type { PriceableCard, PriceSnapshotInput } from "@/lib/prices/types";
 
 import { runJob } from "./run";
@@ -169,10 +170,21 @@ export async function refreshPrices() {
       // snapshot carries only the product-type (all it can tell from a CSV), so
       // this is how it resolves to our product row.
       const sealedRows = await db
-        .select({ id: sealedProducts.id, type: sealedProducts.type })
+        .select({ id: sealedProducts.id, type: sealedProducts.type, slug: sealedProducts.slug })
         .from(sealedProducts)
         .where(eq(sealedProducts.setId, setRow.id));
-      const sealedIdByType = new Map(sealedRows.map((s) => [s.type as string, s.id]));
+      // A set can hold two products of one type — a standard Elite Trainer Box
+      // and its Pokémon Center edition are both `etb`. An adapter reports only
+      // the type, so without this the price landed on whichever row came back
+      // last: the $157 standard price could be written onto the $423 exclusive
+      // and the standard one would stop updating. The canonical slug wins.
+      const sealedIdByType = new Map<string, string>();
+      for (const r of sealedRows) {
+        const canonical = CANONICAL_SEALED_SLUG[r.type as string];
+        if (!sealedIdByType.has(r.type as string) || r.slug === canonical) {
+          sealedIdByType.set(r.type as string, r.id);
+        }
+      }
 
       for (const adapter of adapters) {
         try {

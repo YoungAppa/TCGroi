@@ -36,6 +36,13 @@ describe("formatRoi", () => {
     expect(formatRoi(-0.5)).toBe("-50.0%");
   });
 
+  it("drops the sign on a loss too small to show, never '-0.0%'", () => {
+    // Ascended Heroes' ETB: $49.97 EV against a $49.99 MSRP. Printing that as
+    // "-0.0%" reads as a rendering fault rather than as break-even.
+    expect(formatRoi(-0.0004)).toBe("0.0%");
+    expect(formatRoi(-0.002)).toBe("-0.2%");
+  });
+
   it("formats break-even as +0.0%", () => {
     expect(formatRoi(0)).toBe("+0.0%");
   });

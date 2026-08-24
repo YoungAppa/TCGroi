@@ -9,11 +9,19 @@ export function formatCents(cents: number): string {
   return `$${(Math.round(cents) / 100).toFixed(2)}`;
 }
 
-/** 0.1234 -> "+12.3%"; -0.5 -> "-50.0%". Sign is always explicit. */
+/**
+ * 0.1234 -> "+12.3%"; -0.5 -> "-50.0%". Sign is always explicit.
+ *
+ * A value that ROUNDS to zero renders as a plain "0.0%": Ascended Heroes' ETB
+ * has an EV of $49.97 against a $49.99 MSRP, and printing that as "-0.0%" reads
+ * as a rendering fault rather than as break-even.
+ */
 export function formatRoi(roi: number): string {
   const pct = roi * 100;
-  const sign = pct >= 0 ? "+" : "";
-  return `${sign}${pct.toFixed(1)}%`;
+  // Exactly break-even stays "+0.0%" — it is genuinely non-negative. A small
+  // LOSS that rounds to zero drops the sign instead of printing "-0.0%".
+  if (pct >= 0) return `+${pct.toFixed(1)}%`;
+  return Number(pct.toFixed(1)) === 0 ? "0.0%" : `${pct.toFixed(1)}%`;
 }
 
 /** 0.398 -> "39.8%". For probabilities, where a sign would be noise. */

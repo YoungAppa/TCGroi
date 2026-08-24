@@ -86,3 +86,22 @@ export const PRICE_SOURCES: Record<PriceSourceId, PriceSourceMeta> = {
 
 export const ALL_PRICE_SOURCES: PriceSourceMeta[] =
   PRICE_SOURCE_IDS.map((id) => PRICE_SOURCES[id]);
+
+/**
+ * The canonical product slug for each sealed type.
+ *
+ * A set can hold several products of one type — a standard Elite Trainer Box
+ * and its Pokémon Center edition are both `etb`. Price adapters can only report
+ * a TYPE (it is all a CSV row tells them), so when two rows share a type the
+ * price must land on the standard one, not on whichever the database returned
+ * last. Anything not listed here is a variant and is priced explicitly by the
+ * script that creates it.
+ */
+export const CANONICAL_SEALED_SLUG: Record<string, string> = {
+  booster_box: "booster-box",
+  booster_pack: "booster-pack",
+  etb: "elite-trainer-box",
+  bundle: "booster-bundle",
+  display: "display",
+  case: "case",
+};
