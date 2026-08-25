@@ -1,9 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <rect width="32" height="32" rx="7" fill="#eab308" />
+  <defs>
+    <linearGradient id="holo" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#59f3ff" />
+      <stop offset=".34" stop-color="#a06bff" />
+      <stop offset=".62" stop-color="#ff5fa8" />
+      <stop offset="1" stop-color="#ffc65c" />
+    </linearGradient>
+  </defs>
+  <rect width="32" height="32" rx="7" fill="url(#holo)" />
   <path
     d="M16 6.5 V21 M16 21 L10.2 15.2 M16 21 L21.8 15.2"
     fill="none"
-    stroke="#0b0d10"
+    stroke="#08070d"
     stroke-width="3.4"
     stroke-linecap="round"
     stroke-linejoin="round"

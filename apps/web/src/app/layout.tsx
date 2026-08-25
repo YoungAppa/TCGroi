@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Sora } from "next/font/google";
 import Link from "next/link";
 
 import { SiteBanner, SiteFooter, SiteNav } from "@/components/SiteChrome";
@@ -11,11 +11,14 @@ import "./globals.css";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
+// Display face: the brand mark and page headlines only. Geist still carries
+// every paragraph and every table cell.
+const sora = Sora({ variable: "--font-sora", subsets: ["latin"], weight: ["600", "700", "800"] });
 
 // Same fallback the robots/sitemap routes use; set NEXT_PUBLIC_SITE_URL at deploy.
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://packroi.vercel.app";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://whatsthatroi.com";
 
-const TITLE = "TCGROI — TCG pack & box expected value";
+const TITLE = "WhatsThatROI — TCG pack & box expected value";
 const DESCRIPTION =
   "Expected value and ROI for sealed Pokémon (EN/JP/中文), One Piece and Magic products, from measured pull rates and live market prices — each set badged by how well-evidenced its odds are. Opening sealed product is almost always -EV; this site shows exactly how much.";
 
@@ -25,13 +28,13 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
     default: TITLE,
-    template: "%s · TCGROI",
+    template: "%s · WhatsThatROI",
   },
   description: DESCRIPTION,
-  applicationName: "TCGROI",
+  applicationName: "WhatsThatROI",
   openGraph: {
     type: "website",
-    siteName: "TCGROI",
+    siteName: "WhatsThatROI",
     url: SITE_URL,
     title: TITLE,
     description: DESCRIPTION,
@@ -53,7 +56,7 @@ export default async function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${sora.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <I18nProvider>
@@ -71,8 +74,10 @@ export default async function RootLayout({
               >
                 ↓
               </span>
-              <span className="text-lg font-bold tracking-tight">
-                TCG<span className="text-accent">ROI</span>
+              {/* "ROI" carries the foil — the only place in the chrome that
+                  spends the holo gradient. */}
+              <span className="font-display text-lg font-extrabold tracking-tight">
+                whatsthat<span className="holo-text">ROI</span>
               </span>
             </Link>
             <SiteNav />

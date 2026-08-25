@@ -7,7 +7,7 @@ import { ImageResponse } from "next/og";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 export const alt =
-  "TCGROI — opening sealed product is almost always a losing bet";
+  "WhatsThatROI — opening sealed product is almost always a losing bet";
 
 export default function OpengraphImage() {
   return new ImageResponse(
@@ -19,9 +19,9 @@ export default function OpengraphImage() {
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          background: "#0b0d10",
+          background: "#08070d",
           backgroundImage:
-            "radial-gradient(120% 130% at 0% 0%, rgba(234,179,8,0.16), transparent 55%)",
+            "radial-gradient(120% 130% at 0% 0%, rgba(160,107,255,0.20), transparent 55%)",
           padding: "72px",
           color: "#e6e8eb",
           fontFamily: "sans-serif",
@@ -37,8 +37,8 @@ export default function OpengraphImage() {
               width: "64px",
               height: "64px",
               borderRadius: "16px",
-              background: "#eab308",
-              color: "#0b0d10",
+              background: "#a06bff",
+              color: "#08070d",
               fontSize: "44px",
               fontWeight: 900,
             }}
@@ -46,8 +46,8 @@ export default function OpengraphImage() {
             ↓
           </div>
           <div style={{ display: "flex", fontSize: "40px", fontWeight: 800 }}>
-            <div style={{ display: "flex" }}>TCG</div>
-            <div style={{ display: "flex", color: "#eab308" }}>ROI</div>
+            <div style={{ display: "flex" }}>whatsthat</div>
+            <div style={{ display: "flex", color: "#a06bff" }}>ROI</div>
           </div>
         </div>
 

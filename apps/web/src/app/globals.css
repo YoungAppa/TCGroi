@@ -1,21 +1,32 @@
 @import "tailwindcss";
 
 /**
- * Always-dark, data-dense. The palette is deliberately narrow: near-black
- * surfaces, one accent, and a green->red ramp reserved exclusively for ROI so
- * colour always MEANS something.
+ * "Night Pulls" — always-dark, violet-black, data-dense.
+ *
+ * The palette stays deliberately narrow: near-black violet surfaces, ONE
+ * accent system, and a green->red ramp reserved exclusively for ROI so colour
+ * always MEANS something. The accent system has two registers:
+ *
+ *  - --accent (violet): the workaday accent — active pills, focus rings,
+ *    links. Cheap to use, used often.
+ *  - --holo (the gradient): the foil. Rationed to the brand mark, the hero
+ *    headline, and the border of a positive-ROI product. Positive ROI is the
+ *    rarest thing on this site (6 of 777 products), so the rarest visual
+ *    treatment is reserved for it — the design encodes the data.
  */
 :root {
-  --background: #0b0d10;
-  --surface: #12151a;
-  --surface-raised: #191d24;
-  --border: #262b33;
-  --foreground: #e6e8eb;
-  --muted: #8b93a1;
-  --accent: #eab308; /* pack-foil gold */
+  --background: #08070d;
+  --surface: #100e18;
+  --surface-raised: #171325;
+  --border: #221e33;
+  --foreground: #d9d7e6;
+  --muted: #7d7994;
+  --accent: #a06bff; /* one anchor pulled from the holo ramp */
 
-  --roi-pos: #34d399;
-  --roi-neg: #f87171;
+  --roi-pos: #4df0a8;
+  --roi-neg: #ff6076;
+
+  --holo: linear-gradient(100deg, #59f3ff 0%, #a06bff 34%, #ff5fa8 62%, #ffc65c 100%);
 }
 
 @theme inline {
@@ -30,6 +41,7 @@
   --color-roi-neg: var(--roi-neg);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-sora);
 }
 
 body {
@@ -42,4 +54,36 @@ body {
 .tabular {
   font-family: var(--font-geist-mono), ui-monospace, monospace;
   font-variant-numeric: tabular-nums;
+}
+
+/* Display face for the brand mark and page-level headlines only. */
+.font-display {
+  font-family: var(--font-sora), var(--font-geist-sans), system-ui, sans-serif;
+}
+
+/* ── The foil ─────────────────────────────────────────────────────────────
+   Three ways to spend the holo gradient. Spend it rarely. */
+
+/* Gradient-filled text (the "ROI" in the logo, one word in the hero). */
+.holo-text {
+  background: var(--holo);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Gradient border on a solid tile — the positive-ROI treatment. The
+   padding-box/border-box trick keeps the fill opaque while the 1px border
+   shows the gradient. */
+.holo-ring {
+  border: 1px solid transparent;
+  background:
+    linear-gradient(var(--surface), var(--surface)) padding-box,
+    var(--holo) border-box;
+}
+
+/* Solid gradient fill for the one primary CTA that earns it. */
+.holo-bg {
+  background: var(--holo);
+  color: #0a0812;
 }

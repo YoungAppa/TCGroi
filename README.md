@@ -1,4 +1,4 @@
-# TCGROI
+# WhatsThatROI
 
 Expected value and ROI for sealed TCG products (Pokémon, One Piece), computed
 from community pull rates × live market prices. Free, no accounts. The site's
@@ -6,7 +6,7 @@ recurring finding is its thesis: **opening sealed product is almost always
 −EV, and this site shows exactly how much.**
 
 (The npm workspace packages are still named `@packroi/*` — internal only; the
-product is TCGROI.)
+product is WhatsThatROI, at whatsthatroi.com.)
 
 ## Monorepo layout
 
