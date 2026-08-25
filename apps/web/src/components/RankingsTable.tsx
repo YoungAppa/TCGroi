@@ -4,7 +4,7 @@
    are not configured for next/image yet; plain img is deliberate here. */
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { computeProduct, type ProductComputation } from "@/lib/data/compute";
 import type { ProductPayload } from "@/lib/data/types";
@@ -463,14 +463,17 @@ export function RankingsTable({
           path to anything; hiding it behind the mobile Filters button was a
           mistake at 150 products and would be worse now. */}
       <div className="flex flex-wrap items-center gap-2 text-xs">
-        <input
-          type="search"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder={t("filter.search")}
-          aria-label="Search products"
-          className="min-w-0 basis-full rounded-md bg-surface-raised px-3 py-1.5 text-foreground placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-accent/40 sm:max-w-xs sm:basis-auto"
-        />
+        <div className="relative min-w-0 basis-full sm:max-w-xs sm:basis-auto">
+          <input
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder={t("filter.search")}
+            aria-label="Search products and cards"
+            className="w-full rounded-md bg-surface-raised px-3 py-1.5 text-foreground placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-accent/40"
+          />
+          <CardSearchDropdown query={query} game={game} />
+        </div>
         <label className="flex items-center gap-1.5 text-muted">
           Sort
           <select
@@ -920,5 +923,73 @@ function SortHeader({
         <span className="text-[10px]">{active ? (desc ? "▼" : "▲") : ""}</span>
       </button>
     </th>
+  );
+}
+
+/**
+ * Card hits under the rankings search box. The main search filters PRODUCTS
+ * live; this adds the other thing people type — a card name ("Umbreon ex
+ * 161") — and links each hit to its card page, where every product that can
+ * pull it is listed with odds. Products stay instant/local; cards query our
+ * own DB via /api/cards/search, debounced.
+ */
+function CardSearchDropdown({ query, game }: { query: string; game: string }) {
+  const { money } = useMoney();
+  const [hits, setHits] = useState<
+    { id: string; name: string; number: string; imageUrl: string | null; setCode: string; setName: string; game: string; priceCents: number | null }[]
+  >([]);
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (timer.current) clearTimeout(timer.current);
+    const q = query.trim();
+    if (q.length < 3) {
+      setHits([]);
+      return;
+    }
+    timer.current = setTimeout(async () => {
+      try {
+        const res = await fetch(
+          `/api/cards/search?q=${encodeURIComponent(q)}&game=${encodeURIComponent(game)}`,
+        );
+        if (!res.ok) return;
+        const data = (await res.json()) as { results?: typeof hits };
+        setHits((data.results ?? []).slice(0, 6));
+      } catch {
+        /* transient search failures just show no card hits */
+      }
+    }, 250);
+    return () => {
+      if (timer.current) clearTimeout(timer.current);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [query, game]);
+
+  if (hits.length === 0) return null;
+  return (
+    <div className="absolute left-0 right-0 top-full z-30 mt-1 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-[0_16px_40px_rgba(0,0,0,.55)]">
+      <div className="px-3 pt-2 text-[10px] uppercase tracking-wide text-muted">Cards</div>
+      {hits.map((h) => (
+        <Link
+          key={h.id}
+          href={`/${h.game}/${h.setCode}/card/${encodeURIComponent(h.number)}`}
+          className="flex items-center gap-2.5 px-3 py-2 text-xs hover:bg-surface"
+        >
+          {h.imageUrl ? (
+            <img src={h.imageUrl} alt="" loading="lazy" className="h-10 w-7 shrink-0 rounded-[3px] object-cover object-top" />
+          ) : (
+            <span className="h-10 w-7 shrink-0 rounded-[3px] bg-surface" />
+          )}
+          <span className="min-w-0 flex-1 truncate">
+            <span className="font-medium text-foreground">{h.name}</span>{" "}
+            <span className="tabular text-muted">#{h.number}</span>
+            <span className="block truncate text-[11px] text-muted">{h.setName}</span>
+          </span>
+          {h.priceCents !== null && (
+            <span className="tabular shrink-0 font-semibold">{money(h.priceCents)}</span>
+          )}
+        </Link>
+      ))}
+    </div>
   );
 }

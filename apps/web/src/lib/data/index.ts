@@ -125,3 +125,83 @@ export async function getSetProducts(
   const { products } = await getRankings();
   return products.filter((p) => p.gameSlug === game && p.setCode === setCode);
 }
+
+/** Everything the per-card page needs: the card + every product that can pull it. */
+export interface CardContext {
+  gameSlug: string;
+  gameName: string;
+  setCode: string;
+  setName: string;
+  card: import("@packroi/ev/types").CardPriceData;
+  /** Products whose packs can contain this card, with the card's odds in each. */
+  sources: {
+    productName: string;
+    productSlug: string;
+    setCode: string;
+    setName: string;
+    productType: string;
+    marketCents: number | null;
+    imageUrl: string | null;
+    /** From the product's chase table; null when the card is below the chase bar. */
+    perPackProbability: number | null;
+    oneInPacks: number | null;
+    probPerProduct: number | null;
+    valueCents: number | null;
+  }[];
+}
+
+export async function getCardContext(
+  game: string,
+  setCode: string,
+  number: string,
+): Promise<CardContext | null> {
+  const { products } = await getRankings();
+  // The card lives in the payload of any product of its set.
+  const home = products.find((p) => p.gameSlug === game && p.setCode === setCode);
+  if (!home) return null;
+  const card = home.cards.find((c) => c.number === number);
+  if (!card) return null;
+
+  // Every product whose packs draw from this set: the set's own products plus
+  // any blended collection (UPC / tin) whose componentPacks include it.
+  const holders = products.filter(
+    (p) =>
+      (p.gameSlug === game && p.setCode === setCode) ||
+      p.componentPacks?.some((cp) => cp.setCode === setCode),
+  );
+
+  // Deferred import keeps this module server/client agnostic like the rest.
+  const { computeProduct } = await import("@/lib/data/compute");
+  const { DEFAULT_FILTER_STATE } = await import("@packroi/ev/url-state");
+  const { availableSources } = await getRankings();
+  const ids = availableSources.map((s) => s.id);
+
+  const sources = holders.map((p) => {
+    const c = computeProduct(p, DEFAULT_FILTER_STATE, ids);
+    const chase = c.ev.chase.find((ch) => ch.cardId === card.cardId);
+    return {
+      productName: p.productName,
+      productSlug: p.productSlug,
+      setCode: p.setCode,
+      setName: p.setName,
+      productType: p.productType,
+      marketCents: p.market.priceCents,
+      imageUrl: p.imageUrl,
+      perPackProbability: chase?.perPackProbability ?? null,
+      oneInPacks: chase && Number.isFinite(chase.oneInPacks) ? chase.oneInPacks : null,
+      probPerProduct: chase?.probPerProduct ?? null,
+      valueCents: chase?.valueCents ?? null,
+    };
+  });
+  // Best odds first; products where the card is below the chase bar sink.
+  sources.sort((a, b) => (b.probPerProduct ?? -1) - (a.probPerProduct ?? -1));
+
+  return {
+    gameSlug: home.gameSlug,
+    gameName: home.gameName,
+    setCode: home.setCode,
+    setName: home.setName,
+    card,
+    sources,
+  };
+}
