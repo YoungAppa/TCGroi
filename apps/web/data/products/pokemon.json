@@ -1791,6 +1791,25 @@
         }
       ],
       "contentsNote": "The publisher's own listing states “18 Pokémon TCG booster packs” and adds “Packs may vary by product” — no sets are named. EV models the assortment as a uniform draw across the 7 Scarlet & Violet main sets released before this product (Scarlet & Violet through Stellar Crown), each priced with its own odds; the real mix in any one box will differ. Also includes foil Terapagos ex, Lapras ex and Cinderace ex promos, 8 foil Basic Energy cards, a playmat, deck box, coin and dice — not modelled, so EV understates what's in the box."
+    },
+    {
+      "setCode": "me2",
+      "name": "Mega Charizard X ex Ultra-Premium Collection (18 packs)",
+      "slug": "mega-charizard-x-ex-ultra-premium-collection",
+      "type": "case",
+      "packsContained": 18,
+      "msrpCents": null,
+      "componentPacks": [
+        {
+          "setCode": "me1",
+          "count": 9.0
+        },
+        {
+          "setCode": "me2",
+          "count": 9.0
+        }
+      ],
+      "contentsNote": "The publisher's own listing states “18 Pokémon TCG booster packs” without naming sets. EV models the assortment as a uniform draw across the two Mega Evolution main sets released by this product's debut (Mega Evolution and Phantasmal Flames), each priced with its own odds; the real mix in any one box will differ. Also includes foil Mega Charizard X ex and Oricorio ex promos, 65 sleeves, a playmat, deck box, metal coin and dice — not modelled, so EV understates what's in the box."
     }
   ]
 }

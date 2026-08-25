@@ -77,7 +77,7 @@ export default async function RootLayout({
               {/* "ROI" carries the foil — the only place in the chrome that
                   spends the holo gradient. */}
               <span className="font-display text-lg font-extrabold tracking-tight">
-                whatsthat<span className="holo-text">ROI</span>
+                WhatsThat<span className="holo-text">ROI</span>
               </span>
             </Link>
             <SiteNav />

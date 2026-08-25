@@ -46,7 +46,7 @@ export default function OpengraphImage() {
             ↓
           </div>
           <div style={{ display: "flex", fontSize: "40px", fontWeight: 800 }}>
-            <div style={{ display: "flex" }}>whatsthat</div>
+            <div style={{ display: "flex" }}>WhatsThat</div>
             <div style={{ display: "flex", color: "#a06bff" }}>ROI</div>
           </div>
         </div>
