@@ -283,7 +283,7 @@ const productFileSchema = z.object({
       language: z.enum(["EN", "JP", "ZH"]).default("EN"),
       name: z.string().min(1),
       slug: z.string().min(1),
-      type: z.enum(["booster_pack", "booster_box", "etb", "bundle", "display", "case"]),
+      type: z.enum(["booster_pack", "booster_box", "etb", "bundle", "display", "case", "tin"]),
       packsContained: z.number().int().positive(),
       msrpCents: z.number().int().positive().nullable(),
       // Hand-tracked market price: all three fields travel together.

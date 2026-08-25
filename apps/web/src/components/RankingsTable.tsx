@@ -224,7 +224,7 @@ export function RankingsTable({
   // the filter must only offer the types the selected game actually has.
   // Types present for the current game+language, in fixed pack->box->etb order,
   // with live counts so the pills read "Booster Box · 47" before you click.
-  const TYPE_ORDER = ["booster_pack", "booster_box", "etb", "bundle", "display", "case"];
+  const TYPE_ORDER = ["booster_pack", "booster_box", "etb", "bundle", "tin", "display", "case"];
   const typeCounts = useMemo(() => {
     const wantLang = lang === "ja" ? "JP" : lang === "zh" ? "ZH" : "EN";
     const pool = products.filter(
@@ -711,6 +711,7 @@ const TYPE_LABEL: Record<ProductPayload["productType"], string> = {
   bundle: "Bundle",
   display: "Display",
   case: "UPC",
+  tin: "Tin",
 };
 
 /**

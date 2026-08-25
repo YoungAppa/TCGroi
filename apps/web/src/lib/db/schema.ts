@@ -30,6 +30,7 @@ export const sealedProductType = pgEnum("sealed_product_type", [
   "bundle",
   "display",
   "case",
+  "tin",
 ]);
 
 /** Publishers do not publish official odds; every table is an estimate. */

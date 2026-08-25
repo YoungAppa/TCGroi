@@ -25,7 +25,7 @@ export interface ProductPayload {
   productId: string;
   productName: string;
   productSlug: string;
-  productType: "booster_pack" | "booster_box" | "etb" | "bundle" | "display" | "case";
+  productType: "booster_pack" | "booster_box" | "etb" | "bundle" | "display" | "case" | "tin";
   packsContained: number;
   /** Set logo, used as the product's visual identity. */
   imageUrl: string | null;

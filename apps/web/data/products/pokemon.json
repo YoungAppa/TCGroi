@@ -1802,14 +1802,1267 @@
       "componentPacks": [
         {
           "setCode": "me1",
-          "count": 9.0
+          "count": 9
         },
         {
           "setCode": "me2",
-          "count": 9.0
+          "count": 9
         }
       ],
       "contentsNote": "The publisher's own listing states “18 Pokémon TCG booster packs” without naming sets. EV models the assortment as a uniform draw across the two Mega Evolution main sets released by this product's debut (Mega Evolution and Phantasmal Flames), each priced with its own odds; the real mix in any one box will differ. Also includes foil Mega Charizard X ex and Oricorio ex promos, 65 sleeves, a playmat, deck box, metal coin and dice — not modelled, so EV understates what's in the box."
+    },
+    {
+      "setCode": "sv4pt5",
+      "name": "Paldean Fates Tin - Charizard ex (5 packs)",
+      "slug": "paldean-fates-tin-charizard-ex",
+      "type": "tin",
+      "packsContained": 5,
+      "msrpCents": null,
+      "contentsNote": "The publisher's listing states 5 Paldean Fates booster packs. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "sv4pt5",
+      "name": "Paldean Fates International Tin - Charizard ex (4 packs)",
+      "slug": "paldean-fates-international-tin-charizard-ex",
+      "type": "tin",
+      "packsContained": 4,
+      "msrpCents": null,
+      "contentsNote": "The publisher's listing states 4 Paldean Fates booster packs. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "sv4pt5",
+      "name": "Paldean Fates Tin - Iron Treads ex (5 packs)",
+      "slug": "paldean-fates-tin-iron-treads-ex",
+      "type": "tin",
+      "packsContained": 5,
+      "msrpCents": null,
+      "contentsNote": "The publisher's listing states 5 Paldean Fates booster packs. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "sv4pt5",
+      "name": "Paldean Fates International Tin - Great Tusk ex (4 packs)",
+      "slug": "paldean-fates-international-tin-great-tusk-ex",
+      "type": "tin",
+      "packsContained": 4,
+      "msrpCents": null,
+      "contentsNote": "The publisher's listing states 4 Paldean Fates booster packs. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "sv4pt5",
+      "name": "Paldean Fates International Tin - Iron Treads ex (4 packs)",
+      "slug": "paldean-fates-international-tin-iron-treads-ex",
+      "type": "tin",
+      "packsContained": 4,
+      "msrpCents": null,
+      "contentsNote": "The publisher's listing states 4 Paldean Fates booster packs. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "sv4pt5",
+      "name": "Paldean Fates Tin - Great Tusk ex (5 packs)",
+      "slug": "paldean-fates-tin-great-tusk-ex",
+      "type": "tin",
+      "packsContained": 5,
+      "msrpCents": null,
+      "contentsNote": "The publisher's listing states 5 Paldean Fates booster packs. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "sm7",
+      "name": "Celestial Storm Evolution Celebration Tin - Sylveon GX (4 packs)",
+      "slug": "celestial-storm-evolution-celebration-tin-sylveon-gx",
+      "type": "tin",
+      "packsContained": 4,
+      "msrpCents": null,
+      "componentPacks": [
+        {
+          "setCode": "sm2",
+          "count": 0.5714
+        },
+        {
+          "setCode": "sm7",
+          "count": 0.5714
+        },
+        {
+          "setCode": "sm5",
+          "count": 0.5714
+        },
+        {
+          "setCode": "sm1",
+          "count": 0.5714
+        },
+        {
+          "setCode": "sm3",
+          "count": 0.5714
+        },
+        {
+          "setCode": "sm4",
+          "count": 0.5714
+        },
+        {
+          "setCode": "sm6",
+          "count": 0.5714
+        }
+      ],
+      "contentsNote": "The publisher's listing states 4 Pokémon TCG booster packs without naming sets. EV models the assortment as a uniform draw across the 7 ranked main sets of this era released by then, each priced with its own odds; the real mix in any one tin will differ. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "sm7",
+      "name": "Celestial Storm Evolution Celebration Tin Glaceon GX (4 packs)",
+      "slug": "celestial-storm-evolution-celebration-tin-glaceon-gx",
+      "type": "tin",
+      "packsContained": 4,
+      "msrpCents": null,
+      "componentPacks": [
+        {
+          "setCode": "sm2",
+          "count": 0.5714
+        },
+        {
+          "setCode": "sm7",
+          "count": 0.5714
+        },
+        {
+          "setCode": "sm5",
+          "count": 0.5714
+        },
+        {
+          "setCode": "sm1",
+          "count": 0.5714
+        },
+        {
+          "setCode": "sm3",
+          "count": 0.5714
+        },
+        {
+          "setCode": "sm4",
+          "count": 0.5714
+        },
+        {
+          "setCode": "sm6",
+          "count": 0.5714
+        }
+      ],
+      "contentsNote": "The publisher's listing states 4 Pokémon TCG booster packs without naming sets. EV models the assortment as a uniform draw across the 7 ranked main sets of this era released by then, each priced with its own odds; the real mix in any one tin will differ. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "sm7",
+      "name": "Celestial Storm Evolution Celebration Tin - Leafeon GX (4 packs)",
+      "slug": "celestial-storm-evolution-celebration-tin-leafeon-gx",
+      "type": "tin",
+      "packsContained": 4,
+      "msrpCents": null,
+      "componentPacks": [
+        {
+          "setCode": "sm2",
+          "count": 0.5714
+        },
+        {
+          "setCode": "sm7",
+          "count": 0.5714
+        },
+        {
+          "setCode": "sm5",
+          "count": 0.5714
+        },
+        {
+          "setCode": "sm1",
+          "count": 0.5714
+        },
+        {
+          "setCode": "sm3",
+          "count": 0.5714
+        },
+        {
+          "setCode": "sm4",
+          "count": 0.5714
+        },
+        {
+          "setCode": "sm6",
+          "count": 0.5714
+        }
+      ],
+      "contentsNote": "The publisher's listing states 4 Pokémon TCG booster packs without naming sets. EV models the assortment as a uniform draw across the 7 ranked main sets of this era released by then, each priced with its own odds; the real mix in any one tin will differ. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "swsh11",
+      "name": "Lost Origin Pokemon Stacking Tin: Fire (3 packs)",
+      "slug": "lost-origin-pokemon-stacking-tin-fire",
+      "type": "tin",
+      "packsContained": 3,
+      "msrpCents": null,
+      "componentPacks": [
+        {
+          "setCode": "swsh6",
+          "count": 0.2727
+        },
+        {
+          "setCode": "swsh10",
+          "count": 0.2727
+        },
+        {
+          "setCode": "swsh11",
+          "count": 0.2727
+        },
+        {
+          "setCode": "swsh2",
+          "count": 0.2727
+        },
+        {
+          "setCode": "swsh5",
+          "count": 0.2727
+        },
+        {
+          "setCode": "swsh3",
+          "count": 0.2727
+        },
+        {
+          "setCode": "swsh7",
+          "count": 0.2727
+        },
+        {
+          "setCode": "swsh9",
+          "count": 0.2727
+        },
+        {
+          "setCode": "swsh4",
+          "count": 0.2727
+        },
+        {
+          "setCode": "swsh1",
+          "count": 0.2727
+        },
+        {
+          "setCode": "swsh8",
+          "count": 0.2727
+        }
+      ],
+      "contentsNote": "The publisher's listing states 3 Pokémon TCG booster packs without naming sets. EV models the assortment as a uniform draw across the 11 ranked main sets of this era released by then, each priced with its own odds; the real mix in any one tin will differ. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "swsh11",
+      "name": "Lost Origin Pokemon Stacking Tin: Darkness (3 packs)",
+      "slug": "lost-origin-pokemon-stacking-tin-darkness",
+      "type": "tin",
+      "packsContained": 3,
+      "msrpCents": null,
+      "componentPacks": [
+        {
+          "setCode": "swsh6",
+          "count": 0.2727
+        },
+        {
+          "setCode": "swsh10",
+          "count": 0.2727
+        },
+        {
+          "setCode": "swsh11",
+          "count": 0.2727
+        },
+        {
+          "setCode": "swsh2",
+          "count": 0.2727
+        },
+        {
+          "setCode": "swsh5",
+          "count": 0.2727
+        },
+        {
+          "setCode": "swsh3",
+          "count": 0.2727
+        },
+        {
+          "setCode": "swsh7",
+          "count": 0.2727
+        },
+        {
+          "setCode": "swsh9",
+          "count": 0.2727
+        },
+        {
+          "setCode": "swsh4",
+          "count": 0.2727
+        },
+        {
+          "setCode": "swsh1",
+          "count": 0.2727
+        },
+        {
+          "setCode": "swsh8",
+          "count": 0.2727
+        }
+      ],
+      "contentsNote": "The publisher's listing states 3 Pokémon TCG booster packs without naming sets. EV models the assortment as a uniform draw across the 11 ranked main sets of this era released by then, each priced with its own odds; the real mix in any one tin will differ. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "swsh11",
+      "name": "Lost Origin Pokemon Stacking Tin: Fighting (3 packs)",
+      "slug": "lost-origin-pokemon-stacking-tin-fighting",
+      "type": "tin",
+      "packsContained": 3,
+      "msrpCents": null,
+      "componentPacks": [
+        {
+          "setCode": "swsh6",
+          "count": 0.2727
+        },
+        {
+          "setCode": "swsh10",
+          "count": 0.2727
+        },
+        {
+          "setCode": "swsh11",
+          "count": 0.2727
+        },
+        {
+          "setCode": "swsh2",
+          "count": 0.2727
+        },
+        {
+          "setCode": "swsh5",
+          "count": 0.2727
+        },
+        {
+          "setCode": "swsh3",
+          "count": 0.2727
+        },
+        {
+          "setCode": "swsh7",
+          "count": 0.2727
+        },
+        {
+          "setCode": "swsh9",
+          "count": 0.2727
+        },
+        {
+          "setCode": "swsh4",
+          "count": 0.2727
+        },
+        {
+          "setCode": "swsh1",
+          "count": 0.2727
+        },
+        {
+          "setCode": "swsh8",
+          "count": 0.2727
+        }
+      ],
+      "contentsNote": "The publisher's listing states 3 Pokémon TCG booster packs without naming sets. EV models the assortment as a uniform draw across the 11 ranked main sets of this era released by then, each priced with its own odds; the real mix in any one tin will differ. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "swsh2",
+      "name": "Rebel Clash Legends of Galar Tin - Zacian V (5 packs)",
+      "slug": "rebel-clash-legends-of-galar-tin-zacian-v",
+      "type": "tin",
+      "packsContained": 5,
+      "msrpCents": null,
+      "componentPacks": [
+        {
+          "setCode": "swsh2",
+          "count": 2.5
+        },
+        {
+          "setCode": "swsh1",
+          "count": 2.5
+        }
+      ],
+      "contentsNote": "The publisher's listing states 5 Pokémon TCG booster packs without naming sets. EV models the assortment as a uniform draw across the 2 ranked main sets of this era released by then, each priced with its own odds; the real mix in any one tin will differ. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "swsh2",
+      "name": "Rebel Clash Legends of Galar Tin - Zamazenta V (5 packs)",
+      "slug": "rebel-clash-legends-of-galar-tin-zamazenta-v",
+      "type": "tin",
+      "packsContained": 5,
+      "msrpCents": null,
+      "componentPacks": [
+        {
+          "setCode": "swsh2",
+          "count": 2.5
+        },
+        {
+          "setCode": "swsh1",
+          "count": 2.5
+        }
+      ],
+      "contentsNote": "The publisher's listing states 5 Pokémon TCG booster packs without naming sets. EV models the assortment as a uniform draw across the 2 ranked main sets of this era released by then, each priced with its own odds; the real mix in any one tin will differ. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "swsh2",
+      "name": "Rebel Clash Legends of Galar Tin - Zacian V (International Version) (4 packs)",
+      "slug": "rebel-clash-legends-of-galar-tin-zacian-v-international-vers",
+      "type": "tin",
+      "packsContained": 4,
+      "msrpCents": null,
+      "componentPacks": [
+        {
+          "setCode": "swsh2",
+          "count": 2
+        },
+        {
+          "setCode": "swsh1",
+          "count": 2
+        }
+      ],
+      "contentsNote": "The publisher's listing states 4 Pokémon TCG booster packs without naming sets. EV models the assortment as a uniform draw across the 2 ranked main sets of this era released by then, each priced with its own odds; the real mix in any one tin will differ. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "swsh2",
+      "name": "Rebel Clash Legends of Galar Tin - Zamazenta V (International Version) (4 packs)",
+      "slug": "rebel-clash-legends-of-galar-tin-zamazenta-v-international-v",
+      "type": "tin",
+      "packsContained": 4,
+      "msrpCents": null,
+      "componentPacks": [
+        {
+          "setCode": "swsh2",
+          "count": 2
+        },
+        {
+          "setCode": "swsh1",
+          "count": 2
+        }
+      ],
+      "contentsNote": "The publisher's listing states 4 Pokémon TCG booster packs without naming sets. EV models the assortment as a uniform draw across the 2 ranked main sets of this era released by then, each priced with its own odds; the real mix in any one tin will differ. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "sm1",
+      "name": "Sun & Moon Spring 2017 Collector's Chest Tin (5 packs)",
+      "slug": "sun-moon-spring-2017-collector-s-chest-tin",
+      "type": "tin",
+      "packsContained": 5,
+      "msrpCents": null,
+      "componentPacks": [
+        {
+          "setCode": "sm1",
+          "count": 5
+        }
+      ],
+      "contentsNote": "The publisher's listing states 5 Pokémon TCG booster packs without naming sets. EV models the assortment as a uniform draw across the 1 ranked main sets of this era released by then, each priced with its own odds; the real mix in any one tin will differ. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "sm11",
+      "name": "Unified Minds Power Partnership Tin - Mewtwo & Mew GX (4 packs)",
+      "slug": "unified-minds-power-partnership-tin-mewtwo-mew-gx",
+      "type": "tin",
+      "packsContained": 4,
+      "msrpCents": null,
+      "componentPacks": [
+        {
+          "setCode": "sm2",
+          "count": 0.4
+        },
+        {
+          "setCode": "sm7",
+          "count": 0.4
+        },
+        {
+          "setCode": "sm10",
+          "count": 0.4
+        },
+        {
+          "setCode": "sm5",
+          "count": 0.4
+        },
+        {
+          "setCode": "sm1",
+          "count": 0.4
+        },
+        {
+          "setCode": "sm11",
+          "count": 0.4
+        },
+        {
+          "setCode": "sm3",
+          "count": 0.4
+        },
+        {
+          "setCode": "sm4",
+          "count": 0.4
+        },
+        {
+          "setCode": "sm6",
+          "count": 0.4
+        },
+        {
+          "setCode": "sm8",
+          "count": 0.4
+        }
+      ],
+      "contentsNote": "The publisher's listing states 4 Pokémon TCG booster packs without naming sets. EV models the assortment as a uniform draw across the 10 ranked main sets of this era released by then, each priced with its own odds; the real mix in any one tin will differ. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "sm11",
+      "name": "Unified Minds Power Partnership Tin - Garchomp & Giratina GX (4 packs)",
+      "slug": "unified-minds-power-partnership-tin-garchomp-giratina-gx",
+      "type": "tin",
+      "packsContained": 4,
+      "msrpCents": null,
+      "componentPacks": [
+        {
+          "setCode": "sm2",
+          "count": 0.4
+        },
+        {
+          "setCode": "sm7",
+          "count": 0.4
+        },
+        {
+          "setCode": "sm10",
+          "count": 0.4
+        },
+        {
+          "setCode": "sm5",
+          "count": 0.4
+        },
+        {
+          "setCode": "sm1",
+          "count": 0.4
+        },
+        {
+          "setCode": "sm11",
+          "count": 0.4
+        },
+        {
+          "setCode": "sm3",
+          "count": 0.4
+        },
+        {
+          "setCode": "sm4",
+          "count": 0.4
+        },
+        {
+          "setCode": "sm6",
+          "count": 0.4
+        },
+        {
+          "setCode": "sm8",
+          "count": 0.4
+        }
+      ],
+      "contentsNote": "The publisher's listing states 4 Pokémon TCG booster packs without naming sets. EV models the assortment as a uniform draw across the 10 ranked main sets of this era released by then, each priced with its own odds; the real mix in any one tin will differ. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "sm11",
+      "name": "Unified Minds Power Partnership Tin - Lucario & Melmetal GX (4 packs)",
+      "slug": "unified-minds-power-partnership-tin-lucario-melmetal-gx",
+      "type": "tin",
+      "packsContained": 4,
+      "msrpCents": null,
+      "componentPacks": [
+        {
+          "setCode": "sm2",
+          "count": 0.4
+        },
+        {
+          "setCode": "sm7",
+          "count": 0.4
+        },
+        {
+          "setCode": "sm10",
+          "count": 0.4
+        },
+        {
+          "setCode": "sm5",
+          "count": 0.4
+        },
+        {
+          "setCode": "sm1",
+          "count": 0.4
+        },
+        {
+          "setCode": "sm11",
+          "count": 0.4
+        },
+        {
+          "setCode": "sm3",
+          "count": 0.4
+        },
+        {
+          "setCode": "sm4",
+          "count": 0.4
+        },
+        {
+          "setCode": "sm6",
+          "count": 0.4
+        },
+        {
+          "setCode": "sm8",
+          "count": 0.4
+        }
+      ],
+      "contentsNote": "The publisher's listing states 4 Pokémon TCG booster packs without naming sets. EV models the assortment as a uniform draw across the 10 ranked main sets of this era released by then, each priced with its own odds; the real mix in any one tin will differ. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "sm3",
+      "name": "Burning Shadows Mysterious Powers Tin - Ho-oh (4 packs)",
+      "slug": "burning-shadows-mysterious-powers-tin-ho-oh",
+      "type": "tin",
+      "packsContained": 4,
+      "msrpCents": null,
+      "componentPacks": [
+        {
+          "setCode": "sm2",
+          "count": 1.3333
+        },
+        {
+          "setCode": "sm1",
+          "count": 1.3333
+        },
+        {
+          "setCode": "sm3",
+          "count": 1.3333
+        }
+      ],
+      "contentsNote": "The publisher's listing states 4 Pokémon TCG booster packs without naming sets. EV models the assortment as a uniform draw across the 3 ranked main sets of this era released by then, each priced with its own odds; the real mix in any one tin will differ. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "sm3",
+      "name": "Burning Shadows Mysterious Powers Tin - Marshadow GX (4 packs)",
+      "slug": "burning-shadows-mysterious-powers-tin-marshadow-gx",
+      "type": "tin",
+      "packsContained": 4,
+      "msrpCents": null,
+      "componentPacks": [
+        {
+          "setCode": "sm2",
+          "count": 1.3333
+        },
+        {
+          "setCode": "sm1",
+          "count": 1.3333
+        },
+        {
+          "setCode": "sm3",
+          "count": 1.3333
+        }
+      ],
+      "contentsNote": "The publisher's listing states 4 Pokémon TCG booster packs without naming sets. EV models the assortment as a uniform draw across the 3 ranked main sets of this era released by then, each priced with its own odds; the real mix in any one tin will differ. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "sm3",
+      "name": "Mysterious Powers Tin - Necrozma GX (4 packs)",
+      "slug": "mysterious-powers-tin-necrozma-gx",
+      "type": "tin",
+      "packsContained": 4,
+      "msrpCents": null,
+      "componentPacks": [
+        {
+          "setCode": "sm2",
+          "count": 1.3333
+        },
+        {
+          "setCode": "sm1",
+          "count": 1.3333
+        },
+        {
+          "setCode": "sm3",
+          "count": 1.3333
+        }
+      ],
+      "contentsNote": "The publisher's listing states 4 Pokémon TCG booster packs without naming sets. EV models the assortment as a uniform draw across the 3 ranked main sets of this era released by then, each priced with its own odds; the real mix in any one tin will differ. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "swsh5",
+      "name": "Battle Styles Spring 2021 Collector's Chest Tin (5 packs)",
+      "slug": "battle-styles-spring-2021-collector-s-chest-tin",
+      "type": "tin",
+      "packsContained": 5,
+      "msrpCents": null,
+      "componentPacks": [
+        {
+          "setCode": "swsh2",
+          "count": 1
+        },
+        {
+          "setCode": "swsh5",
+          "count": 1
+        },
+        {
+          "setCode": "swsh3",
+          "count": 1
+        },
+        {
+          "setCode": "swsh4",
+          "count": 1
+        },
+        {
+          "setCode": "swsh1",
+          "count": 1
+        }
+      ],
+      "contentsNote": "The publisher's listing states 5 Pokémon TCG booster packs without naming sets. EV models the assortment as a uniform draw across the 5 ranked main sets of this era released by then, each priced with its own odds; the real mix in any one tin will differ. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "swsh7",
+      "name": "Evolving Skies Eevee Evolutions Tin - Vaporeon V (4 packs)",
+      "slug": "evolving-skies-eevee-evolutions-tin-vaporeon-v",
+      "type": "tin",
+      "packsContained": 4,
+      "msrpCents": null,
+      "componentPacks": [
+        {
+          "setCode": "swsh6",
+          "count": 0.5714
+        },
+        {
+          "setCode": "swsh2",
+          "count": 0.5714
+        },
+        {
+          "setCode": "swsh5",
+          "count": 0.5714
+        },
+        {
+          "setCode": "swsh3",
+          "count": 0.5714
+        },
+        {
+          "setCode": "swsh7",
+          "count": 0.5714
+        },
+        {
+          "setCode": "swsh4",
+          "count": 0.5714
+        },
+        {
+          "setCode": "swsh1",
+          "count": 0.5714
+        }
+      ],
+      "contentsNote": "The publisher's listing states 4 Pokémon TCG booster packs without naming sets. EV models the assortment as a uniform draw across the 7 ranked main sets of this era released by then, each priced with its own odds; the real mix in any one tin will differ. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "swsh7",
+      "name": "Eevee Evolutions Tin - Jolteon V (4 packs)",
+      "slug": "eevee-evolutions-tin-jolteon-v",
+      "type": "tin",
+      "packsContained": 4,
+      "msrpCents": null,
+      "componentPacks": [
+        {
+          "setCode": "swsh6",
+          "count": 0.5714
+        },
+        {
+          "setCode": "swsh2",
+          "count": 0.5714
+        },
+        {
+          "setCode": "swsh5",
+          "count": 0.5714
+        },
+        {
+          "setCode": "swsh3",
+          "count": 0.5714
+        },
+        {
+          "setCode": "swsh7",
+          "count": 0.5714
+        },
+        {
+          "setCode": "swsh4",
+          "count": 0.5714
+        },
+        {
+          "setCode": "swsh1",
+          "count": 0.5714
+        }
+      ],
+      "contentsNote": "The publisher's listing states 4 Pokémon TCG booster packs without naming sets. EV models the assortment as a uniform draw across the 7 ranked main sets of this era released by then, each priced with its own odds; the real mix in any one tin will differ. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "swsh7",
+      "name": "Eevee Evolutions Tin - Flareon V (4 packs)",
+      "slug": "eevee-evolutions-tin-flareon-v",
+      "type": "tin",
+      "packsContained": 4,
+      "msrpCents": null,
+      "componentPacks": [
+        {
+          "setCode": "swsh6",
+          "count": 0.5714
+        },
+        {
+          "setCode": "swsh2",
+          "count": 0.5714
+        },
+        {
+          "setCode": "swsh5",
+          "count": 0.5714
+        },
+        {
+          "setCode": "swsh3",
+          "count": 0.5714
+        },
+        {
+          "setCode": "swsh7",
+          "count": 0.5714
+        },
+        {
+          "setCode": "swsh4",
+          "count": 0.5714
+        },
+        {
+          "setCode": "swsh1",
+          "count": 0.5714
+        }
+      ],
+      "contentsNote": "The publisher's listing states 4 Pokémon TCG booster packs without naming sets. EV models the assortment as a uniform draw across the 7 ranked main sets of this era released by then, each priced with its own odds; the real mix in any one tin will differ. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "swsh4",
+      "name": "Vivid Voltage Fall 2020 Collector's Chest Tin (5 packs)",
+      "slug": "vivid-voltage-fall-2020-collector-s-chest-tin",
+      "type": "tin",
+      "packsContained": 5,
+      "msrpCents": null,
+      "componentPacks": [
+        {
+          "setCode": "swsh2",
+          "count": 1.25
+        },
+        {
+          "setCode": "swsh3",
+          "count": 1.25
+        },
+        {
+          "setCode": "swsh4",
+          "count": 1.25
+        },
+        {
+          "setCode": "swsh1",
+          "count": 1.25
+        }
+      ],
+      "contentsNote": "The publisher's listing states 5 Pokémon TCG booster packs without naming sets. EV models the assortment as a uniform draw across the 4 ranked main sets of this era released by then, each priced with its own odds; the real mix in any one tin will differ. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "swsh1",
+      "name": "Sword & Shield Galar Partners International Tin - Cinderace V (4 packs)",
+      "slug": "sword-shield-galar-partners-international-tin-cinderace-v",
+      "type": "tin",
+      "packsContained": 4,
+      "msrpCents": null,
+      "componentPacks": [
+        {
+          "setCode": "swsh1",
+          "count": 4
+        }
+      ],
+      "contentsNote": "The publisher's listing states 4 Pokémon TCG booster packs without naming sets. EV models the assortment as a uniform draw across the 1 ranked main sets of this era released by then, each priced with its own odds; the real mix in any one tin will differ. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "swsh1",
+      "name": "Sword & Shield Legends of Galar Tin + Galar Partners Tin 2 (5 packs)",
+      "slug": "sword-shield-legends-of-galar-tin-galar-partners-tin-2",
+      "type": "tin",
+      "packsContained": 5,
+      "msrpCents": null,
+      "componentPacks": [
+        {
+          "setCode": "swsh1",
+          "count": 5
+        }
+      ],
+      "contentsNote": "The publisher's listing states 5 Pokémon TCG booster packs without naming sets. EV models the assortment as a uniform draw across the 1 ranked main sets of this era released by then, each priced with its own odds; the real mix in any one tin will differ. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "swsh1",
+      "name": "Sword & Shield Galar Partners International Tin - Inteleon V (4 packs)",
+      "slug": "sword-shield-galar-partners-international-tin-inteleon-v",
+      "type": "tin",
+      "packsContained": 4,
+      "msrpCents": null,
+      "componentPacks": [
+        {
+          "setCode": "swsh1",
+          "count": 4
+        }
+      ],
+      "contentsNote": "The publisher's listing states 4 Pokémon TCG booster packs without naming sets. EV models the assortment as a uniform draw across the 1 ranked main sets of this era released by then, each priced with its own odds; the real mix in any one tin will differ. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "swsh1",
+      "name": "Sword & Shield Galar Partners International Tin - Rillaboom V (4 packs)",
+      "slug": "sword-shield-galar-partners-international-tin-rillaboom-v",
+      "type": "tin",
+      "packsContained": 4,
+      "msrpCents": null,
+      "componentPacks": [
+        {
+          "setCode": "swsh1",
+          "count": 4
+        }
+      ],
+      "contentsNote": "The publisher's listing states 4 Pokémon TCG booster packs without naming sets. EV models the assortment as a uniform draw across the 1 ranked main sets of this era released by then, each priced with its own odds; the real mix in any one tin will differ. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "swsh1",
+      "name": "Sword & Shield Galar Partners Tin - Inteleon V (5 packs)",
+      "slug": "sword-shield-galar-partners-tin-inteleon-v",
+      "type": "tin",
+      "packsContained": 5,
+      "msrpCents": null,
+      "componentPacks": [
+        {
+          "setCode": "swsh1",
+          "count": 5
+        }
+      ],
+      "contentsNote": "The publisher's listing states 5 Pokémon TCG booster packs without naming sets. EV models the assortment as a uniform draw across the 1 ranked main sets of this era released by then, each priced with its own odds; the real mix in any one tin will differ. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "sv3pt5",
+      "name": "151 Mini Tin - Gengar & Poliwag (2 packs)",
+      "slug": "151-mini-tin-gengar-poliwag",
+      "type": "tin",
+      "packsContained": 2,
+      "msrpCents": null,
+      "contentsNote": "The publisher's listing states 2 151 booster packs. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "sv3pt5",
+      "name": "151 Mini Tin - Hitmonchan & Meowth (2 packs)",
+      "slug": "151-mini-tin-hitmonchan-meowth",
+      "type": "tin",
+      "packsContained": 2,
+      "msrpCents": null,
+      "contentsNote": "The publisher's listing states 2 151 booster packs. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "sv3pt5",
+      "name": "151 Mini Tin - Hitmonlee & Kadabra (2 packs)",
+      "slug": "151-mini-tin-hitmonlee-kadabra",
+      "type": "tin",
+      "packsContained": 2,
+      "msrpCents": null,
+      "contentsNote": "The publisher's listing states 2 151 booster packs. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "sv3pt5",
+      "name": "151 Mini Tin - Machamp & Cubone (2 packs)",
+      "slug": "151-mini-tin-machamp-cubone",
+      "type": "tin",
+      "packsContained": 2,
+      "msrpCents": null,
+      "contentsNote": "The publisher's listing states 2 151 booster packs. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "sv3pt5",
+      "name": "151 Mini Tin - Magneton & Ekans (2 packs)",
+      "slug": "151-mini-tin-magneton-ekans",
+      "type": "tin",
+      "packsContained": 2,
+      "msrpCents": null,
+      "contentsNote": "The publisher's listing states 2 151 booster packs. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "sv3pt5",
+      "name": "151 Mini Tin - Weezing & Scyther (2 packs)",
+      "slug": "151-mini-tin-weezing-scyther",
+      "type": "tin",
+      "packsContained": 2,
+      "msrpCents": null,
+      "contentsNote": "The publisher's listing states 2 151 booster packs. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "sv3pt5",
+      "name": "151 Mini Tin - Slowpoke & Sandshrew (2 packs)",
+      "slug": "151-mini-tin-slowpoke-sandshrew",
+      "type": "tin",
+      "packsContained": 2,
+      "msrpCents": null,
+      "contentsNote": "The publisher's listing states 2 151 booster packs. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "sv3pt5",
+      "name": "151 Mini Tin - Electabuzz & Magnemites (2 packs)",
+      "slug": "151-mini-tin-electabuzz-magnemites",
+      "type": "tin",
+      "packsContained": 2,
+      "msrpCents": null,
+      "contentsNote": "The publisher's listing states 2 151 booster packs. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "sv3pt5",
+      "name": "151 Mini Tin - Dragonite & Vileplume (2 packs)",
+      "slug": "151-mini-tin-dragonite-vileplume",
+      "type": "tin",
+      "packsContained": 2,
+      "msrpCents": null,
+      "contentsNote": "The publisher's listing states 2 151 booster packs. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "sv3pt5",
+      "name": "151 Mini Tin - Arcanine & Omanyte (2 packs)",
+      "slug": "151-mini-tin-arcanine-omanyte",
+      "type": "tin",
+      "packsContained": 2,
+      "msrpCents": null,
+      "contentsNote": "The publisher's listing states 2 151 booster packs. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "me2pt5",
+      "name": "Ascended Heroes Mini Tin - Clefairy & Chikorita (2 packs)",
+      "slug": "ascended-heroes-mini-tin-clefairy-chikorita",
+      "type": "tin",
+      "packsContained": 2,
+      "msrpCents": null,
+      "contentsNote": "The publisher's listing states 2 Ascended Heroes booster packs. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "me2pt5",
+      "name": "Ascended Heroes Mini Tin - Pikachu & Tepig (2 packs)",
+      "slug": "ascended-heroes-mini-tin-pikachu-tepig",
+      "type": "tin",
+      "packsContained": 2,
+      "msrpCents": null,
+      "contentsNote": "The publisher's listing states 2 Ascended Heroes booster packs. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "me2pt5",
+      "name": "Ascended Heroes Mini Tin - Riolu & Darumaka (2 packs)",
+      "slug": "ascended-heroes-mini-tin-riolu-darumaka",
+      "type": "tin",
+      "packsContained": 2,
+      "msrpCents": null,
+      "contentsNote": "The publisher's listing states 2 Ascended Heroes booster packs. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "me2pt5",
+      "name": "Ascended Heroes Mini Tin - Togepi & Totodile (2 packs)",
+      "slug": "ascended-heroes-mini-tin-togepi-totodile",
+      "type": "tin",
+      "packsContained": 2,
+      "msrpCents": null,
+      "contentsNote": "The publisher's listing states 2 Ascended Heroes booster packs. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "me2pt5",
+      "name": "Ascended Heroes Mini Tin - Zorua & Cramorant (2 packs)",
+      "slug": "ascended-heroes-mini-tin-zorua-cramorant",
+      "type": "tin",
+      "packsContained": 2,
+      "msrpCents": null,
+      "contentsNote": "The publisher's listing states 2 Ascended Heroes booster packs. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "zsv10pt5",
+      "name": "Black Bolt Unova Mini Tin - Volcarona & Emolga (2 packs)",
+      "slug": "black-bolt-unova-mini-tin-volcarona-emolga",
+      "type": "tin",
+      "packsContained": 2,
+      "msrpCents": null,
+      "contentsNote": "The publisher's listing states 2 Black Bolt booster packs. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "zsv10pt5",
+      "name": "Black Bolt Unova Mini Tin - Elektross & Galvantula (2 packs)",
+      "slug": "black-bolt-unova-mini-tin-elektross-galvantula",
+      "type": "tin",
+      "packsContained": 2,
+      "msrpCents": null,
+      "contentsNote": "The publisher's listing states 2 Black Bolt booster packs. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "zsv10pt5",
+      "name": "Black Bolt Unova Mini Tin - Chandelure & Zorua (2 packs)",
+      "slug": "black-bolt-unova-mini-tin-chandelure-zorua",
+      "type": "tin",
+      "packsContained": 2,
+      "msrpCents": null,
+      "contentsNote": "The publisher's listing states 2 Black Bolt booster packs. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "zsv10pt5",
+      "name": "Black Bolt Unova Mini Tin - Mienshao & Klinklang (2 packs)",
+      "slug": "black-bolt-unova-mini-tin-mienshao-klinklang",
+      "type": "tin",
+      "packsContained": 2,
+      "msrpCents": null,
+      "contentsNote": "The publisher's listing states 2 Black Bolt booster packs. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "zsv10pt5",
+      "name": "Black Bolt Unova Mini Tin - Krookodile & Excadrill (2 packs)",
+      "slug": "black-bolt-unova-mini-tin-krookodile-excadrill",
+      "type": "tin",
+      "packsContained": 2,
+      "msrpCents": null,
+      "contentsNote": "The publisher's listing states 2 Black Bolt booster packs. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "zsv10pt5",
+      "name": "Black Bolt Unova Mini Tin - Lilligant & Whimsicot (2 packs)",
+      "slug": "black-bolt-unova-mini-tin-lilligant-whimsicot",
+      "type": "tin",
+      "packsContained": 2,
+      "msrpCents": null,
+      "contentsNote": "The publisher's listing states 2 Black Bolt booster packs. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "zsv10pt5",
+      "name": "Black Bolt Unova Mini Tin - Alomomola & Axew (2 packs)",
+      "slug": "black-bolt-unova-mini-tin-alomomola-axew",
+      "type": "tin",
+      "packsContained": 2,
+      "msrpCents": null,
+      "contentsNote": "The publisher's listing states 2 Black Bolt booster packs. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "zsv10pt5",
+      "name": "Black Bolt Unova Mini Tin - Garbodor & Amoonguss (2 packs)",
+      "slug": "black-bolt-unova-mini-tin-garbodor-amoonguss",
+      "type": "tin",
+      "packsContained": 2,
+      "msrpCents": null,
+      "contentsNote": "The publisher's listing states 2 Black Bolt booster packs. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "sv8pt5",
+      "name": "Prismatic Evolutions Mini Tin (2 packs)",
+      "slug": "prismatic-evolutions-mini-tin",
+      "type": "tin",
+      "packsContained": 2,
+      "msrpCents": null,
+      "contentsNote": "The publisher's listing states 2 Prismatic Evolutions booster packs. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "sv8pt5",
+      "name": "Prismatic Evolutions Mini Tin - Sylveon (2 packs)",
+      "slug": "prismatic-evolutions-mini-tin-sylveon",
+      "type": "tin",
+      "packsContained": 2,
+      "msrpCents": null,
+      "contentsNote": "The publisher's listing states 2 Prismatic Evolutions booster packs. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "sv8pt5",
+      "name": "Prismatic Evolutions Mini Tin - Espeon (2 packs)",
+      "slug": "prismatic-evolutions-mini-tin-espeon",
+      "type": "tin",
+      "packsContained": 2,
+      "msrpCents": null,
+      "contentsNote": "The publisher's listing states 2 Prismatic Evolutions booster packs. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "sv8pt5",
+      "name": "Prismatic Evolutions Mini Tin - Leafeon (2 packs)",
+      "slug": "prismatic-evolutions-mini-tin-leafeon",
+      "type": "tin",
+      "packsContained": 2,
+      "msrpCents": null,
+      "contentsNote": "The publisher's listing states 2 Prismatic Evolutions booster packs. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "sv8pt5",
+      "name": "Prismatic Evolutions Mini Tin - Vaporeon (2 packs)",
+      "slug": "prismatic-evolutions-mini-tin-vaporeon",
+      "type": "tin",
+      "packsContained": 2,
+      "msrpCents": null,
+      "contentsNote": "The publisher's listing states 2 Prismatic Evolutions booster packs. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "sv8pt5",
+      "name": "Prismatic Evolutions Mini Tin - Flareon (2 packs)",
+      "slug": "prismatic-evolutions-mini-tin-flareon",
+      "type": "tin",
+      "packsContained": 2,
+      "msrpCents": null,
+      "contentsNote": "The publisher's listing states 2 Prismatic Evolutions booster packs. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "sv8pt5",
+      "name": "Prismatic Evolutions Mini Tin - Jolteon (2 packs)",
+      "slug": "prismatic-evolutions-mini-tin-jolteon",
+      "type": "tin",
+      "packsContained": 2,
+      "msrpCents": null,
+      "contentsNote": "The publisher's listing states 2 Prismatic Evolutions booster packs. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "sv8pt5",
+      "name": "Prismatic Evolutions Mini Tin - Glaceon (2 packs)",
+      "slug": "prismatic-evolutions-mini-tin-glaceon",
+      "type": "tin",
+      "packsContained": 2,
+      "msrpCents": null,
+      "contentsNote": "The publisher's listing states 2 Prismatic Evolutions booster packs. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "me1",
+      "name": "Mega Heroes Mini Tin - Mega Lucario (2 packs)",
+      "slug": "mega-heroes-mini-tin-mega-lucario",
+      "type": "tin",
+      "packsContained": 2,
+      "msrpCents": null,
+      "componentPacks": [
+        {
+          "setCode": "me1",
+          "count": 2
+        }
+      ],
+      "contentsNote": "The publisher's listing states 2 Pokémon TCG booster packs without naming sets. EV models the assortment as a uniform draw across the 1 ranked main sets of this era released by then, each priced with its own odds; the real mix in any one tin will differ. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "me1",
+      "name": "Mega Evolution Mega Heroes Mini Tin - Mega Gardevoir (2 packs)",
+      "slug": "mega-evolution-mega-heroes-mini-tin-mega-gardevoir",
+      "type": "tin",
+      "packsContained": 2,
+      "msrpCents": null,
+      "componentPacks": [
+        {
+          "setCode": "me1",
+          "count": 2
+        }
+      ],
+      "contentsNote": "The publisher's listing states 2 Pokémon TCG booster packs without naming sets. EV models the assortment as a uniform draw across the 1 ranked main sets of this era released by then, each priced with its own odds; the real mix in any one tin will differ. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "me1",
+      "name": "Mega Evolution Mega Heroes Mini Tin - Mega Latias (2 packs)",
+      "slug": "mega-evolution-mega-heroes-mini-tin-mega-latias",
+      "type": "tin",
+      "packsContained": 2,
+      "msrpCents": null,
+      "componentPacks": [
+        {
+          "setCode": "me1",
+          "count": 2
+        }
+      ],
+      "contentsNote": "The publisher's listing states 2 Pokémon TCG booster packs without naming sets. EV models the assortment as a uniform draw across the 1 ranked main sets of this era released by then, each priced with its own odds; the real mix in any one tin will differ. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "me1",
+      "name": "Mega Evolution Mega Heroes Mini Tin - Mega Kangaskhan (2 packs)",
+      "slug": "mega-evolution-mega-heroes-mini-tin-mega-kangaskhan",
+      "type": "tin",
+      "packsContained": 2,
+      "msrpCents": null,
+      "componentPacks": [
+        {
+          "setCode": "me1",
+          "count": 2
+        }
+      ],
+      "contentsNote": "The publisher's listing states 2 Pokémon TCG booster packs without naming sets. EV models the assortment as a uniform draw across the 1 ranked main sets of this era released by then, each priced with its own odds; the real mix in any one tin will differ. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
+    },
+    {
+      "setCode": "me1",
+      "name": "Mega Evolution Mega Heroes Mini Tin - Mega Venusaur (2 packs)",
+      "slug": "mega-evolution-mega-heroes-mini-tin-mega-venusaur",
+      "type": "tin",
+      "packsContained": 2,
+      "msrpCents": null,
+      "componentPacks": [
+        {
+          "setCode": "me1",
+          "count": 2
+        }
+      ],
+      "contentsNote": "The publisher's listing states 2 Pokémon TCG booster packs without naming sets. EV models the assortment as a uniform draw across the 1 ranked main sets of this era released by then, each priced with its own odds; the real mix in any one tin will differ. No tin-specific pull-rate study exists anywhere we could find (checked 2026-08-26) — packs in tins come from the same printings, so the set's own measured pack odds apply. The tin's promo card(s) are not modelled, so EV understates the tin's full contents."
     }
   ]
 }

@@ -105,7 +105,7 @@ export interface SealedProductInput {
   productId: string;
   name: string;
   slug: string;
-  type: "booster_pack" | "booster_box" | "etb" | "bundle" | "display" | "case";
+  type: "booster_pack" | "booster_box" | "etb" | "bundle" | "display" | "case" | "tin";
   packsContained: number;
   msrpCents: Cents | null;
   /** Sealed price per source; may be empty when no source has data. */
