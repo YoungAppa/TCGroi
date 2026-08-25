@@ -16,9 +16,9 @@ const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"]
 const sora = Sora({ variable: "--font-sora", subsets: ["latin"], weight: ["600", "700", "800"] });
 
 // Same fallback the robots/sitemap routes use; set NEXT_PUBLIC_SITE_URL at deploy.
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://packroi.vercel.app";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://whatsthatroi.com";
 
-const TITLE = "TCGROI — TCG pack & box expected value";
+const TITLE = "WhatsThatROI — TCG pack & box expected value";
 const DESCRIPTION =
   "Expected value and ROI for sealed Pokémon (EN/JP/中文), One Piece and Magic products, from measured pull rates and live market prices — each set badged by how well-evidenced its odds are. Opening sealed product is almost always -EV; this site shows exactly how much.";
 
@@ -28,13 +28,13 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
     default: TITLE,
-    template: "%s · TCGROI",
+    template: "%s · WhatsThatROI",
   },
   description: DESCRIPTION,
-  applicationName: "TCGROI",
+  applicationName: "WhatsThatROI",
   openGraph: {
     type: "website",
-    siteName: "TCGROI",
+    siteName: "WhatsThatROI",
     url: SITE_URL,
     title: TITLE,
     description: DESCRIPTION,
@@ -77,7 +77,7 @@ export default async function RootLayout({
               {/* "ROI" carries the foil — the only place in the chrome that
                   spends the holo gradient. */}
               <span className="font-display text-lg font-extrabold tracking-tight">
-                TCG<span className="holo-text">ROI</span>
+                whatsthat<span className="holo-text">ROI</span>
               </span>
             </Link>
             <SiteNav />

@@ -4,7 +4,7 @@ import { getRankings } from "@/lib/data";
 
 export const revalidate = 3600;
 
-const BASE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://packroi.vercel.app";
+const BASE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://whatsthatroi.com";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const { products } = await getRankings();

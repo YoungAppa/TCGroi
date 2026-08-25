@@ -1,4 +1,4 @@
-# Deploying TCGROI
+# Deploying WhatsThatROI
 
 > **Update 2026-07-30:** the database moved from Neon to **Railway Postgres**
 > (Neon hit its transfer quota). Wherever this doc says "Neon", read Railway —

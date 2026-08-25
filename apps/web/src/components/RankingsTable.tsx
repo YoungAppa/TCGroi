@@ -801,13 +801,13 @@ function IconTile({
           narrow (164px on a phone) and the art is width-bound instead, so the
           hero stays at 160px there rather than leaving a band of dead space
           above and below the picture. */}
-      <div className="relative flex h-40 items-center justify-center overflow-hidden rounded-xl bg-[radial-gradient(80%_90%_at_50%_10%,var(--surface-raised),transparent_80%)] lg:h-50">
+      <div className="relative flex h-40 items-center justify-center overflow-hidden rounded-xl bg-[radial-gradient(80%_90%_at_50%_10%,var(--surface-raised),transparent_80%)] lg:h-48">
         {heroImg ? (
           <img
             src={heroImg}
             alt={payload.setName}
             loading="lazy"
-            className={`${heroIsCard ? "h-full" : "max-h-36 max-w-[90%] lg:max-h-46"} w-auto object-contain drop-shadow-[0_10px_22px_rgba(0,0,0,.6)] transition-opacity duration-200 group-hover:opacity-0`}
+            className={`${heroIsCard ? "max-h-[92%]" : "max-h-36 max-w-[88%] lg:max-h-42"} w-auto object-contain drop-shadow-[0_10px_22px_rgba(0,0,0,.6)] transition-opacity duration-200 group-hover:opacity-0`}
           />
         ) : (
           <span className="px-2 text-center text-sm font-semibold text-muted transition-opacity group-hover:opacity-0">
@@ -823,7 +823,7 @@ function IconTile({
                 src={ch.img!}
                 alt=""
                 loading="lazy"
-                className="h-24 w-auto rounded-sm border border-border object-contain shadow-md lg:h-32"
+                className="h-auto max-h-[82%] w-auto max-w-[30%] rounded-sm border border-border object-contain shadow-md"
                 style={{ transform: `rotate(${(i - 1) * 7}deg) translateY(${i === 1 ? -2 : 4}px)` }}
               />
             ))}

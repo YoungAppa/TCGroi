@@ -12,7 +12,7 @@ import { SitePreferences } from "./SitePreferences";
  *
  * Split out of layout.tsx because translation needs client state, while the
  * layout itself stays a server component (it owns metadata and the font
- * setup). The brand mark is deliberately NOT translated — "TCGROI" is a name.
+ * setup). The brand mark is deliberately NOT translated — "WhatsThatROI" is a name.
  */
 export function SiteNav() {
   const { t } = useI18n();
