@@ -52,11 +52,12 @@ export async function getMarketHistory(
  * Never fetches from an external API — that is the non-negotiable. External
  * calls happen in cron jobs; pages read what the jobs wrote.
  *
- * On DB failure this returns an EMPTY payload rather than throwing, for one
- * specific reason: CI builds with a DATABASE_URL that points nowhere, and the
- * "app builds with only env vars set" guarantee must survive that. In
- * production the build has the real database. The failure is logged loudly —
- * an empty site with a healthy DB is a bug, not a state to render silently.
+ * On DB failure this retries, then — off Vercel only — returns an EMPTY
+ * payload rather than throwing, so CI builds whose DATABASE_URL points nowhere
+ * still pass. On Vercel the same situation throws instead: a failed build
+ * keeps the previous deployment live and a failed revalidation keeps the
+ * stale page, either of which beats shipping an empty site (which happened
+ * once, 2026-08-25).
  */
 
 const EMPTY: RankingsPayload = {
@@ -70,16 +71,38 @@ let cached: RankingsPayload | null = null;
 export async function getRankings(): Promise<RankingsPayload> {
   if (cached && cached.products.length > 0) return cached;
 
-  try {
-    cached = await loadRankingsFromDb();
-  } catch (err) {
-    console.error(
-      "[data] DB unavailable — rendering empty payload:",
-      err instanceof Error ? err.message : err,
-    );
-    return EMPTY;
+  // A transient DB refusal during a Vercel build once shipped a fully EMPTY
+  // homepage to production (2026-08-25) — 200, zero products, while the DB was
+  // healthy. So: retry with backoff, and on Vercel treat "no products" as a
+  // hard failure. Failing a build keeps the previous deployment serving;
+  // failing an ISR revalidation keeps the stale page. Both beat rendering an
+  // empty site. The empty fallback survives only OFF Vercel, for CI builds
+  // whose DATABASE_URL points nowhere.
+  const attempts = 3;
+  for (let i = 1; i <= attempts; i++) {
+    try {
+      const loaded = await loadRankingsFromDb();
+      if (loaded.products.length > 0) {
+        cached = loaded;
+        return cached;
+      }
+      console.error(`[data] rankings query returned 0 products (attempt ${i}/${attempts})`);
+    } catch (err) {
+      console.error(
+        `[data] DB fetch failed (attempt ${i}/${attempts}):`,
+        err instanceof Error ? err.message : err,
+      );
+    }
+    if (i < attempts) await new Promise((r) => setTimeout(r, i * 2000));
   }
-  return cached;
+
+  if (process.env.VERCEL) {
+    throw new Error(
+      "rankings unavailable after retries — failing this render rather than serving an empty site",
+    );
+  }
+  console.error("[data] DB unavailable — rendering empty payload (non-Vercel build)");
+  return EMPTY;
 }
 
 export async function getProduct(
