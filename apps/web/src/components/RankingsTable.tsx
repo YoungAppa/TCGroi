@@ -732,12 +732,17 @@ function IconTile({
 }) {
   const { money } = useMoney();
   const { payload, c } = row;
+  // Blended products' chase cards live in componentPacks' card lists, not the
+  // home set's — search both, or every UPC hover-fan comes up empty.
+  const findCard = (id: string) =>
+    payload.cards.find((cd) => cd.cardId === id) ??
+    payload.componentPacks?.flatMap((cp) => cp.cards).find((cd) => cd.cardId === id);
   const chase = c.ev.chase
     .slice(0, 3)
     .map((ch) => ({
       key: ch.cardId,
       value: ch.valueCents,
-      img: payload.cards.find((cd) => cd.cardId === ch.cardId)?.imageUrl ?? null,
+      img: findCard(ch.cardId)?.imageUrl ?? null,
     }))
     .filter((ch) => ch.img);
 
@@ -807,10 +812,10 @@ function IconTile({
             src={heroImg}
             alt={payload.setName}
             loading="lazy"
-            className={`${heroIsCard ? "max-h-[92%]" : "max-h-36 max-w-[88%] lg:max-h-42"} w-auto object-contain drop-shadow-[0_10px_22px_rgba(0,0,0,.6)] transition-opacity duration-200 group-hover:opacity-0`}
+            className={`${heroIsCard ? "max-h-[92%]" : "max-h-36 max-w-[88%] lg:max-h-42"} w-auto object-contain drop-shadow-[0_10px_22px_rgba(0,0,0,.6)] transition-opacity duration-200 ${chase.length > 0 ? "group-hover:opacity-0" : ""}`}
           />
         ) : (
-          <span className="px-2 text-center text-sm font-semibold text-muted transition-opacity group-hover:opacity-0">
+          <span className={`px-2 text-center text-sm font-semibold text-muted transition-opacity ${chase.length > 0 ? "group-hover:opacity-0" : ""}`}>
             {payload.setName}
           </span>
         )}

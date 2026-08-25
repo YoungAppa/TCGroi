@@ -87,6 +87,16 @@ export function ProductDetail({
 
   const totalEv = ev.tiers.reduce((s, t) => s + t.evContributionCents, 0);
 
+  // Card lookup across the WHOLE payload: a blended product's chase cards live
+  // in its componentPacks' sets, not in the home set's card list — looking
+  // only at payload.cards left every UPC chase card imageless.
+  const cardById = useMemo(() => {
+    const m = new Map<string, (typeof payload.cards)[number]>();
+    for (const c of payload.cards) m.set(c.cardId, c);
+    for (const cp of payload.componentPacks ?? []) for (const c of cp.cards) m.set(c.cardId, c);
+    return m;
+  }, [payload]);
+
   // Promo sidecar: guaranteed extras with their live prices.
   const promoRows = payload.promos.map((promo) => {
     const card = payload.cards.find((c) => c.cardId === promo.cardId);
@@ -399,7 +409,7 @@ export function ProductDetail({
         ) : (
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5">
             {ev.chase.map((c) => {
-              const img = payload.cards.find((x) => x.cardId === c.cardId)?.imageUrl;
+              const img = cardById.get(c.cardId)?.imageUrl;
               return (
                 <div
                   key={c.cardId}
