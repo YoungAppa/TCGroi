@@ -109,6 +109,7 @@ export const MTG_RARITIES = [
   "uncommon",
   "rare",
   "mythic",
+  "bonus_sheet",
 ] as const;
 
 /**
@@ -141,6 +142,7 @@ export const RARITY_VOCAB: Record<KnownGameSlug, readonly string[]> = {
 
 /** Human-facing labels. Anything absent falls back to a title-cased slug. */
 export const RARITY_LABELS: Record<string, string> = {
+  bonus_sheet: "Bonus sheet",
   promo: "Promo",
   common: "Common",
   uncommon: "Uncommon",
@@ -187,6 +189,8 @@ export function rarityLabel(slug: string): string {
  * find out without leaving the page. Absent slugs simply have no tooltip.
  */
 export const RARITY_DESCRIPTIONS: Record<string, string> = {
+  bonus_sheet:
+    "A separate reprint sheet inserted into this product's packs (e.g. Final Fantasy: Through the Ages) — its own card pool, not part of the main set's rarities.",
   // Pokémon
   promo: "A promotional card, given out rather than pulled from packs.",
   double_rare:

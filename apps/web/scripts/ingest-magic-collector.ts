@@ -24,6 +24,19 @@ const BASE = "https://api.scryfall.com";
 const HEADERS = { "User-Agent": "TCGROI/1.0 (collector set ingest)" };
 const GAP_MS = 90;
 
+/**
+ * Bonus/masterpiece sheets folded into a set's Collector Boosters. Scryfall
+ * keys them as their OWN set code, so the e:{code} query never sees them —
+ * which is how Final Fantasy: Through the Ages ended up entirely absent. Each
+ * entry ingests that sheet's prints into the collector pool under the
+ * "bonus_sheet" rarity, foil-priced, same serialized/ultra-chase exclusions.
+ * Only sheets with an OFFICIAL per-pack guarantee belong here — the guarantee
+ * itself lives in the set's pull-rate file, not this script.
+ */
+const BONUS_SHEETS: Record<string, { sheetCode: string; label: string }> = {
+  fin: { sheetCode: "fca", label: "Through the Ages" },
+};
+
 const imageUris = z.object({ large: z.string().nullish(), normal: z.string().nullish() }).passthrough();
 const cardSchema = z.object({
   id: z.string(),
@@ -124,6 +137,39 @@ async function main() {
         }
         url = res.has_more ? (res.next_page ?? null) : null;
         if (url) await sleep(GAP_MS);
+      }
+
+      // Bonus sheet (own Scryfall set code), all rarities -> "bonus_sheet".
+      const sheet = BONUS_SHEETS[code];
+      if (sheet) {
+        let su: string | null =
+          `${BASE}/cards/search?q=${encodeURIComponent(`e:${sheet.sheetCode} game:paper`)}&unique=prints&order=set`;
+        let sheetCount = 0;
+        while (su) {
+          const res: z.infer<typeof cardsResponse> = await fetchJson(su, cardsResponse, {
+            provider: "scryfall",
+            headers: HEADERS,
+            retries: 3,
+          });
+          for (const c of res.data) {
+            if (c.promo_types?.includes("serialized")) continue;
+            const cents = foilCents(c);
+            if (cents !== null && cents > 50000) continue;
+            rows.push({
+              name: c.name,
+              // Prefixed so sheet numbers can't collide with the set's own.
+              number: `${sheet.sheetCode.toUpperCase()}-${c.collector_number}`,
+              rarity: "bonus_sheet",
+              image: cardImage(c),
+              scryfallId: c.id,
+              cents,
+            });
+            sheetCount++;
+          }
+          su = res.has_more ? (res.next_page ?? null) : null;
+          if (su) await sleep(GAP_MS);
+        }
+        console.log(`  ${code}: +${sheetCount} ${sheet.label} (${sheet.sheetCode}) bonus-sheet prints`);
       }
 
       const byNumber = new Map<string, Row>();

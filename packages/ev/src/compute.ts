@@ -244,6 +244,13 @@ function buildChaseTable(
   byRarity: Map<string, CardPriceData[]>,
 ): ChaseCard[] {
   const probByRarity = new Map(table.slots.map((s) => [s.rarity, s.perPackProbability]));
+  // Guaranteed per-pack slots (a Collector Booster's fixed rares, an official
+  // 1-per-pack bonus sheet) have knowable per-card odds too: count/tierSize
+  // expected copies per pack. Without this, a guaranteed tier's cards never
+  // appeared in the chase gallery at all.
+  for (const g of table.guaranteedSlots) {
+    if (!probByRarity.has(g.rarity)) probByRarity.set(g.rarity, g.countPerPack);
+  }
 
   const rows: ChaseCard[] = [];
   for (const card of cards) {
