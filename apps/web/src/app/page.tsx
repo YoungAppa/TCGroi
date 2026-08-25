@@ -1,4 +1,3 @@
-import { RankingsHeading } from "@/components/RankingsHeading";
 import { RankingsHero, type HeroCard } from "@/components/RankingsHero";
 import { RankingsTable } from "@/components/RankingsTable";
 import { getRankings } from "@/lib/data";
@@ -80,7 +79,6 @@ export default async function HomePage() {
         cardCount={cardCount}
       />
 
-      <RankingsHeading />
 
       <RankingsTable products={products} availableSources={availableSources} />
     </div>
