@@ -67,20 +67,20 @@ export function RankingsHero({
         }}
       />
 
-      <div className="relative grid items-center gap-8 p-6 sm:p-8 lg:grid-cols-[1.15fr_.85fr] lg:gap-10">
+      <div className="relative grid items-center gap-6 p-5 sm:p-6 lg:grid-cols-[1.15fr_.85fr] lg:gap-8">
         <div>
           <div className="text-[10px] font-semibold uppercase tracking-[.22em] text-muted sm:text-[11px]">
             {cardCount.toLocaleString()} {t("hero.kicker.cards")} · {productCount}{" "}
             {t("hero.kicker.products")} · <span className="holo-text">{t("hero.kicker.odds")}</span>
           </div>
 
-          <h1 className="mt-4 font-display text-3xl font-extrabold leading-[1.05] tracking-tight text-white sm:text-4xl lg:text-5xl">
+          <h1 className="mt-3 font-display text-2xl font-extrabold leading-[1.05] tracking-tight text-white sm:text-3xl lg:text-4xl">
             {t("hero.headline.a")} <span className="holo-text">{t("hero.headline.b")}</span>
             <br />
             {t("hero.headline.c")}
           </h1>
 
-          <p className="mt-4 max-w-xl text-sm text-muted sm:text-base">
+          <p className="mt-3 max-w-xl text-sm text-muted">
             {lead && lead.oneInPacks !== null ? (
               <>
                 {t("hero.body.lead")}{" "}
@@ -105,13 +105,13 @@ export function RankingsHero({
         {/* The fan. Hidden below sm: three overlapping cards at 375px is a
             smear, and the headline carries the page on its own there. */}
         {cards.length > 0 && (
-          <div className="relative hidden h-[300px] sm:block lg:h-[340px]">
+          <div className="relative hidden h-[230px] sm:block lg:h-[260px]">
             {cards.slice(0, 3).map((c, i) => (
               <img
                 key={c.cardId}
                 src={c.imageUrl}
                 alt={i === 0 ? c.name : ""}
-                className={`absolute w-[46%] rounded-xl shadow-[0_24px_60px_rgba(0,0,0,.65)] ring-1 ring-white/[.07] ${FAN[i]!.cls} ${FAN[i]!.dim}`}
+                className={`absolute w-[40%] rounded-xl shadow-[0_24px_60px_rgba(0,0,0,.65)] ring-1 ring-white/[.07] ${FAN[i]!.cls} ${FAN[i]!.dim}`}
               />
             ))}
             {lead && (

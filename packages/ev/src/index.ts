@@ -11,6 +11,13 @@ export { blendPrices, mean, median } from "./blend";
 export { effectiveCardValue, type CardValue } from "./value";
 export { groupByRarity, tierValue, type TierValue } from "./tiers";
 export {
+  percentile,
+  probAbove,
+  simulateUnboxes,
+  type ProfitGroup,
+  type UnboxDistribution,
+} from "./profit";
+export {
   formatCents,
   formatOneIn,
   formatProbability,

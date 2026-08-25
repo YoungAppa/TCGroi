@@ -25,9 +25,6 @@ export function SiteNav() {
         <Link href="/" className={link}>
           {t("nav.rankings")}
         </Link>
-        <Link href="/collection" className={link}>
-          {t("nav.collection")}
-        </Link>
         <Link href="/methodology" className={link}>
           {t("nav.methodology")}
         </Link>

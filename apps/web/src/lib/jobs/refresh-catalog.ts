@@ -299,7 +299,7 @@ const productFileSchema = z.object({
        * setCode must be a ranked set (its own pull table drives the blend).
        */
       componentPacks: z
-        .array(z.object({ setCode: z.string().min(1), count: z.number().int().positive() }))
+        .array(z.object({ setCode: z.string().min(1), count: z.number().positive() }))
         .default([]),
       contentsNote: z.string().optional(),
     }),

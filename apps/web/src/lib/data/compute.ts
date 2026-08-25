@@ -1,5 +1,9 @@
 import {
   computeEv,
+  percentile,
+  probAbove,
+  simulateUnboxes,
+  type ProfitGroup,
   DEFAULT_EV_OPTIONS,
   type EvOptions,
   type EvResult,
@@ -28,6 +32,21 @@ export interface ProductComputation {
 }
 
 /** The full product computation: EV plus both ROIs the UI shows. */
+function evOptionsFor(
+  payload: ProductPayload,
+  filter: FilterState,
+  availableSourceIds: string[],
+): EvOptions {
+  const gradeableConfidence =
+    payload.pullRates.confidence !== "low" && payload.pullRates.confidence !== "placeholder";
+  return {
+    ...DEFAULT_EV_OPTIONS,
+    selectedSources: effectiveSources(filter, availableSourceIds),
+    blend: filter.blend,
+    graded: filter.graded && gradeableConfidence,
+  };
+}
+
 export function computeProduct(
   payload: ProductPayload,
   filter: FilterState,
@@ -82,15 +101,7 @@ export function computeForPayload(
   // inventing one would be fabricating the very number in question, so graded
   // valuation is withheld where the odds are a guess. The card prices are still
   // shown; only the graded EV is suppressed.
-  const gradeableConfidence =
-    payload.pullRates.confidence !== "low" && payload.pullRates.confidence !== "placeholder";
-
-  const opts: EvOptions = {
-    ...DEFAULT_EV_OPTIONS,
-    selectedSources: effectiveSources(filter, availableSourceIds),
-    blend: filter.blend,
-    graded: filter.graded && gradeableConfidence,
-  };
+  const opts = evOptionsFor(payload, filter, availableSourceIds);
 
   // Mixed-pack collections (a UPC whose packs span several sets) can't ride one
   // set's pull table — blend each component set's per-pack EV by its pack count.
@@ -259,5 +270,70 @@ function computeBlendedEv(payload: ProductPayload, opts: EvOptions): EvResult {
     expectedHits,
     probAtLeastOne,
     warnings,
+  };
+}
+
+/** The profit-odds summary the product page renders. */
+export interface UnboxOdds {
+  /** P(unbox value > market price), null when there's no market price. */
+  pMarket: number | null;
+  /** P(unbox value > MSRP), null when MSRP is absent. */
+  pRetail: number | null;
+  medianCents: number;
+  p90Cents: number;
+  trials: number;
+}
+
+/**
+ * "What are the odds you make a profit?" — where the price falls in the
+ * simulated distribution of whole-product openings. Uses the exact same
+ * sources/blend/graded options as the EV above it, so the two can never
+ * disagree about assumptions. Deterministic (seeded), so a page always shows
+ * the same percentages for the same data.
+ */
+export function computeUnboxOdds(
+  payload: ProductPayload,
+  filter: FilterState,
+  availableSourceIds: string[],
+  fixedExtrasCents: number,
+): UnboxOdds | null {
+  const opts = evOptionsFor(payload, filter, availableSourceIds);
+  const toTable = (pr: ProductPayload["pullRates"], setId: string): PullRateTable => ({
+    setId,
+    version: pr.version,
+    sampleSizePacks: pr.sampleSizePacks ?? 0,
+    sourceUrl: pr.sourceUrl,
+    sourceNote: pr.sourceNote,
+    confidence: pr.confidence,
+    slots: pr.slots,
+    guaranteedSlots: pr.guaranteedSlots,
+  });
+
+  const groups: ProfitGroup[] =
+    payload.componentPacks && payload.componentPacks.length > 0
+      ? payload.componentPacks.map((cp) => ({
+          table: toTable({ ...cp.pullRates, alternateEstimates: [] }, cp.setCode),
+          cards: cp.cards,
+          packs: cp.count,
+        }))
+      : [
+          {
+            table: toTable(payload.pullRates, payload.setCode),
+            cards: payload.cards,
+            packs: payload.packsContained,
+          },
+        ];
+
+  const dist = simulateUnboxes(groups, fixedExtrasCents, opts);
+  if (!dist) return null;
+
+  const market = payload.market.priceCents;
+  const retail = payload.msrpCents;
+  return {
+    pMarket: market !== null && market > 0 ? probAbove(dist, market) : null,
+    pRetail: retail !== null && retail > 0 ? probAbove(dist, retail) : null,
+    medianCents: percentile(dist, 0.5),
+    p90Cents: percentile(dist, 0.9),
+    trials: dist.trials,
   };
 }

@@ -8,7 +8,7 @@ import { useMoney } from "@/lib/money/context";
 import { useMemo, useState } from "react";
 
 import { rarityDescription, rarityLabel } from "@/lib/catalog/rarities";
-import { computeProduct } from "@/lib/data/compute";
+import { computeProduct, computeUnboxOdds } from "@/lib/data/compute";
 import type { ProductPayload } from "@/lib/data/types";
 import { blendPrices, median, packsForProbability } from "@packroi/ev";
 import {formatOneIn, formatPerPackChance, formatProbability} from "@packroi/ev/format";
@@ -53,6 +53,10 @@ export function ProductDetail({
   const { ev, roiRetail, roiMarket } = useMemo(
     () => computeProduct(payload, state, availableIds),
     [payload, state, availableIds],
+  );
+  const unboxOdds = useMemo(
+    () => computeUnboxOdds(payload, state, availableIds, ev.productExtrasValueCents),
+    [payload, state, availableIds, ev.productExtrasValueCents],
   );
 
   // "Bulk / regular cards" completeness row: the balance up to 100% after the
@@ -329,6 +333,57 @@ export function ProductDetail({
         </p>
       </section>
 
+      {/* ---- odds of profit ---- */}
+      {unboxOdds && (unboxOdds.pMarket !== null || unboxOdds.pRetail !== null) && (
+        <section className="rounded-xl border border-border bg-surface p-4 sm:p-5">
+          <h2 className="text-lg font-semibold">What are the odds you profit?</h2>
+          <p className="mt-1 text-xs text-muted">
+            EV is the average; this is the distribution. {unboxOdds.trials.toLocaleString()}{" "}
+            simulated openings of this exact product, using the same sources, odds and
+            prices as everything above.
+          </p>
+          <div className="mt-4 flex flex-wrap items-stretch gap-6">
+            {unboxOdds.pMarket !== null && (
+              <div>
+                <div className={`font-display text-3xl font-extrabold ${oddsColor(unboxOdds.pMarket)}`}>
+                  {formatOdds(unboxOdds.pMarket, unboxOdds.trials)}
+                </div>
+                <div className="mt-1 text-xs uppercase tracking-wide text-muted">
+                  beat today&apos;s market price
+                </div>
+              </div>
+            )}
+            {unboxOdds.pRetail !== null && (
+              <div>
+                <div className={`font-display text-3xl font-extrabold ${oddsColor(unboxOdds.pRetail)}`}>
+                  {formatOdds(unboxOdds.pRetail, unboxOdds.trials)}
+                </div>
+                <div className="mt-1 text-xs uppercase tracking-wide text-muted">
+                  beat retail (MSRP)
+                </div>
+              </div>
+            )}
+            <div className="border-l border-border pl-6">
+              <div className="tabular text-lg font-semibold">{money(unboxOdds.medianCents)}</div>
+              <div className="mt-1 text-xs uppercase tracking-wide text-muted">median opening</div>
+            </div>
+            <div>
+              <div className="tabular text-lg font-semibold">{money(unboxOdds.p90Cents)}</div>
+              <div className="mt-1 text-xs uppercase tracking-wide text-muted">
+                luckiest 1 in 10 opens above
+              </div>
+            </div>
+          </div>
+          <p className="mt-4 text-xs text-muted">
+            Same assumptions as the EV: odds are uniform within each tier (real sets
+            short-print their biggest chases, so true odds are usually a touch{" "}
+            <em>worse</em>{" "}
+            than this), cards sell at today&apos;s market price, and
+            selling costs nothing. Read it as a ceiling, not a promise.
+          </p>
+        </section>
+      )}
+
       {/* ---- chase gallery ---- */}
       <section className="space-y-3">
         <div className="flex flex-wrap items-baseline justify-between gap-2">
@@ -596,4 +651,20 @@ function PacksCalculator({
       </p>
     </section>
   );
+}
+
+/** "31.4%", clamped honestly at the simulator's resolution. */
+function formatOdds(p: number, trials: number): string {
+  if (p <= 0) return `< 1 in ${trials.toLocaleString()}`;
+  if (p < 0.001) return "< 0.1%";
+  if (p > 0.995 && p < 1) return "> 99.5%";
+  return `${(p * 100).toFixed(1)}%`;
+}
+
+/** Same green->red ramp the ROI pills use, keyed to how often you'd win. */
+function oddsColor(p: number): string {
+  if (p >= 0.5) return "text-roi-pos";
+  if (p >= 0.25) return "text-amber-400";
+  if (p >= 0.05) return "text-orange-400";
+  return "text-roi-neg";
 }

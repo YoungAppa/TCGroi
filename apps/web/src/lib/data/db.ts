@@ -463,8 +463,12 @@ export async function loadRankingsFromDb(): Promise<RankingsPayload> {
       productSlug: p.productSlug,
       productType: p.productType,
       packsContained: p.packsContained,
-      // Prefer the actual box/pack photo; fall back to the set logo.
-      imageUrl: p.productImageUrl ?? p.logoUrl,
+      // Prefer the actual box/pack photo; fall back to the set logo — except
+      // Magic, whose Scryfall "logo" is a monochrome keyrune icon that renders
+      // as a black silhouette. Left null, the tiles and product page fall back
+      // to the set's top chase card art (Scryfall card scans we already have),
+      // which is the best-looking honest image available for Magic sealed.
+      imageUrl: p.productImageUrl ?? (p.gameSlug === "mtg" ? null : p.logoUrl),
       msrpCents: purchasableMsrpCents(p.msrpCents, market.priceCents, p.releaseDate),
       market,
       sealed,

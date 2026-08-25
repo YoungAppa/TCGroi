@@ -1693,6 +1693,104 @@
       "marketCents": 13500,
       "marketAsOf": "2026-07-30",
       "marketSource": "PriceCharting (eBay sold), 2026-07-30"
+    },
+    {
+      "setCode": "swsh11",
+      "name": "Ultra-Premium Collection — Charizard (16 packs)",
+      "slug": "charizard-ultra-premium-collection",
+      "type": "case",
+      "packsContained": 16,
+      "msrpCents": 11999,
+      "componentPacks": [
+        {
+          "setCode": "swsh1",
+          "count": 1.3333
+        },
+        {
+          "setCode": "swsh2",
+          "count": 1.3333
+        },
+        {
+          "setCode": "swsh3",
+          "count": 1.3333
+        },
+        {
+          "setCode": "swsh4",
+          "count": 1.3333
+        },
+        {
+          "setCode": "swsh5",
+          "count": 1.3333
+        },
+        {
+          "setCode": "swsh6",
+          "count": 1.3333
+        },
+        {
+          "setCode": "swsh7",
+          "count": 1.3333
+        },
+        {
+          "setCode": "swsh8",
+          "count": 1.3333
+        },
+        {
+          "setCode": "swsh9",
+          "count": 1.3333
+        },
+        {
+          "setCode": "swsh10",
+          "count": 1.3333
+        },
+        {
+          "setCode": "swsh11",
+          "count": 1.3333
+        },
+        {
+          "setCode": "swsh12",
+          "count": 1.3333
+        }
+      ],
+      "contentsNote": "The publisher's own listing states “16 Pokémon TCG booster packs from the Sword & Shield Series” without naming sets — the assortment varies box to box. EV models it as a uniform draw across the 12 Sword & Shield main sets, each set priced with its own odds; the real mix in any one box will differ. Also includes 3 etched-foil Charizard promos (V, VMAX, VSTAR), a playmat, sleeves, metal coin and dice — not modelled, so EV understates what's in the box."
+    },
+    {
+      "setCode": "sv7",
+      "name": "Terapagos ex Ultra-Premium Collection (18 packs)",
+      "slug": "terapagos-ex-ultra-premium-collection",
+      "type": "case",
+      "packsContained": 18,
+      "msrpCents": null,
+      "componentPacks": [
+        {
+          "setCode": "sv1",
+          "count": 2.5714
+        },
+        {
+          "setCode": "sv2",
+          "count": 2.5714
+        },
+        {
+          "setCode": "sv3",
+          "count": 2.5714
+        },
+        {
+          "setCode": "sv4",
+          "count": 2.5714
+        },
+        {
+          "setCode": "sv5",
+          "count": 2.5714
+        },
+        {
+          "setCode": "sv6",
+          "count": 2.5714
+        },
+        {
+          "setCode": "sv7",
+          "count": 2.5714
+        }
+      ],
+      "contentsNote": "The publisher's own listing states “18 Pokémon TCG booster packs” and adds “Packs may vary by product” — no sets are named. EV models the assortment as a uniform draw across the 7 Scarlet & Violet main sets released before this product (Scarlet & Violet through Stellar Crown), each priced with its own odds; the real mix in any one box will differ. Also includes foil Terapagos ex, Lapras ex and Cinderace ex promos, 8 foil Basic Energy cards, a playmat, deck box, coin and dice — not modelled, so EV understates what's in the box."
     }
   ]
 }

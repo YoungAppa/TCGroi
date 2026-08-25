@@ -855,7 +855,7 @@ function IconTile({
                 )}
               </div>
               <div className="text-[10.5px] text-muted">
-                opens for{" "}
+                average opening is{" "}
                 <span className="font-semibold text-foreground">
                   {money(c.ev.evProductCents)}
                 </span>
