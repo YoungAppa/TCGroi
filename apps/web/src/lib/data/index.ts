@@ -2,7 +2,11 @@ import { sql } from "drizzle-orm";
 
 import { getDb, priceSnapshots } from "@/lib/db";
 
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
+
 import { loadRankingsFromDb } from "./db";
+import { RANKINGS_SNAPSHOT_FILE } from "./snapshot";
 import type { ProductPayload, RankingsPayload } from "./types";
 
 export interface MarketHistoryPoint {
@@ -78,6 +82,24 @@ export async function getRankings(): Promise<RankingsPayload> {
   // failing an ISR revalidation keeps the stale page. Both beat rendering an
   // empty site. The empty fallback survives only OFF Vercel, for CI builds
   // whose DATABASE_URL points nowhere.
+  // During `next build`, scripts/prebuild-rankings.ts has already fetched the
+  // payload once and written it beside the app — every worker reads the file
+  // instead of hammering the DB (which blew Next's 60s page timeout on Vercel
+  // and failed deploys). At runtime the file doesn't ship; ISR uses the DB.
+  if (process.env.NEXT_PHASE === "phase-production-build") {
+    try {
+      const raw = await readFile(join(process.cwd(), RANKINGS_SNAPSHOT_FILE), "utf8");
+      const snap = JSON.parse(raw) as RankingsPayload;
+      if (snap.products.length > 0) {
+        cached = snap;
+        return cached;
+      }
+    } catch {
+      // No snapshot (plain `next build` without the prebuild step) — fall
+      // through to the DB path below.
+    }
+  }
+
   const attempts = 5;
   for (let i = 1; i <= attempts; i++) {
     try {
