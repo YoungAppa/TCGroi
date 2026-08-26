@@ -78,7 +78,7 @@ export async function getRankings(): Promise<RankingsPayload> {
   // failing an ISR revalidation keeps the stale page. Both beat rendering an
   // empty site. The empty fallback survives only OFF Vercel, for CI builds
   // whose DATABASE_URL points nowhere.
-  const attempts = 3;
+  const attempts = 5;
   for (let i = 1; i <= attempts; i++) {
     try {
       const loaded = await loadRankingsFromDb();
@@ -93,7 +93,9 @@ export async function getRankings(): Promise<RankingsPayload> {
         err instanceof Error ? err.message : err,
       );
     }
-    if (i < attempts) await new Promise((r) => setTimeout(r, i * 2000));
+    // Exponential: 2s, 4s, 8s, 16s — Railway refusals during Vercel builds
+    // have outlived the old linear backoff and failed whole deploys.
+    if (i < attempts) await new Promise((r) => setTimeout(r, 2 ** i * 1000));
   }
 
   if (process.env.VERCEL) {

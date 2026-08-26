@@ -28,10 +28,13 @@ function buildDb() {
     globalForDb.__packroiSql ??
     postgres(DATABASE_URL, {
       // Serverless-friendly: Vercel functions are short-lived, so a large pool
-      // just exhausts Postgres connection slots.
-      max: 5,
+      // just exhausts Postgres connection slots. During BUILDS the squeeze is
+      // worse: Next spawns parallel workers, each with its own pool, and the
+      // combined demand has hit Railway's connection cap and flaked deploys —
+      // so builds run leaner and wait longer instead of failing fast.
+      max: process.env.CI || process.env.NEXT_PHASE === "phase-production-build" ? 2 : 5,
       idle_timeout: 20,
-      connect_timeout: 10,
+      connect_timeout: process.env.VERCEL ? 30 : 10,
     });
 
   if (process.env.NODE_ENV !== "production") {
