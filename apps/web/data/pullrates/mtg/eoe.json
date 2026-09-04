@@ -1,19 +1,23 @@
 {
   "game": "mtg",
   "setCode": "eoe",
-  "version": 1,
+  "version": 2,
   "sampleSizePacks": null,
-  "sourceUrl": "https://mtg.fandom.com/wiki/Play_Booster",
-  "sourceNote": "Modern Magic Play Booster (14 cards). Unlike Pok\u00e9mon/One Piece, WotC discloses the collation, so this is closer to official than community estimate \u2014 but it is still modelled and capped at LOW confidence for the reasons below. Structure used: ~7 commons + ~3 uncommons per pack (guaranteed slots), one guaranteed rare-or-mythic slot (mythic ~13.5% of the time), plus a wildcard slot and a traditional-foil slot that each occasionally add another rare/mythic. This model uses the one guaranteed rare-or-mythic slot directly (rare 0.865, mythic 0.135). The wildcard slot and the traditional-foil slot each add roughly another ~0.2 rares/mythics per pack on average \u2014 those are NOT modelled here (the modelled hit slots sum to 1.0 per pack by construction), so this pack EV is deliberately CONSERVATIVE / understated by that amount. IMPORTANT approximations: (1) special treatments \u2014 showcase, borderless, extended-art \u2014 are folded into the flat common/uncommon/rare/mythic tiers with a uniform-within-tier assumption, which OVERSTATES the odds of the specific expensive alt-treatment prints; (2) prices are the NON-FOIL TCGplayer market price (via Scryfall) \u2014 a pack's guaranteed slots are all non-foil; the single foil slot's extra value is not added to EV (conservative). Only cards Scryfall marks booster:true are counted, so promos, box-toppers and Commander-deck cards are excluded. Net effect is a rough, indicative pack EV, not a precise one.",
-  "confidence": "low",
+  "sourceUrl": "https://magic.wizards.com/en/news/feature/collecting-edge-of-eternities",
+  "sourceNote": "v2 OFFICIAL: rates from WotC's 'Collecting Edge of Eternities' article. Default rare 80.4% / mythic 14.2%; borderless triumphant + surreal space at their stated 2%+2% as one pool ('less than 1%' entries counted as zero — understates). The wildcard adds rare 10.6% and the Stellar Sights land sheet at 10% rare / 2.5% mythic (own bonus tiers, non-foil). Special Guests 1.8% (2025-08-01 batch). Pool rule: non-foil prints only, priced non-foil.",
+  "confidence": "official",
   "slots": [
     {
       "rarity": "rare",
-      "perPackProbability": 0.865
+      "perPackProbability": 0.804
     },
     {
       "rarity": "mythic",
-      "perPackProbability": 0.135
+      "perPackProbability": 0.142
+    },
+    {
+      "rarity": "booster_fun",
+      "perPackProbability": 0.04
     }
   ],
   "guaranteedSlots": [
@@ -26,6 +30,26 @@
       "label": "Uncommons",
       "rarity": "uncommon",
       "countPerPack": 3
+    },
+    {
+      "label": "Wildcard rare (10.6%)",
+      "rarity": "rare",
+      "countPerPack": 0.106
+    },
+    {
+      "label": "Stellar Sights rare (10%)",
+      "rarity": "bonus_rare",
+      "countPerPack": 0.1
+    },
+    {
+      "label": "Stellar Sights mythic (2.5%)",
+      "rarity": "bonus_mythic",
+      "countPerPack": 0.025
+    },
+    {
+      "label": "Special Guests (1.8%)",
+      "rarity": "bonus_sheet",
+      "countPerPack": 0.018
     }
   ],
   "alternateEstimates": [],

@@ -38,6 +38,23 @@ const CONFIG: Record<string, Job[]> = {
   blb: [
     { query: "e:spg game:paper is:nonfoil", tier: () => "bonus_sheet", numberPrefix: "SPG-", releasedAt: "2024-08-02" },
   ],
+  dft: [
+    { query: "e:dft game:paper border:borderless (rarity:rare or rarity:mythic) is:nonfoil",
+      tier: (r) => (r === "mythic" ? "borderless_mythic" : "borderless_rare") },
+    { query: "e:spg game:paper is:nonfoil", tier: () => "bonus_sheet", numberPrefix: "SPG-", releasedAt: "2025-02-14" },
+  ],
+  tdm: [
+    { query: "e:tdm game:paper (border:borderless or is:showcase) (rarity:rare or rarity:mythic) is:nonfoil",
+      tier: () => "booster_fun" },
+    { query: "e:spg game:paper is:nonfoil", tier: () => "bonus_sheet", numberPrefix: "SPG-", releasedAt: "2025-04-11" },
+  ],
+  eoe: [
+    { query: "e:eoe game:paper border:borderless (rarity:rare or rarity:mythic) is:nonfoil",
+      tier: () => "booster_fun" },
+    { query: "e:eos game:paper is:nonfoil",
+      tier: (r) => (r === "mythic" ? "bonus_mythic" : "bonus_rare"), numberPrefix: "EOS-" },
+    { query: "e:spg game:paper is:nonfoil", tier: () => "bonus_sheet", numberPrefix: "SPG-", releasedAt: "2025-08-01" },
+  ],
 };
 
 async function fetchPool(query: string) {

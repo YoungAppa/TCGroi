@@ -1,19 +1,27 @@
 {
   "game": "mtg",
   "setCode": "dft",
-  "version": 1,
+  "version": 2,
   "sampleSizePacks": null,
-  "sourceUrl": "https://mtg.fandom.com/wiki/Play_Booster",
-  "sourceNote": "Modern Magic Play Booster (14 cards). Unlike Pokemon/One Piece, WotC discloses the collation, so this is closer to official than community estimate - but it is still modelled and capped at LOW confidence for the reasons below. Structure used: ~7 commons + ~3 uncommons per pack (guaranteed slots), one guaranteed rare-or-mythic slot (mythic ~13.5% of the time), plus a wildcard slot and a traditional-foil slot that each occasionally add another rare/mythic. This model uses the one guaranteed rare-or-mythic slot directly (rare 0.865, mythic 0.135). The wildcard slot and the traditional-foil slot each add roughly another ~0.2 rares/mythics per pack on average - those are NOT modelled here (the modelled hit slots sum to 1.0 per pack by construction), so this pack EV is deliberately CONSERVATIVE / understated by that amount. IMPORTANT approximations: (1) special treatments - showcase, borderless, extended-art - are folded into the flat common/uncommon/rare/mythic tiers with a uniform-within-tier assumption, which OVERSTATES the odds of the specific expensive alt-treatment prints; (2) prices are the NON-FOIL TCGplayer market price (via Scryfall) \u2014 a pack's guaranteed slots are all non-foil; the single foil slot's extra value is not added to EV (conservative). Only cards Scryfall marks booster:true are counted, so promos, box-toppers and Commander-deck cards are excluded. Net effect is a rough, indicative pack EV, not a precise one.",
-  "confidence": "low",
+  "sourceUrl": "https://magic.wizards.com/en/news/feature/collecting-aetherdrift",
+  "sourceNote": "v2 OFFICIAL: rates from WotC's 'Collecting Aetherdrift' article. R/M slot: rare 78% / mythic 13% / borderless rare 8% / borderless mythic 1%. The wildcard's 20.8% rare-or-mythic is published UNSPLIT, so it is counted entirely as rare — mythics are dearer, so this understates. Special Guests 1.5% (2025-02-14 SPG batch, non-foil). Borderless commons/uncommons in the wildcard (8.3%, near-bulk) and all foils unmodelled. Pool rule: non-foil prints only, priced non-foil.",
+  "confidence": "official",
   "slots": [
     {
       "rarity": "rare",
-      "perPackProbability": 0.865
+      "perPackProbability": 0.78
     },
     {
       "rarity": "mythic",
-      "perPackProbability": 0.135
+      "perPackProbability": 0.13
+    },
+    {
+      "rarity": "borderless_rare",
+      "perPackProbability": 0.08
+    },
+    {
+      "rarity": "borderless_mythic",
+      "perPackProbability": 0.01
     }
   ],
   "guaranteedSlots": [
@@ -26,6 +34,16 @@
       "label": "Uncommons",
       "rarity": "uncommon",
       "countPerPack": 3
+    },
+    {
+      "label": "Wildcard rare/mythic (20.8%, unsplit — counted as rare)",
+      "rarity": "rare",
+      "countPerPack": 0.208
+    },
+    {
+      "label": "Special Guests (1.5%)",
+      "rarity": "bonus_sheet",
+      "countPerPack": 0.015
     }
   ],
   "alternateEstimates": [],
