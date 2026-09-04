@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 
 import { SetDetail } from "@/components/SetDetail";
 import { getRankings, getSetProducts } from "@/lib/data";
+import { buildRankingsRows } from "@/lib/data/rankings-rows";
 
 export const revalidate = 3600;
 
@@ -43,6 +44,12 @@ export default async function SetPage({ params }: { params: Promise<Params> }) {
   if (!first) notFound();
 
   const { availableSources } = await getRankings();
+  // EV precomputed per filter combination, so the page ships numbers instead of
+  // every product's copy of the same card list.
+  const { rows } = buildRankingsRows(
+    products,
+    availableSources.map((s) => s.id),
+  );
 
   return (
     <div className="space-y-4">
@@ -54,7 +61,11 @@ export default async function SetPage({ params }: { params: Promise<Params> }) {
         <h1 className="text-2xl font-bold tracking-tight">{first.setName}</h1>
       </div>
 
-      <SetDetail products={products} availableSources={availableSources} />
+      <SetDetail
+        rows={rows}
+        cards={first.cards}
+        availableSources={availableSources}
+      />
     </div>
   );
 }

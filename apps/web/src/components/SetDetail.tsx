@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 
 import { rarityLabel } from "@/lib/catalog/rarities";
-import { computeProduct } from "@/lib/data/compute";
+import { summaryFor, type RankingsRow } from "@/lib/data/rankings-rows";
 import type { ProductPayload } from "@/lib/data/types";
 import { blendPrices } from "@packroi/ev";
 
@@ -17,11 +17,18 @@ import { SourceFilter } from "./SourceFilter";
 import { useFilterState } from "./useFilterState";
 
 export function SetDetail({
-  products,
+  rows: productRows,
+  cards,
   availableSources,
 }: {
-  /** Every product of this set; cards are identical across them. */
-  products: ProductPayload[];
+  /** This set's products, with EV precomputed per filter combination. */
+  rows: RankingsRow[];
+  /**
+   * The set's cards, passed ONCE. They used to arrive inside every product
+   * payload — identical cards serialised once per product — which made a
+   * five-product set page ~3.9MB of duplicated prices.
+   */
+  cards: ProductPayload["cards"];
   availableSources: { id: string; displayName: string }[];
 }) {
   const { money } = useMoney();
@@ -29,18 +36,17 @@ export function SetDetail({
   const [sortByPrice, setSortByPrice] = useState(true);
   const availableIds = useMemo(() => availableSources.map((s) => s.id), [availableSources]);
 
-  const first = products[0];
+  const first = productRows[0];
 
   const rows = useMemo(
-    () => products.map((p) => ({ payload: p, c: computeProduct(p, state, availableIds) })),
-    [products, state, availableIds],
+    () => productRows.map((p) => ({ payload: p, c: summaryFor(p, state, availableIds) })),
+    [productRows, state, availableIds],
   );
 
   const selectedSources = effectiveSources(state, availableIds);
 
   const cardList = useMemo(() => {
-    if (!first) return [];
-    const list = first.cards.map((c) => ({
+    const list = cards.map((c) => ({
       ...c,
       priceCents: blendPrices(c.raw, selectedSources, state.blend),
     }));
@@ -51,7 +57,7 @@ export function SetDetail({
     return list.sort((a, b) =>
       a.number.localeCompare(b.number, undefined, { numeric: true }),
     );
-  }, [first, selectedSources, state.blend, sortByPrice]);
+  }, [cards, selectedSources, state.blend, sortByPrice]);
 
   if (!first) return null;
 
@@ -96,7 +102,7 @@ export function SetDetail({
                       {payload.productName}
                     </Link>
                   </td>
-                  <td className="tabular px-3 py-2">{money(c.ev.evProductCents)}</td>
+                  <td className="tabular px-3 py-2">{money(c.evProductCents)}</td>
                   <td className="tabular px-3 py-2 text-muted">
                     {payload.msrpCents !== null ? money(payload.msrpCents) : "—"}
                   </td>
