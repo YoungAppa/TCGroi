@@ -154,9 +154,16 @@ export function SetDetail({
             </thead>
             <tbody>
               {cardList.map((c) => (
-                <tr key={c.cardId} className="border-b border-border/40 last:border-0">
+                <tr key={c.cardId} className="border-b border-border/40 last:border-0 hover:bg-surface">
                   <td className="tabular px-3 py-1 text-muted">{c.number}</td>
-                  <td className="px-3 py-1">{c.name}</td>
+                  <td className="px-3 py-1">
+                    <Link
+                      href={`/${first.gameSlug}/${first.setCode}/card/${encodeURIComponent(c.number)}`}
+                      className="hover:text-accent"
+                    >
+                      {c.name}
+                    </Link>
+                  </td>
                   <td className="px-3 py-1 text-muted">{rarityLabel(c.rarity)}</td>
                   <td className="tabular px-3 py-1">
                     {c.priceCents !== null ? money(c.priceCents) : <span className="text-muted">—</span>}

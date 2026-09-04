@@ -436,10 +436,11 @@ describe("computeEv — chase table", () => {
     expect(r.chase.map((c) => c.cardId)).toEqual(["high", "mid", "low"]);
   });
 
-  it("shows every card over $5, not an arbitrary top-N", () => {
-    // 25 cards from $1 to $25; only the 21 at/over $5 are worth chasing.
+  it("shows every card over $1, not an arbitrary top-N", () => {
+    // 25 cards from $0.20 to $5.00 in 20c steps; only the 21 at/over $1 clear
+    // the floor (the floor moved $5 -> $1 when every card gained a page).
     const cards = Array.from({ length: 25 }, (_, i) =>
-      card(`c${i}`, "ultra_rare", { a: (i + 1) * 100 }),
+      card(`c${i}`, "ultra_rare", { a: (i + 1) * 20 }),
     );
     const r = computeEv(
       {
@@ -451,7 +452,7 @@ describe("computeEv — chase table", () => {
     );
     expect(r.chase).toHaveLength(21);
     expect(r.chase[0]!.cardId).toBe("c24");
-    expect(r.chase.every((c) => c.valueCents >= 500)).toBe(true);
+    expect(r.chase.every((c) => c.valueCents >= 100)).toBe(true);
   });
 
   it("caps the list so a pathological set can't render hundreds of tiles", () => {
@@ -469,14 +470,14 @@ describe("computeEv — chase table", () => {
     expect(r.chase).toHaveLength(90);
   });
 
-  it("keeps the single best card when nothing clears $5, so the section is never empty", () => {
+  it("keeps the single best card when nothing clears $1, so the section is never empty", () => {
     const r = computeEv(
       {
         product: product({ packsContained: 36 }),
         table: table({ slots: [{ rarity: "ultra_rare", perPackProbability: 0.1 }] }),
         cards: [
-          card("cheap1", "ultra_rare", { a: 100 }),
-          card("cheap2", "ultra_rare", { a: 400 }),
+          card("cheap1", "ultra_rare", { a: 60 }),
+          card("cheap2", "ultra_rare", { a: 90 }),
         ],
       },
       opts(),

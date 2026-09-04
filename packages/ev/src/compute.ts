@@ -233,7 +233,7 @@ export function computeEv(input: EvInput, opts: EvOptions): EvResult {
  * violate this — short prints exist — but no public dataset quantifies it, so
  * uniform is the honest default and /methodology states it.
  */
-const CHASE_MIN_CENTS = 500; // $5 — the floor for "a card worth chasing".
+const CHASE_MIN_CENTS = 100; // $1 — every card someone would sleeve gets shown (CHASE_MAX still caps rendering).
 const CHASE_MAX = 90;
 
 function buildChaseTable(
