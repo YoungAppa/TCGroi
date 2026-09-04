@@ -222,9 +222,12 @@ export default function MethodologyPage() {
           <li>
             <strong>Magic: The Gathering.</strong> Play and Collector boosters
             are modelled from set structure with honest tier rules (special
-            treatments and serialized cards stay out of EV). Its odds are under
-            active review — treat Magic&apos;s positives with extra
-            skepticism.
+            treatments and serialized cards stay out of EV) — except where
+            WotC&apos;s own per-set &ldquo;Collecting&rdquo; articles publish
+            numeric rates: those sets (Final Fantasy first) carry OFFICIAL
+            confidence, with borderless slots and bonus sheets modelled at the
+            printed percentages. Everything else is under active review —
+            treat non-official Magic positives with extra skepticism.
           </li>
         </ul>
       </section>

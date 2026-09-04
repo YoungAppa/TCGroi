@@ -33,7 +33,7 @@ const slotSchema = z.object({
 const guaranteedSlotSchema = z.object({
   label: z.string().min(1),
   rarity: z.string().min(1),
-  countPerPack: z.number().int().positive(),
+  countPerPack: z.number().positive(),
 });
 
 const boxGuaranteeSchema = z.object({

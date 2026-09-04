@@ -1,19 +1,27 @@
 {
   "game": "mtg",
   "setCode": "fin",
-  "version": 1,
+  "version": 2,
   "sampleSizePacks": null,
-  "sourceUrl": "https://mtg.fandom.com/wiki/Play_Booster",
-  "sourceNote": "Modern Magic Play Booster (14 cards). Unlike Pok\u00e9mon/One Piece, WotC discloses the collation, so this is closer to official than community estimate \u2014 but it is still modelled and capped at LOW confidence for the reasons below. Structure used: ~7 commons + ~3 uncommons per pack (guaranteed slots), one guaranteed rare-or-mythic slot (mythic ~13.5% of the time), plus a wildcard slot and a traditional-foil slot that each occasionally add another rare/mythic. This model uses the one guaranteed rare-or-mythic slot directly (rare 0.865, mythic 0.135). The wildcard slot and the traditional-foil slot each add roughly another ~0.2 rares/mythics per pack on average \u2014 those are NOT modelled here (the modelled hit slots sum to 1.0 per pack by construction), so this pack EV is deliberately CONSERVATIVE / understated by that amount. IMPORTANT approximations: (1) special treatments \u2014 showcase, borderless, extended-art, and the Final Fantasy 'Through the Ages'/bonus cards \u2014 are folded into the flat common/uncommon/rare/mythic tiers with a uniform-within-tier assumption, which OVERSTATES the odds of the specific expensive alt-treatment prints; (2) prices are the NON-FOIL TCGplayer market price (via Scryfall) \u2014 a pack's guaranteed slots are all non-foil; the single foil slot's extra value is not added to EV (conservative). Only cards Scryfall marks booster:true are counted, so promos, box-toppers and Commander-deck cards are excluded. Net effect is a rough, indicative pack EV, not a precise one.",
-  "confidence": "low",
+  "sourceUrl": "https://magic.wizards.com/en/news/feature/collecting-final-fantasy",
+  "sourceNote": "v2 OFFICIAL: rates transcribed from WotC's own 'Collecting MAGIC: THE GATHERING—FINAL FANTASY' article. Rare/mythic slot: default rare 80%, default mythic 10%, borderless rare 8%, borderless mythic 1% (the ~1% FINAL FANTASY-artist series is left unmodelled and display-only — a 1% group is not worth a misclassification). One third of Play Boosters carry a FINAL FANTASY: Through the Ages card, split uncommon 63.25% / rare 29.75% / mythic 7% per the article — modelled as its own three tiers at NON-foil play prices. The traditional-foil slot and its 1.85% woodblock group are NOT modelled (foils excluded from Play EV site-wide), so EV still understates slightly. Uniform-within-tier remains the per-card assumption inside each pool.",
+  "confidence": "official",
   "slots": [
     {
       "rarity": "rare",
-      "perPackProbability": 0.865
+      "perPackProbability": 0.8
     },
     {
       "rarity": "mythic",
-      "perPackProbability": 0.135
+      "perPackProbability": 0.1
+    },
+    {
+      "rarity": "borderless_rare",
+      "perPackProbability": 0.08
+    },
+    {
+      "rarity": "borderless_mythic",
+      "perPackProbability": 0.01
     }
   ],
   "guaranteedSlots": [
@@ -26,6 +34,21 @@
       "label": "Uncommons",
       "rarity": "uncommon",
       "countPerPack": 3
+    },
+    {
+      "label": "Through the Ages uncommon (1/3 of packs × 63.25%)",
+      "rarity": "bonus_uncommon",
+      "countPerPack": 0.2108
+    },
+    {
+      "label": "Through the Ages rare (1/3 × 29.75%)",
+      "rarity": "bonus_rare",
+      "countPerPack": 0.0992
+    },
+    {
+      "label": "Through the Ages mythic (1/3 × 7%)",
+      "rarity": "bonus_mythic",
+      "countPerPack": 0.0233
     }
   ],
   "alternateEstimates": [],

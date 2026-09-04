@@ -110,6 +110,13 @@ export const MTG_RARITIES = [
   "rare",
   "mythic",
   "bonus_sheet",
+  // WotC's per-set Collecting articles publish numeric rates for these — the
+  // borderless slot share and the bonus-sheet rarity split (see fin.json).
+  "borderless_rare",
+  "borderless_mythic",
+  "bonus_uncommon",
+  "bonus_rare",
+  "bonus_mythic",
 ] as const;
 
 /**
@@ -142,6 +149,11 @@ export const RARITY_VOCAB: Record<KnownGameSlug, readonly string[]> = {
 
 /** Human-facing labels. Anything absent falls back to a title-cased slug. */
 export const RARITY_LABELS: Record<string, string> = {
+  borderless_rare: "Borderless rare",
+  borderless_mythic: "Borderless mythic",
+  bonus_uncommon: "Bonus sheet (uncommon)",
+  bonus_rare: "Bonus sheet (rare)",
+  bonus_mythic: "Bonus sheet (mythic)",
   bonus_sheet: "Bonus sheet",
   promo: "Promo",
   common: "Common",
