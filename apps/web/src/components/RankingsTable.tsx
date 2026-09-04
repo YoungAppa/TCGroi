@@ -195,7 +195,13 @@ export function RankingsTable({
       sortKey === "roi"
         ? (r) => (marketColumnOn ? r.c.roiMarket : r.c.roiRetail) ?? -Infinity
         : SORTS[sortKey];
-    return [...rows].sort((a, b) => (metric(b) - metric(a)) * (sortDesc ? 1 : -1));
+    // Ties (a set's products share one Popular score) break on market price,
+    // so a hot set leads with its box/ETB rather than five mini tins.
+    return [...rows].sort(
+      (a, b) =>
+        (metric(b) - metric(a)) * (sortDesc ? 1 : -1) ||
+        (b.payload.market.priceCents ?? -1) - (a.payload.market.priceCents ?? -1),
+    );
   }, [rows, sortKey, sortDesc, state.showMarket, state.showRetail]);
 
   function clickSort(key: SortKey) {
@@ -564,6 +570,7 @@ export function RankingsTable({
             aria-label="Filter by data confidence"
           >
             <option value="all">{t("filter.anyConfidence")}</option>
+            <option value="official">OFFICIAL odds</option>
             <option value="high">HIGH data</option>
             <option value="medium">Medium data</option>
             <option value="low">Low data</option>

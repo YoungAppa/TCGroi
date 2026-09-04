@@ -83,6 +83,14 @@ function sourceSubsets(available: string[]): string[][] {
   return out;
 }
 
+/** Popularity decays with a ~1.4-year half-life. Chase value alone made the
+ *  front page a museum: Lost Origin blends and seven Evolving Skies rows led
+ *  while Ascended Heroes sat 11th and 151 was nowhere — because a 2021 set's
+ *  \$2,200 Umbreon outweighs everything people are actually opening in 2026.
+ *  Demand is hits x how CURRENT the set is; this is the best proxy our data
+ *  affords without usage numbers. */
+const POPULAR_DECAY_YEARS = 2;
+
 function summarize(
   payload: ProductPayload,
   state: FilterState,
@@ -95,16 +103,34 @@ function summarize(
     const p = c.ev.probAtLeastOne[r];
     if (p !== undefined && p > pTop) pTop = p;
   }
-  const top = c.ev.chase.slice(0, 10);
+
+  // A blended product's chase table spans its COMPONENT sets, so an assorted
+  // Lost Origin tin "inherits" Evolving Skies' Umbreon and outranks everything.
+  // Popularity is about the product's own set: score only chase cards from the
+  // home card list, falling back to the full table for pure blends.
+  const homeIds = new Set(payload.cards.map((cd) => cd.cardId));
+  const homeChase = c.ev.chase.filter((ch) => homeIds.has(ch.cardId));
+  const pool = (homeChase.length > 0 ? homeChase : c.ev.chase).slice(0, 10);
+  const chaseMean = pool.length
+    ? pool.reduce((s, ch) => s + ch.valueCents, 0) / pool.length
+    : Number.NEGATIVE_INFINITY;
+  const rawAge = payload.releaseDate
+    ? Math.max(0, (Date.now() - Date.parse(payload.releaseDate)) / 31_557_600_000)
+    : 6; // undated sets sort like old ones rather than like new ones
+  // A set still purchasable at MSRP (payload.msrpCents survives the
+  // purchasability gate) is CURRENT no matter its print date — 151 has been on
+  // shelves since 2023 and is chased as hard as any new set. Out-of-print sets
+  // age normally.
+  const ageYears = payload.msrpCents !== null ? Math.min(rawAge, 1) : rawAge;
+  const popularScore = chaseMean * Math.exp(-ageYears / POPULAR_DECAY_YEARS);
+
   return {
     evProductCents: c.ev.evProductCents,
     evPackCents: c.ev.evPackCents,
     roiMarket: c.roiMarket,
     roiRetail: c.roiRetail,
     pTop,
-    popularScore: top.length
-      ? top.reduce((s, ch) => s + ch.valueCents, 0) / top.length
-      : Number.NEGATIVE_INFINITY,
+    popularScore,
   };
 }
 
