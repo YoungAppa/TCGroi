@@ -117,6 +117,8 @@ export const MTG_RARITIES = [
   "bonus_uncommon",
   "bonus_rare",
   "bonus_mythic",
+  "retro_frame",
+  "booster_fun",
 ] as const;
 
 /**
@@ -154,6 +156,8 @@ export const RARITY_LABELS: Record<string, string> = {
   bonus_uncommon: "Bonus sheet (uncommon)",
   bonus_rare: "Bonus sheet (rare)",
   bonus_mythic: "Bonus sheet (mythic)",
+  retro_frame: "Retro frame",
+  booster_fun: "Booster Fun (borderless)",
   bonus_sheet: "Bonus sheet",
   promo: "Promo",
   common: "Common",

@@ -1,19 +1,19 @@
 {
   "game": "mtg",
   "setCode": "mh3",
-  "version": 1,
+  "version": 2,
   "sampleSizePacks": null,
-  "sourceUrl": "https://mtg.fandom.com/wiki/Booster_pack",
-  "sourceNote": "Magic booster EV, modeled on the ~1 rare-or-mythic-per-pack structure common to Draft, Set and Play Boosters: rare 0.865 / mythic 0.135 (mythic ~1 in 7-8), plus ~7 commons + ~3 uncommons per pack. WotC discloses booster collation, so this beats a pure community estimate, but it is still MODELLED and capped LOW: (1) special treatments (showcase/borderless/extended, and pre-2024 alt-frames) are folded into the flat common/uncommon/rare/mythic tiers with a uniform-within-tier assumption, which OVERSTATES the odds of the specific expensive alt-treatment prints; (2) prices are the NON-FOIL TCGplayer market price (via Scryfall) \u2014 a pack's guaranteed slots are all non-foil; the single foil slot's extra value is not added to EV (conservative); (3) for Play Boosters the wildcard + foil slots add ~0.2 more rares/mythics per pack that are NOT modelled (conservative); (4) older sets used Draft Boosters (more commons, foil ~1 in 3-4 packs) - the rare/mythic value driver is the same but the rest is approximate. Only cards Scryfall marks booster:true are counted (no promos/box-toppers/Commander cards). Net: a rough, indicative pack EV, not a precise one.",
-  "confidence": "low",
+  "sourceUrl": "https://magic.wizards.com/en/news/feature/collecting-modern-horizons-3",
+  "sourceNote": "v2 OFFICIAL: rates transcribed from WotC's 'Collecting Modern Horizons 3' article. Default rare .798 and mythic .130 in the R/M slot plus .067/.011 from the wildcard slot; retro-frame cards at 2.1% (R/M slot) + 4.2% (wildcard) as one pool; borderless Booster Fun at 5.1% + 0.4%. Deliberately unmodelled, all understating EV: the new-to-Modern slot's extra rares/mythics, the wildcard slot's Commander mythics (4.2%), DFC uncommons, and every foil. Mixed-rarity pools (retro, Booster Fun) use uniform-within-pool like every tier.",
+  "confidence": "official",
   "slots": [
     {
       "rarity": "rare",
-      "perPackProbability": 0.865
+      "perPackProbability": 0.798
     },
     {
       "rarity": "mythic",
-      "perPackProbability": 0.135
+      "perPackProbability": 0.13
     }
   ],
   "guaranteedSlots": [
@@ -26,6 +26,26 @@
       "label": "Uncommons",
       "rarity": "uncommon",
       "countPerPack": 3
+    },
+    {
+      "label": "Wildcard-slot rare (6.7%)",
+      "rarity": "rare",
+      "countPerPack": 0.067
+    },
+    {
+      "label": "Wildcard-slot mythic (1.1%)",
+      "rarity": "mythic",
+      "countPerPack": 0.011
+    },
+    {
+      "label": "Retro frame (2.1% + wildcard 4.2%)",
+      "rarity": "retro_frame",
+      "countPerPack": 0.063
+    },
+    {
+      "label": "Booster Fun borderless (5.1% + 0.4%)",
+      "rarity": "booster_fun",
+      "countPerPack": 0.055
     }
   ],
   "alternateEstimates": [],
