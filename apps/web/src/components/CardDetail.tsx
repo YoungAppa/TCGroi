@@ -62,6 +62,9 @@ export function CardDetail({ ctx, history = [] }: { ctx: CardContext; history?: 
             <h1 className="font-display text-2xl font-extrabold tracking-tight sm:text-3xl">
               {card.name} <span className="text-muted">#{card.number}</span>
             </h1>
+            {ctx.nameEn && ctx.nameEn !== card.name && (
+              <p className="mt-0.5 text-base font-medium text-muted">{ctx.nameEn}</p>
+            )}
             <p className="mt-1 text-sm text-muted">
               {ctx.setName} · {rarityLabel(card.rarity)}
             </p>

@@ -73,6 +73,34 @@ export default async function SetPage({ params }: { params: Promise<Params> }) {
             odds. Prices are live regardless.
           </p>
         </div>
+        {fb.products.length > 0 && (
+          <section className="space-y-2">
+            <h2 className="text-lg font-semibold">
+              Sealed products{" "}
+              <span className="text-xs font-normal text-muted">
+                prices live · not ranked (no published pull rates)
+              </span>
+            </h2>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
+              {fb.products.map((pr) => (
+                <div
+                  key={pr.name}
+                  className="rounded-xl border border-border bg-surface p-3"
+                  title={pr.contentsNote ?? undefined}
+                >
+                  {pr.imageUrl && (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img src={pr.imageUrl} alt={pr.name} loading="lazy" className="mx-auto h-24 object-contain" />
+                  )}
+                  <div className="mt-2 truncate text-xs font-medium">{pr.name}</div>
+                  <div className="tabular text-sm font-semibold">
+                    {pr.priceCents !== null ? formatCents(pr.priceCents) : "—"}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6">
           {fb.cards.map((c) => (
             <Link

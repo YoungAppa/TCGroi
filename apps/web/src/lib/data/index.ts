@@ -157,6 +157,9 @@ export interface CardContext {
   setCode: string;
   setName: string;
   card: import("@packroi/ev/types").CardPriceData;
+  /** Official English name for JP/ZH cards (external_ids->name_en); native
+   *  names stay the primary display. */
+  nameEn: string | null;
   /** Other notable cards in the same set — internal links for readers and
    *  crawlers, which is how a card page stops being an orphan. */
   related: { number: string; name: string; imageUrl: string | null; valueCents: number }[];
@@ -194,6 +197,8 @@ export async function getCardContext(
   if (!home) return getCardContextFromDb(game, setCode, number);
   const card = home.cards.find((c) => c.number === number);
   if (!card) return null;
+
+  const nameEn = await lookupNameEn(card.cardId);
 
   // Every product whose packs draw from this set: the set's own products plus
   // any blended collection (UPC / tin) whose componentPacks include it.
@@ -257,10 +262,25 @@ export async function getCardContext(
     setCode: home.setCode,
     setName: home.setName,
     card,
+    nameEn,
     related,
     tier,
     sources,
   };
+}
+
+/** English name (JP/ZH cards) from external_ids, or null. */
+async function lookupNameEn(cardId: string): Promise<string | null> {
+  try {
+    const { getDb, cards } = await import("@/lib/db");
+    const { eq } = await import("drizzle-orm");
+    const db = getDb();
+    const [row] = await db.select({ ext: cards.externalIds }).from(cards).where(eq(cards.id, cardId));
+    const en = (row?.ext as Record<string, unknown> | undefined)?.["name_en"];
+    return typeof en === "string" && en.length > 0 ? en : null;
+  } catch {
+    return null;
+  }
 }
 
 /**
@@ -286,7 +306,7 @@ async function getCardContextFromDb(
   if (!setRow) return null;
 
   const all = await db
-    .select({ id: cards.id, name: cards.name, number: cards.number, rarity: cards.rarity, imageUrl: cards.imageUrl, treatment: cards.treatment })
+    .select({ id: cards.id, name: cards.name, number: cards.number, rarity: cards.rarity, imageUrl: cards.imageUrl, treatment: cards.treatment, ext: cards.externalIds })
     .from(cards)
     .where(eq(cards.setId, setRow.id));
   const mine = all.filter((c) => c.number === number);
@@ -333,6 +353,10 @@ async function getCardContextFromDb(
     gameName: setRow.gameName,
     setCode: setRow.code,
     setName: setRow.name,
+    nameEn: (() => {
+      const en = (main.ext as Record<string, unknown>)["name_en"];
+      return typeof en === "string" && en.length > 0 ? en : null;
+    })(),
     card: {
       cardId: main.id,
       name: main.name + label,
@@ -356,6 +380,9 @@ export interface UnrankedSetCards {
   setCode: string;
   setName: string;
   cards: { number: string; name: string; rarity: string; imageUrl: string | null; priceCents: number | null }[];
+  /** Sealed products of this set — visible with live prices even though the
+   *  set can't be ranked (no odds source). */
+  products: { name: string; type: string; imageUrl: string | null; priceCents: number | null; contentsNote: string | null }[];
 }
 
 export async function getUnrankedSetCards(
@@ -401,5 +428,26 @@ export async function getUnrankedSetCards(
     (a, b) => (b.priceCents ?? -1) - (a.priceCents ?? -1) || a.number.localeCompare(b.number, undefined, { numeric: true }),
   );
 
-  return { gameSlug: setRow.gameSlug, gameName: setRow.gameName, setCode: setRow.code, setName: setRow.name, cards: list };
+  const { sealedProducts, latestPrices: lp2 } = await import("@/lib/db");
+  const prodRows = await db
+    .select({ name: sealedProducts.name, type: sealedProducts.type, imageUrl: sealedProducts.imageUrl, contentsNote: sealedProducts.contentsNote, id: sealedProducts.id })
+    .from(sealedProducts)
+    .where(eq(sealedProducts.setId, setRow.id));
+  const prodPrices = prodRows.length
+    ? await db
+        .select({ pid: lp2.sealedProductId, cents: lp2.priceCents })
+        .from(lp2)
+        .where(and(inArray(lp2.sealedProductId, prodRows.map((r) => r.id)), eq(lp2.kind, "sealed")))
+    : [];
+  const priceByProd = new Map<string, number>();
+  for (const r of prodPrices) if (r.pid) priceByProd.set(r.pid, r.cents);
+  const products = prodRows.map((r) => ({
+    name: r.name,
+    type: r.type,
+    imageUrl: r.imageUrl,
+    priceCents: priceByProd.get(r.id) ?? null,
+    contentsNote: r.contentsNote,
+  }));
+
+  return { gameSlug: setRow.gameSlug, gameName: setRow.gameName, setCode: setRow.code, setName: setRow.name, cards: list, products };
 }

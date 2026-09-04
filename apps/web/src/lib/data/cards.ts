@@ -62,7 +62,7 @@ export async function searchCards(
     .innerJoin(games, eq(sets.gameId, games.id))
     .where(
       and(
-        ilike(cards.name, `%${q}%`),
+        sql`(${cards.name} ilike ${"%" + q + "%"} or ${cards.externalIds}->>'name_en' ilike ${"%" + q + "%"})`,
         opts.game ? eq(games.slug, opts.game as "pokemon" | "one-piece" | "mtg") : undefined,
       ),
     )
@@ -101,7 +101,7 @@ export async function getCardHistory(cardId: string, days = 3650): Promise<Histo
     const db = getDb();
     const cutoffIso = new Date(Date.now() - days * 86_400_000).toISOString();
     const rows = await db.execute<{ day: string; cents: number | string }>(sql`
-      select to_char(date(${latestPrices.capturedAt}), 'YYYY-MM-DD') as day,
+      select to_char(date(ps.captured_at), 'YYYY-MM-DD') as day,
              round(percentile_cont(0.5) within group (order by ps.price_cents))::int as cents
       from price_snapshots ps
       where ps.card_id = ${cardId}::uuid and ps.kind = 'raw'

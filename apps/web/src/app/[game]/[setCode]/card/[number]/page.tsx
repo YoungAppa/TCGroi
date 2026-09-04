@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 
 import { CardDetail } from "@/components/CardDetail";
 import { getCardHistory } from "@/lib/data/cards";
+import { gradingCost } from "@/lib/grading/fees";
 import { rarityLabel } from "@/lib/catalog/rarities";
 import { getCardContext } from "@/lib/data";
 import { median } from "@packroi/ev";
@@ -43,13 +44,14 @@ export async function generateMetadata({
 
   // Title carries the three things people type: card + number + set, then the
   // price, then the pull odds.
+  const enBit = ctx.nameEn && ctx.nameEn !== ctx.card.name ? ` (${ctx.nameEn})` : "";
   const title =
-    `${ctx.card.name} ${ctx.card.number} ${ctx.setName} price` +
+    `${ctx.card.name}${enBit} ${ctx.card.number} ${ctx.setName} price` +
     (price !== null ? ` — ${formatCents(price)}` : "") +
     (odds ? `, ${odds}` : "");
 
   const description =
-    `${ctx.card.name} #${ctx.card.number} from ${ctx.setName} (${rarity})` +
+    `${ctx.card.name}${enBit} #${ctx.card.number} from ${ctx.setName} (${rarity})` +
     (price !== null ? ` is worth about ${formatCents(price)} raw` : "") +
     (odds ? `, and pulls at roughly ${odds}` : "") +
     `. See every ${ctx.setName} booster box, pack, ETB and tin that can contain it, ` +
@@ -103,6 +105,31 @@ export default async function CardPage({ params }: { params: Promise<Params> }) 
     .sort((a, b) => a.marketCents! - b.marketCents!)[0];
   const bestChance = ctx.sources.find((s) => s.probPerProduct !== null && s.probPerProduct > 0);
 
+  // "Is it worth grading?" — only where both legs exist; fee from the PSA tier
+  // for the declared (graded) value, gem odds from the card's own census.
+  const grading =
+    price !== null && psa10 !== null
+      ? (() => {
+          const g = gradingCost(price, psa10);
+          const net = psa10 - price - g.feeCents;
+          const pop = ctx.card.population;
+          const gemRate = pop && pop.total >= 50 ? pop.gemCount / pop.total : null;
+          return { feeCents: g.feeCents, service: g.service, net, gemRate, popTotal: pop?.total ?? null };
+        })()
+      : null;
+
+  // Price trend across everything we have tracked (no invented history).
+  const trend =
+    history.length >= 2
+      ? {
+          from: history[0]!,
+          to: history[history.length - 1]!,
+          pct: ((history[history.length - 1]!.cents - history[0]!.cents) / history[0]!.cents) * 100,
+        }
+      : null;
+
+  const enBit2 = ctx.nameEn && ctx.nameEn !== ctx.card.name ? ` (${ctx.nameEn})` : "";
+
   // Breadcrumbs are the one structured-data type that is unambiguously honest
   // here: we are not selling the card, so no Offer/Product markup — claiming a
   // sale we don't make is exactly the kind of thing this site exists not to do.
@@ -126,6 +153,37 @@ export default async function CardPage({ params }: { params: Promise<Params> }) 
     ],
   };
 
+  const faq = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      price !== null && {
+        "@type": "Question",
+        name: `How much is ${ctx.card.name}${enBit2} #${ctx.card.number} worth?`,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: `${ctx.card.name} #${ctx.card.number} from ${ctx.setName} is worth about ${formatCents(price)} raw at today's market prices${psa10 !== null ? `; a PSA 10 sells for about ${formatCents(psa10)}` : ""}.`,
+        },
+      },
+      odds && {
+        "@type": "Question",
+        name: `What are the odds of pulling ${ctx.card.name}${enBit2}?`,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: `Roughly ${odds}, assuming uniform odds within its rarity tier — community-measured rates, not official odds.`,
+        },
+      },
+      grading && {
+        "@type": "Question",
+        name: `Is ${ctx.card.name}${enBit2} worth grading?`,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: `A PSA 10 nets about ${grading.net > 0 ? "+" : ""}${formatCents(grading.net)} after the ${formatCents(grading.feeCents)} fee${grading.gemRate !== null ? `, and ${formatProbability(grading.gemRate)} of ${grading.popTotal!.toLocaleString()} graded copies came back a 10` : ""}.`,
+        },
+      },
+    ].filter(Boolean),
+  };
+
   return (
     <div className="space-y-6">
       <script
@@ -133,6 +191,12 @@ export default async function CardPage({ params }: { params: Promise<Params> }) 
         // Static, server-built object — no user input reaches it.
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbs) }}
       />
+      {faq.mainEntity.length > 0 && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faq) }}
+        />
+      )}
 
       <nav aria-label="Breadcrumb" className="text-xs uppercase tracking-wide text-muted">
         <Link href="/" className="hover:text-foreground">
@@ -175,7 +239,7 @@ export default async function CardPage({ params }: { params: Promise<Params> }) 
         </p>
 
         <h2 className="font-display text-lg font-bold">
-          How rare is {ctx.card.name} #{ctx.card.number}?
+          What are the odds of pulling {ctx.card.name} #{ctx.card.number}?
         </h2>
         <p>
           {odds ? (
@@ -232,6 +296,48 @@ export default async function CardPage({ params }: { params: Promise<Params> }) 
             </>
           )}
         </p>
+        {grading && (
+          <>
+            <h2 className="font-display text-lg font-bold">
+              Is {ctx.card.name}{enBit2} worth grading?
+            </h2>
+            <p>
+              A PSA 10 copy sells for about <strong>{formatCents(psa10!)}</strong> against a raw
+              price of {formatCents(price!)} and a PSA fee of roughly {formatCents(grading.feeCents)}{" "}
+              ({grading.service}) — so a 10 nets about{" "}
+              <strong>{grading.net > 0 ? "+" : ""}{formatCents(grading.net)}</strong>.{" "}
+              {grading.gemRate !== null ? (
+                <>
+                  Of the <strong>{grading.popTotal!.toLocaleString()}</strong> copies PSA has graded,{" "}
+                  <strong>{formatProbability(grading.gemRate)}</strong> came back a 10 — and since
+                  people submit their cleanest copies, read that as a ceiling for a random pull, not
+                  your odds.
+                </>
+              ) : (
+                <>
+                  Too few copies have been graded for a reliable gem rate, so the payoff above is an
+                  upper bound with unknown odds.
+                </>
+              )}
+            </p>
+          </>
+        )}
+
+        {trend && (
+          <>
+            <h2 className="font-display text-lg font-bold">
+              {ctx.card.name}{enBit2} price history
+            </h2>
+            <p>
+              Since we began tracking on <strong>{trend.from.date}</strong>, {ctx.card.name} has
+              moved from {formatCents(trend.from.cents)} to{" "}
+              <strong>{formatCents(trend.to.cents)}</strong> (
+              {trend.pct >= 0 ? "+" : ""}
+              {trend.pct.toFixed(1)}%). The chart above shows every tracked day; history deepens
+              daily and nothing earlier is invented.
+            </p>
+          </>
+        )}
       </section>
 
       {/* ---- internal links: the set's other chases ---------------------- */}
