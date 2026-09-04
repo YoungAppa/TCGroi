@@ -157,6 +157,11 @@ export interface CardContext {
   setCode: string;
   setName: string;
   card: import("@packroi/ev/types").CardPriceData;
+  /** Other notable cards in the same set — internal links for readers and
+   *  crawlers, which is how a card page stops being an orphan. */
+  related: { number: string; name: string; imageUrl: string | null; valueCents: number }[];
+  /** The card's rarity tier stats in its home set, for the "how rare" copy. */
+  tier: { rarity: string; perPackProbability: number; cardsInTier: number } | null;
   /** Products whose packs can contain this card, with the card's odds in each. */
   sources: {
     productName: string;
@@ -220,12 +225,36 @@ export async function getCardContext(
   // Best odds first; products where the card is below the chase bar sink.
   sources.sort((a, b) => (b.probPerProduct ?? -1) - (a.probPerProduct ?? -1));
 
+  // Tier facts from the home set's own pull table.
+  const slot = home.pullRates.slots.find((sl) => sl.rarity === card.rarity) ?? null;
+  const cardsInTier = home.cards.filter((c) => c.rarity === card.rarity).length;
+  const tier = slot
+    ? { rarity: card.rarity, perPackProbability: slot.perPackProbability, cardsInTier }
+    : null;
+
+  // Related: the set's most valuable other cards, priced with the default
+  // sources so the list matches what the rest of the site shows.
+  const { median } = await import("@packroi/ev");
+  const related = home.cards
+    .filter((c) => c.cardId !== card.cardId)
+    .map((c) => ({
+      number: c.number,
+      name: c.name,
+      imageUrl: c.imageUrl ?? null,
+      valueCents: median(Object.values(c.raw)) ?? 0,
+    }))
+    .filter((c) => c.valueCents > 0)
+    .sort((a, b) => b.valueCents - a.valueCents)
+    .slice(0, 12);
+
   return {
     gameSlug: home.gameSlug,
     gameName: home.gameName,
     setCode: home.setCode,
     setName: home.setName,
     card,
+    related,
+    tier,
     sources,
   };
 }

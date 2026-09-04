@@ -6,7 +6,11 @@
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import { computeProduct, type ProductComputation } from "@/lib/data/compute";
+import {
+  summaryFor,
+  type EvSummary,
+  type RankingsRow,
+} from "@/lib/data/rankings-rows";
 import type { ProductPayload } from "@/lib/data/types";
 import {formatProbability, formatRoi} from "@packroi/ev/format";
 
@@ -27,14 +31,14 @@ type SortKey =
   | "pTopBox"
   | "popular"
   | "released";
-type Row = { payload: ProductPayload; c: ProductComputation };
+type Row = { payload: RankingsRow; c: EvSummary };
 type ViewMode = "list" | "icons";
 
 /**
  * Pokémon generation/era a set belongs to, derived from its code prefix. Used
  * by the rankings generation filter. Non-Pokémon games return "" (no filter).
  */
-function generationOf(p: ProductPayload): string {
+function generationOf(p: Pick<RankingsRow, "gameSlug" | "setCode">): string {
   if (p.gameSlug !== "pokemon") return "";
   const c = p.setCode.toLowerCase(); // JP codes are upper-cased (SV2a, S9)
   if (/^gem-pack/.test(c)) return "Gem Pack";
@@ -63,20 +67,10 @@ const GENERATION_ORDER = [
   "Other",
 ];
 
-/** The rarity whose per-box probability headlines the rankings, per game. */
-const HEADLINE_RARITY: Record<string, string[]> = {
-  pokemon: ["special_illustration_rare"],
-  "one-piece": ["secret_rare", "manga_rare"],
-};
-
+/** Precomputed server-side (see rankings-rows.ts) — the headline rarity's
+ *  per-product probability, and the top-10 chase mean behind "Popular". */
 function headlineProb(row: Row): number {
-  const rarities = HEADLINE_RARITY[row.payload.gameSlug] ?? [];
-  let best = 0;
-  for (const r of rarities) {
-    const p = row.c.ev.probAtLeastOne[r];
-    if (p !== undefined && p > best) best = p;
-  }
-  return best;
+  return row.c.pTop;
 }
 
 const SORTS: Record<SortKey, (r: Row) => number> = {
@@ -87,17 +81,14 @@ const SORTS: Record<SortKey, (r: Row) => number> = {
   // outrank genuinely bad products.
   roiMarket: (r) => r.c.roiMarket ?? -Infinity,
   roiRetail: (r) => r.c.roiRetail ?? -Infinity,
-  ev: (r) => r.c.ev.evProductCents,
+  ev: (r) => r.c.evProductCents,
   market: (r) => r.payload.market.priceCents ?? -Infinity,
-  evPerPack: (r) => r.c.ev.evPackCents,
+  evPerPack: (r) => r.c.evPackCents,
   pTopBox: headlineProb,
   // "Popular" = the average value of a set's top 10 chase cards. The sets with
   // the big-money hits (151, Prismatic Evolutions, Ascended Heroes) are the ones
   // people actually chase — the best demand proxy we have without usage data.
-  popular: (r) => {
-    const top = r.c.ev.chase.slice(0, 10);
-    return top.length ? top.reduce((s, ch) => s + ch.valueCents, 0) / top.length : -Infinity;
-  },
+  popular: (r) => r.c.popularScore,
   // Release date as an epoch ms; undated sets sink to the bottom either way.
   released: (r) =>
     r.payload.releaseDate ? Date.parse(r.payload.releaseDate) : Number.NEGATIVE_INFINITY,
@@ -115,11 +106,13 @@ const SORT_OPTIONS: { value: string; label: string; key: SortKey; desc: boolean 
 ];
 
 export function RankingsTable({
-  products: allProducts,
+  rows: allRows,
   availableSources,
+  gradedAvailable,
 }: {
-  products: ProductPayload[];
+  rows: RankingsRow[];
   availableSources: { id: string; displayName: string }[];
+  gradedAvailable: boolean;
 }) {
   const { money } = useMoney();
   const { t } = useI18n();
@@ -129,13 +122,13 @@ export function RankingsTable({
   // its own product pages (a separate loader) stay reachable by direct link.
   const products = useMemo(
     () =>
-      allProducts.filter(
+      allRows.filter(
         (p) =>
           p.market.priceCents !== null ||
           p.msrpCents !== null ||
-          p.cards.some((c) => Object.keys(c.raw).length > 0),
+          p.ev[Object.keys(p.ev)[0]!]!.evProductCents > 0,
       ),
-    [allProducts],
+    [allRows],
   );
   const { state, setState, withFilter } = useFilterState();
   const [sortKey, setSortKey] = useState<SortKey>("popular");
@@ -164,11 +157,6 @@ export function RankingsTable({
   const [filtersOpen, setFiltersOpen] = useState(false);
 
   const availableIds = useMemo(() => availableSources.map((s) => s.id), [availableSources]);
-  // Offer the graded toggle once any product has a card with both PSA legs.
-  const gradedAvailable = useMemo(
-    () => products.some((p) => p.cards.some((c) => c.psa9 && c.psa10)),
-    [products],
-  );
 
   const rows: Row[] = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -184,7 +172,7 @@ export function RankingsTable({
       .filter((p) => typeFilter === "all" || p.productType === typeFilter)
       .filter((p) => genFilter === "all" || generationOf(p) === genFilter)
       .filter((p) => !q || `${p.setName} ${p.productName}`.toLowerCase().includes(q))
-      .map((payload) => ({ payload, c: computeProduct(payload, state, availableIds) }))
+      .map((payload) => ({ payload, c: summaryFor(payload, state, availableIds) }))
       .filter((r) => {
         if (!positiveOnly) return true;
         // "Worth opening" means worth opening at a price you can actually pay,
@@ -365,7 +353,7 @@ export function RankingsTable({
                     </span>
                   </Link>
                 </td>
-                <td className="tabular px-3 py-2">{money(c.ev.evProductCents)}</td>
+                <td className="tabular px-3 py-2">{money(c.evProductCents)}</td>
                 {retailOn && (
                   <>
                     <td className="tabular border-l border-border/60 px-3 py-2 text-muted">
@@ -736,19 +724,9 @@ function IconTile({
 }) {
   const { money } = useMoney();
   const { payload, c } = row;
-  // Blended products' chase cards live in componentPacks' card lists, not the
-  // home set's — search both, or every UPC hover-fan comes up empty.
-  const findCard = (id: string) =>
-    payload.cards.find((cd) => cd.cardId === id) ??
-    payload.componentPacks?.flatMap((cp) => cp.cards).find((cd) => cd.cardId === id);
-  const chase = c.ev.chase
-    .slice(0, 3)
-    .map((ch) => ({
-      key: ch.cardId,
-      value: ch.valueCents,
-      img: findCard(ch.cardId)?.imageUrl ?? null,
-    }))
-    .filter((ch) => ch.img);
+  // Resolved server-side (rankings-rows.ts) so the page ships three image URLs
+  // instead of every card in the set.
+  const chase = payload.chaseThumbs.map((t) => ({ key: t.cardId, img: t.imageUrl }));
 
   // The tile shows the selected denominator(s) plus average-unbox (EV). With
   // both on, market leads (the honest verdict) and retail sits alongside; with
@@ -866,7 +844,7 @@ function IconTile({
               <div className="text-[10.5px] text-muted">
                 Average opening is{" "}
                 <span className="font-semibold text-foreground">
-                  {money(c.ev.evProductCents)}
+                  {money(c.evProductCents)}
                 </span>
               </div>
             </div>

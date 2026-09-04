@@ -410,9 +410,16 @@ export function ProductDetail({
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5">
             {ev.chase.map((c) => {
               const img = cardById.get(c.cardId)?.imageUrl;
+              // A blended product's chase cards belong to its COMPONENT sets,
+              // so each link must carry the card's own set code.
+              const ownSet =
+                payload.componentPacks?.find((cp) =>
+                  cp.cards.some((cd) => cd.cardId === c.cardId),
+                )?.setCode ?? payload.setCode;
               return (
-                <div
+                <Link
                   key={c.cardId}
+                  href={`/${payload.gameSlug}/${ownSet}/card/${encodeURIComponent(c.number)}`}
                   className="group flex flex-col overflow-hidden rounded-xl bg-surface ring-1 ring-white/5 transition hover:shadow-lg hover:shadow-black/30 hover:ring-accent/50"
                 >
                   <div className="relative aspect-[5/7] w-full overflow-hidden bg-surface-raised">
@@ -450,7 +457,7 @@ export function ProductDetail({
                       </span>
                     </div>
                   </div>
-                </div>
+                </Link>
               );
             })}
           </div>

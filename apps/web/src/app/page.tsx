@@ -2,6 +2,7 @@ import { RankingsHero, type HeroCard } from "@/components/RankingsHero";
 import { RankingsTable } from "@/components/RankingsTable";
 import { getRankings } from "@/lib/data";
 import { computeProduct } from "@/lib/data/compute";
+import { buildRankingsRows } from "@/lib/data/rankings-rows";
 import { DEFAULT_FILTER_STATE } from "@packroi/ev/url-state";
 
 // ISR: rebuilt hourly from the DB the cron jobs write into. Never fetches
@@ -70,6 +71,10 @@ export default async function HomePage() {
 
   const cardCount = products.reduce((n, p) => n + p.cards.length, 0);
 
+  // The table's rows carry precomputed EV for every reachable filter
+  // combination, so the page ships numbers instead of ~27MB of card prices.
+  const { rows, gradedAvailable } = buildRankingsRows(products, sourceIds);
+
   return (
     <div className="space-y-6">
       <RankingsHero
@@ -80,7 +85,11 @@ export default async function HomePage() {
       />
 
 
-      <RankingsTable products={products} availableSources={availableSources} />
+      <RankingsTable
+        rows={rows}
+        availableSources={availableSources}
+        gradedAvailable={gradedAvailable}
+      />
     </div>
   );
 }
