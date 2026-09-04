@@ -85,6 +85,16 @@ export function CardDetail({ ctx }: { ctx: CardContext }) {
           </div>
 
           {/* ---- where to pull it ---- */}
+          {ctx.sources.length === 0 ? (
+            <div className="rounded-xl border border-border bg-surface p-4 text-sm text-muted sm:p-5">
+              <h2 className="text-lg font-semibold text-foreground">Where to pull it</h2>
+              <p className="mt-2">
+                No {ctx.setName} sealed product is ranked yet — no source publishes
+                usable pull rates for this set, and this site doesn&apos;t invent
+                odds. The card&apos;s price above is live regardless.
+              </p>
+            </div>
+          ) : (
           <div className="rounded-xl border border-border bg-surface p-4 sm:p-5">
             <h2 className="text-lg font-semibold">Where to pull it</h2>
             <p className="mt-1 text-xs text-muted">
@@ -149,6 +159,7 @@ export function CardDetail({ ctx }: { ctx: CardContext }) {
               </p>
             )}
           </div>
+          )}
         </div>
       </div>
     </div>

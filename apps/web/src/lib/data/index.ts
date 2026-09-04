@@ -185,9 +185,13 @@ export async function getCardContext(
   number: string,
 ): Promise<CardContext | null> {
   const { products } = await getRankings();
-  // The card lives in the payload of any product of its set.
+  // The card lives in the payload of any product of its set. Sets WITHOUT
+  // ranked products (unranked Simplified-Chinese sets like 收集啦151, whose
+  // odds no source publishes) fall back to the DB directly — their cards are
+  // real, priced and searched for, and deserve pages even when nothing about
+  // the set can be ranked.
   const home = products.find((p) => p.gameSlug === game && p.setCode === setCode);
-  if (!home) return null;
+  if (!home) return getCardContextFromDb(game, setCode, number);
   const card = home.cards.find((c) => c.number === number);
   if (!card) return null;
 
@@ -257,4 +261,145 @@ export async function getCardContext(
     tier,
     sources,
   };
+}
+
+/**
+ * DB-direct card context for sets with no ranked products. Same shape, empty
+ * `sources` (the page copy already handles "no products"), related list from
+ * the set's other priced cards.
+ */
+async function getCardContextFromDb(
+  game: string,
+  setCode: string,
+  number: string,
+): Promise<CardContext | null> {
+  const { getDb, cards, sets, games, latestPrices } = await import("@/lib/db");
+  const { and, eq, inArray } = await import("drizzle-orm");
+  const db = getDb();
+
+  const setRows = await db
+    .select({ id: sets.id, code: sets.code, name: sets.name, gameSlug: games.slug, gameName: games.displayName })
+    .from(sets)
+    .innerJoin(games, eq(sets.gameId, games.id))
+    .where(and(eq(games.slug, game as "pokemon"), eq(sets.code, setCode)));
+  const setRow = setRows[0];
+  if (!setRow) return null;
+
+  const all = await db
+    .select({ id: cards.id, name: cards.name, number: cards.number, rarity: cards.rarity, imageUrl: cards.imageUrl, treatment: cards.treatment })
+    .from(cards)
+    .where(eq(cards.setId, setRow.id));
+  const mine = all.filter((c) => c.number === number);
+  if (mine.length === 0) return null;
+
+  const priceRows = await db
+    .select({ cardId: latestPrices.cardId, sourceId: latestPrices.sourceId, cents: latestPrices.priceCents })
+    .from(latestPrices)
+    .where(and(inArray(latestPrices.cardId, all.map((c) => c.id)), eq(latestPrices.kind, "raw")));
+  const rawByCard = new Map<string, Record<string, number>>();
+  for (const r of priceRows) {
+    if (!r.cardId) continue;
+    const m = rawByCard.get(r.cardId) ?? {};
+    m[r.sourceId] = r.cents;
+    rawByCard.set(r.cardId, m);
+  }
+
+  const { median } = await import("@packroi/ev");
+  // Several rows can share a number (one per printing variant — a 151 Master
+  // Ball Pikachu is a different \$2,241 card from the \$2 base print). Show the
+  // most valuable priced variant, labelled, so the page never quotes a cheap
+  // print's price under a chase variant's search.
+  const valueOf = (id: string) => median(Object.values(rawByCard.get(id) ?? {})) ?? -1;
+  const main = [...mine].sort((a, b) => valueOf(b.id) - valueOf(a.id))[0]!;
+  const label =
+    main.treatment && main.treatment !== "base"
+      ? ` (${main.treatment.replace(/_/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase())})`
+      : "";
+
+  const related = all
+    .filter((c) => c.number !== number)
+    .map((c) => ({
+      number: c.number,
+      name: c.name,
+      imageUrl: c.imageUrl,
+      valueCents: median(Object.values(rawByCard.get(c.id) ?? {})) ?? 0,
+    }))
+    .filter((c) => c.valueCents > 0)
+    .sort((a, b) => b.valueCents - a.valueCents)
+    .slice(0, 12);
+
+  return {
+    gameSlug: setRow.gameSlug,
+    gameName: setRow.gameName,
+    setCode: setRow.code,
+    setName: setRow.name,
+    card: {
+      cardId: main.id,
+      name: main.name + label,
+      number: main.number,
+      rarity: main.rarity,
+      imageUrl: main.imageUrl,
+      raw: rawByCard.get(main.id) ?? {},
+    },
+    related,
+    tier: null,
+    sources: [],
+  };
+}
+
+/** Card list for a set with NO ranked products — the set-page fallback.
+ *  Deduped by collector number (highest-priced variant wins, matching the
+ *  card-page fallback), priced with the max across raw sources. */
+export interface UnrankedSetCards {
+  gameSlug: string;
+  gameName: string;
+  setCode: string;
+  setName: string;
+  cards: { number: string; name: string; rarity: string; imageUrl: string | null; priceCents: number | null }[];
+}
+
+export async function getUnrankedSetCards(
+  game: string,
+  setCode: string,
+): Promise<UnrankedSetCards | null> {
+  const { getDb, cards, sets, games, latestPrices } = await import("@/lib/db");
+  const { and, eq, inArray } = await import("drizzle-orm");
+  const db = getDb();
+  const setRows = await db
+    .select({ id: sets.id, code: sets.code, name: sets.name, gameSlug: games.slug, gameName: games.displayName })
+    .from(sets)
+    .innerJoin(games, eq(sets.gameId, games.id))
+    .where(and(eq(games.slug, game as "pokemon"), eq(sets.code, setCode)));
+  const setRow = setRows[0];
+  if (!setRow) return null;
+
+  const all = await db
+    .select({ id: cards.id, name: cards.name, number: cards.number, rarity: cards.rarity, imageUrl: cards.imageUrl })
+    .from(cards)
+    .where(eq(cards.setId, setRow.id));
+  if (all.length === 0) return null;
+
+  const priceRows = await db
+    .select({ cardId: latestPrices.cardId, cents: latestPrices.priceCents })
+    .from(latestPrices)
+    .where(and(inArray(latestPrices.cardId, all.map((c) => c.id)), eq(latestPrices.kind, "raw")));
+  const best = new Map<string, number>();
+  for (const r of priceRows) {
+    if (!r.cardId) continue;
+    best.set(r.cardId, Math.max(best.get(r.cardId) ?? 0, r.cents));
+  }
+
+  const byNumber = new Map<string, UnrankedSetCards["cards"][number]>();
+  for (const c of all) {
+    const cents = best.get(c.id) ?? null;
+    const ex = byNumber.get(c.number);
+    if (!ex || (cents ?? -1) > (ex.priceCents ?? -1)) {
+      byNumber.set(c.number, { number: c.number, name: c.name, rarity: c.rarity, imageUrl: c.imageUrl, priceCents: cents });
+    }
+  }
+  const list = [...byNumber.values()].sort(
+    (a, b) => (b.priceCents ?? -1) - (a.priceCents ?? -1) || a.number.localeCompare(b.number, undefined, { numeric: true }),
+  );
+
+  return { gameSlug: setRow.gameSlug, gameName: setRow.gameName, setCode: setRow.code, setName: setRow.name, cards: list };
 }

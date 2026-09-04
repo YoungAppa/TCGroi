@@ -51,6 +51,34 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   }
 
+  // Cards from sets WITHOUT ranked products still get pages (a DB-direct
+  // fallback renders them) — but only Pokémon's are submitted. That's where
+  // this site's data is genuinely scarce elsewhere (Simplified-Chinese and
+  // Japanese prices especially); 30k unranked Magic singles would be thin
+  // pages competing with Scryfall, which helps nobody.
+  const { getDb } = await import("@/lib/db");
+  const { sql } = await import("drizzle-orm");
+  const db = getDb();
+  const unranked = await db.execute<{ slug: string; code: string; number: string }>(sql`
+    with ranked_sets as (select distinct set_id from sealed_products)
+    select g.slug, s.code, c.number
+    from cards c
+    join sets s on s.id = c.set_id and s.id not in (select set_id from ranked_sets)
+    join games g on g.id = s.game_id and g.slug = ${"pokemon"}
+    join latest_prices lp on lp.card_id = c.id and lp.kind = ${"raw"}
+    group by g.slug, s.code, c.number
+    having max(lp.price_cents) >= ${CARD_SITEMAP_MIN_CENTS}`);
+  for (const r of unranked) {
+    const key = `${r.slug}/${r.code}/${r.number}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    cardUrls.push({
+      url: `${BASE}/${r.slug}/${r.code}/card/${encodeURIComponent(r.number)}`,
+      changeFrequency: "weekly" as const,
+      priority: 0.6,
+    });
+  }
+
   return [
     { url: BASE, changeFrequency: "daily", priority: 1 },
     { url: `${BASE}/methodology`, changeFrequency: "monthly", priority: 0.5 },
