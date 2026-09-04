@@ -195,13 +195,44 @@ export function RankingsTable({
       sortKey === "roi"
         ? (r) => (marketColumnOn ? r.c.roiMarket : r.c.roiRetail) ?? -Infinity
         : SORTS[sortKey];
-    // Ties (a set's products share one Popular score) break on market price,
-    // so a hot set leads with its box/ETB rather than five mini tins.
-    return [...rows].sort(
+    const sortedRows = [...rows].sort(
       (a, b) =>
         (metric(b) - metric(a)) * (sortDesc ? 1 : -1) ||
         (b.payload.market.priceCents ?? -1) - (a.payload.market.priceCents ?? -1),
     );
+
+    // The default Popular view is a SHOWCASE: one product per set, so the
+    // front page reads as a parade of hot sets instead of nine Ascended
+    // Heroes rows. The representative is the set's flagship you could still
+    // buy — the priciest product trading at or under \$200 (an ETB, usually);
+    // when everything reachable is gone (Evolving Skies), the cheapest way in
+    // (a pack). Any search, filter or other sort shows the full list; per-set
+    // click data should replace this heuristic once there is traffic to
+    // measure.
+    const isDefaultBrowse =
+      sortKey === "popular" && typeFilter === "all" && genFilter === "all" &&
+      confFilter === "all" && !positiveOnly && query.trim() === "";
+    if (!isDefaultBrowse) return sortedRows;
+    const REACHABLE_CENTS = 20000;
+    const bySet = new Map<string, Row[]>();
+    for (const r of sortedRows) {
+      const list = bySet.get(r.payload.setCode) ?? [];
+      list.push(r);
+      bySet.set(r.payload.setCode, list);
+    }
+    const picked = new Set<string>();
+    for (const list of bySet.values()) {
+      const priced = list.filter((r) => r.payload.market.priceCents !== null);
+      const reachable = priced
+        .filter((r) => r.payload.market.priceCents! <= REACHABLE_CENTS)
+        .sort((a, b) => b.payload.market.priceCents! - a.payload.market.priceCents!);
+      const cheapest = [...priced].sort(
+        (a, b) => a.payload.market.priceCents! - b.payload.market.priceCents!,
+      );
+      const rep = reachable[0] ?? cheapest[0] ?? list[0]!;
+      picked.add(rep.payload.productId);
+    }
+    return sortedRows.filter((r) => picked.has(r.payload.productId));
   }, [rows, sortKey, sortDesc, state.showMarket, state.showRetail]);
 
   function clickSort(key: SortKey) {
