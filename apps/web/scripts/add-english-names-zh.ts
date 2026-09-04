@@ -22,7 +22,7 @@ async function speciesDict(): Promise<Map<string, string>> {
       urls.slice(i, i + 20).map(async (u) => {
         try {
           const d = await fetch(u, { signal: AbortSignal.timeout(30000) }).then((r) => r.json());
-          const zh = d.names.find((n: any) => n.language.name === "zh-Hans")?.name;
+          const zh = d.names.find((n: any) => n.language.name === "zh-hans")?.name;
           const en = d.names.find((n: any) => n.language.name === "en")?.name;
           return zh && en ? ([zh, en] as const) : null;
         } catch { return null; }
