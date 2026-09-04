@@ -1,27 +1,32 @@
 {
   "game": "mtg",
   "setCode": "fin-collector",
-  "version": 4,
+  "version": 5,
   "sampleSizePacks": null,
   "sourceUrl": "https://mtg.fandom.com/wiki/Collector_Booster",
-  "sourceNote": "Magic Collector Booster (12-pack box, ~15 cards/pack). Unlike the Play Booster, a Collector Booster is all-foil and its rare/mythic slots pull the SPECIAL TREATMENTS — showcase, borderless, extended-art — which is where the value sits. This table's card pool is every rare/mythic PRINT of the set at its foil price (via Scryfall), treatments included; serialized (1/500) inserts and ultra-chases over $500 are excluded because they pull at far below the standard rate and would dominate the mean. Modelled as ~2 rares + ~0.7 mythic per pack: a Collector pack actually yields ~4 rare/mythic, but the flat foil pool over-weights the pricier treatment prints, so the per-pack count is set conservatively to compensate (and disclosed as such). Uniform-within-rarity, so a specific expensive borderless is overstated. Confidence LOW — a rough, indicative Collector EV calibrated against street box prices, not a precise per-slot model. v2: adds the Final Fantasy: Through the Ages sheet as a guaranteed slot — WotC's official 'Collecting MAGIC: THE GATHERING—FINAL FANTASY' article states every Collector Booster contains exactly 1 Through the Ages card (65-card foil sheet, its own pool under the 'bonus sheet' rarity; serialized and >$500 prints excluded like every other tier).",
+  "sourceNote": "Magic Collector Booster (12-pack box, ~15 cards/pack). Unlike the Play Booster, a Collector Booster is all-foil and its rare/mythic slots pull the SPECIAL TREATMENTS — showcase, borderless, extended-art — which is where the value sits. This table's card pool is every rare/mythic PRINT of the set at its foil price (via Scryfall), treatments included; serialized (1/500) inserts and ultra-chases over $500 are excluded because they pull at far below the standard rate and would dominate the mean. Modelled as ~2 rares + ~0.7 mythic per pack: a Collector pack actually yields ~4 rare/mythic, but the flat foil pool over-weights the pricier treatment prints, so the per-pack count is set conservatively to compensate (and disclosed as such). Uniform-within-rarity, so a specific expensive borderless is overstated. Confidence LOW — a rough, indicative Collector EV calibrated against street box prices, not a precise per-slot model. v2: adds the Final Fantasy: Through the Ages sheet as a guaranteed slot — WotC's official 'Collecting MAGIC: THE GATHERING—FINAL FANTASY' article states every Collector Booster contains exactly 1 Through the Ages card (65-card foil sheet, its own pool under the 'bonus sheet' rarity; serialized and >$500 prints excluded like every other tier). vNext: FIN Collector Boosters also drop MAGIC—FINAL FANTASY COMMANDER (FIC) cards — the article's three Booster Fun rare/mythic slots give FIC groups ~6.2%, ~37% and ~8% shares, ≈0.5 FIC cards per pack. The 154-card FIC Booster Fun/extended-art pool is now IN the model (foil prices) under its own tier, with the coarse rare/mythic aggregate reduced (2+0.7 -> 1.6+0.6) so total expected hits stay ~2.7 and nothing double-counts.",
   "confidence": "low",
   "slots": [
     {
       "rarity": "mythic",
-      "perPackProbability": 0.7
+      "perPackProbability": 0.6
     }
   ],
   "guaranteedSlots": [
     {
-      "label": "Rares",
-      "rarity": "rare",
-      "countPerPack": 2
-    },
-    {
       "label": "Through the Ages (1 per pack, official)",
       "rarity": "bonus_sheet",
       "countPerPack": 1
+    },
+    {
+      "label": "Rares (aggregate, FIC share carved out)",
+      "rarity": "rare",
+      "countPerPack": 1.6
+    },
+    {
+      "label": "FINAL FANTASY Commander cards (≈0.5/pack per the article's slot shares)",
+      "rarity": "commander_fun",
+      "countPerPack": 0.5
     }
   ],
   "alternateEstimates": [],

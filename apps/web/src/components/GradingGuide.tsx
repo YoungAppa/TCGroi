@@ -9,6 +9,9 @@ interface ChaseLike {
   number: string;
   valueCents: number;
   psa10Cents: number | null;
+  /** Other companies' gem-grade prices — comparison columns only. */
+  cgc10Cents?: number | null;
+  tag10Cents?: number | null;
   /** Share of this card's PSA population graded 10, or null with no census. */
   gemRate?: number | null;
   /** Size of that population, so the reader can judge the rate. */
@@ -48,6 +51,8 @@ export function GradingGuide({
   const chaseRows = chase.filter((c) => c.valueCents >= GRADEABLE_MIN);
   const rows = [...promoRows, ...chaseRows].slice(0, 12);
   if (rows.length === 0) return null;
+  const hasCgc = rows.some((c) => c.cgc10Cents != null);
+  const hasTag = rows.some((c) => c.tag10Cents != null);
 
   return (
     <section className="space-y-2 rounded-xl border border-border bg-surface p-4">
@@ -63,11 +68,13 @@ export function GradingGuide({
       <div className="overflow-x-auto">
         <table className="w-full min-w-[32rem] text-sm">
           <thead>
-            <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted">
+            <tr className="whitespace-nowrap border-b border-border text-left text-xs uppercase tracking-wide text-muted">
               <th className="py-1.5 pr-3">Card</th>
               <th className="py-1.5 pr-3">Raw</th>
               <th className="py-1.5 pr-3">PSA fee</th>
               <th className="py-1.5 pr-3">PSA 10 value</th>
+              {hasCgc && <th className="py-1.5 pr-3">CGC 10</th>}
+              {hasTag && <th className="py-1.5 pr-3">TAG 10</th>}
               <th className="py-1.5 pr-3">Net if 10</th>
               <th className="py-1.5">Chance of 10</th>
             </tr>
@@ -109,6 +116,16 @@ export function GradingGuide({
                       </span>
                     )}
                   </td>
+                  {hasCgc && (
+                    <td className="tabular py-1.5 pr-3 text-muted" title="CGC 10 Gem Mint price — shown for comparison; the net-if-10 math stays PSA-based, where population odds exist.">
+                      {c.cgc10Cents != null ? money(c.cgc10Cents) : "—"}
+                    </td>
+                  )}
+                  {hasTag && (
+                    <td className="tabular py-1.5 pr-3 text-muted" title="TAG 10 price — shown for comparison; the net-if-10 math stays PSA-based.">
+                      {c.tag10Cents != null ? money(c.tag10Cents) : "—"}
+                    </td>
+                  )}
                   <td className="tabular py-1.5 pr-3 font-medium">
                     {net !== null ? (
                       <span className={net > 0 ? "text-roi-pos" : "text-roi-neg"}>
