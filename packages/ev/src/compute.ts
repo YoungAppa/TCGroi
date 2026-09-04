@@ -277,6 +277,8 @@ function buildChaseTable(
       // Graded price is its own market, independent of the raw source toggle,
       // so it blends across whatever graded sources exist (currently one).
       psa10Cents: median(Object.values(card.psa10 ?? {})),
+      cgc10Cents: median(Object.values(card.cgc10 ?? {})),
+      tag10Cents: median(Object.values(card.tag10 ?? {})),
       // Odds this card grades a 10, from its own PSA census. Null below the
       // engine's minimum population — a handful of slabs is not a rate.
       gemRate:

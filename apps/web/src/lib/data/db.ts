@@ -254,6 +254,8 @@ export async function loadRankingsFromDb(): Promise<RankingsPayload> {
   const rawByCard = new Map<string, PriceBySource>();
   const psa9ByCard = new Map<string, PriceBySource>();
   const psa10ByCard = new Map<string, PriceBySource>();
+  const cgc10ByCard = new Map<string, PriceBySource>();
+  const tag10ByCard = new Map<string, PriceBySource>();
   const sourcesWithData = new Set<string>();
 
   for (const p of cardPriceRows) {
@@ -270,6 +272,10 @@ export async function loadRankingsFromDb(): Promise<RankingsPayload> {
           ? psa9ByCard
           : p.kind === "psa10"
             ? psa10ByCard
+            : p.kind === "cgc10"
+              ? cgc10ByCard
+              : p.kind === "tag10"
+                ? tag10ByCard
             : null;
     if (!bucket) continue;
     const existing = bucket.get(p.cardId) ?? {};
@@ -346,6 +352,10 @@ export async function loadRankingsFromDb(): Promise<RankingsPayload> {
     const psa10 = psa10ByCard.get(c.id);
     if (psa9) entry.psa9 = psa9;
     if (psa10) entry.psa10 = psa10;
+    const cgc10 = cgc10ByCard.get(c.id);
+    const tag10 = tag10ByCard.get(c.id);
+    if (cgc10) entry.cgc10 = cgc10;
+    if (tag10) entry.tag10 = tag10;
     const pop = popByCard.get(c.id);
     if (pop) entry.population = pop;
     return entry;

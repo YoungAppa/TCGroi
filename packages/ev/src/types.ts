@@ -33,6 +33,10 @@ export interface CardPriceData {
   raw: PriceBySource;
   psa9?: PriceBySource;
   psa10?: PriceBySource;
+  /** Other companies' gem-grade prices — grading-guide display only; graded
+   *  EV stays PSA-based (only PSA has population odds). */
+  cgc10?: PriceBySource;
+  tag10?: PriceBySource;
   /**
    * This card's own PSA census, when we have it — the share of graded copies
    * that came back a 10 and a 9.
@@ -195,6 +199,8 @@ export interface ChaseCard {
   probPerProduct: number;
   /** Best PSA 10 sale price in cents, or null when we have no graded data. */
   psa10Cents: number | null;
+  cgc10Cents: number | null;
+  tag10Cents: number | null;
   /**
    * Share of this card's PSA population graded 10, or null when we hold no
    * census for it. The odds half of "is it worth grading?".

@@ -96,7 +96,7 @@ export interface HistoryPoint {
 }
 
 /** Daily raw-price history for one card (median across sources/runs). */
-export async function getCardHistory(cardId: string, days = 180): Promise<HistoryPoint[]> {
+export async function getCardHistory(cardId: string, days = 3650): Promise<HistoryPoint[]> {
   try {
     const db = getDb();
     const cutoffIso = new Date(Date.now() - days * 86_400_000).toISOString();

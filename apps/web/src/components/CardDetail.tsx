@@ -8,6 +8,8 @@ import { useMemo } from "react";
 
 import { rarityLabel } from "@/lib/catalog/rarities";
 import type { CardContext } from "@/lib/data";
+import type { HistoryPoint } from "@/lib/data/cards";
+import { PriceHistory } from "./PriceHistory";
 import { median } from "@packroi/ev";
 import { formatProbability } from "@packroi/ev/format";
 import { useMoney } from "@/lib/money/context";
@@ -18,7 +20,7 @@ import { useMoney } from "@/lib/money/context";
  * searches "Umbreon ex 161" leaves knowing exactly which boxes/packs/tins can
  * pull it and how likely each one is to.
  */
-export function CardDetail({ ctx }: { ctx: CardContext }) {
+export function CardDetail({ ctx, history = [] }: { ctx: CardContext; history?: HistoryPoint[] }) {
   const { money } = useMoney();
   const { card } = ctx;
 
@@ -33,17 +35,26 @@ export function CardDetail({ ctx }: { ctx: CardContext }) {
   return (
     <div className="space-y-6">
       <div className="grid gap-6 lg:grid-cols-[minmax(260px,340px)_1fr]">
-        {/* ---- the card ---- */}
-        <div className="flex items-start justify-center rounded-2xl border border-border bg-surface p-5">
-          {card.imageUrl ? (
-            <img
-              src={card.imageUrl}
-              alt={`${card.name} #${card.number}`}
-              className="w-full max-w-[320px] rounded-xl shadow-[0_24px_60px_rgba(0,0,0,.55)]"
-            />
-          ) : (
-            <div className="py-20 text-sm text-muted">No image available</div>
+        {/* ---- the card, its price, and its history ---- */}
+        <div className="space-y-4">
+          <div className="flex items-start justify-center rounded-2xl border border-border bg-surface p-5">
+            {card.imageUrl ? (
+              <img
+                src={card.imageUrl}
+                alt={`${card.name} #${card.number}`}
+                className="w-full max-w-[320px] rounded-xl shadow-[0_24px_60px_rgba(0,0,0,.55)]"
+              />
+            ) : (
+              <div className="py-20 text-sm text-muted">No image available</div>
+            )}
+          </div>
+          {raw !== null && (
+            <div className="flex items-baseline justify-between rounded-xl border border-border bg-surface px-4 py-3">
+              <span className="text-xs uppercase tracking-wide text-muted">Current price</span>
+              <span className="tabular font-display text-2xl font-extrabold">{money(raw)}</span>
+            </div>
           )}
+          <PriceHistory data={history} />
         </div>
 
         <div className="space-y-4">

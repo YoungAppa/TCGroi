@@ -619,7 +619,7 @@ export const scrydexPriceProvider = {
             (psa9 === null || psa10 <= psa9 * MAX_PSA10_OVER_PSA9);
           if (psa10 !== null && !psa10Trusted) implausible++;
 
-          const emit = (kind: "psa10" | "psa9", dollars: number | null) => {
+          const emit = (kind: "psa10" | "psa9" | "cgc10" | "tag10", dollars: number | null) => {
             if (dollars === null) return;
             // Same rule the PokemonPriceTracker job uses: a slab worth less
             // than the raw card is bad data, not a bargain.
@@ -642,6 +642,22 @@ export const scrydexPriceProvider = {
 
           emit("psa10", psa10Trusted ? psa10 : null);
           emit("psa9", psa9);
+
+          // CGC 10 / TAG 10: display-only columns in the grading guide (graded
+          // EV stays PSA-based — only PSA has population odds). These markets
+          // are thinner than PSA's, so a slab price is trusted ONLY with a
+          // same-card PSA 10 anchor: no anchor, no number — and anything above
+          // 2x the PSA 10 is an ask, not a market (CGC 10 Gem Mint and TAG 10
+          // trade at or below PSA 10 on verified chases).
+          if (psa10Trusted && psa10 !== null) {
+            for (const { kind, company } of [
+              { kind: "cgc10" as const, company: "CGC" },
+              { kind: "tag10" as const, company: "TAG" },
+            ]) {
+              const dollars = gradedDollars(prices, company, "10");
+              if (dollars !== null && dollars <= psa10 * 2) emit(kind, dollars);
+            }
+          }
         }
       }
 

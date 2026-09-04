@@ -3,7 +3,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { CardDetail } from "@/components/CardDetail";
-import { PriceHistory } from "@/components/PriceHistory";
 import { getCardHistory } from "@/lib/data/cards";
 import { rarityLabel } from "@/lib/catalog/rarities";
 import { getCardContext } from "@/lib/data";
@@ -146,9 +145,7 @@ export default async function CardPage({ params }: { params: Promise<Params> }) 
         · <span className="text-foreground">#{ctx.card.number}</span>
       </nav>
 
-      <CardDetail ctx={ctx} />
-
-      <PriceHistory data={history} />
+      <CardDetail ctx={ctx} history={history} />
 
       {/* ---- the indexable answer copy ----------------------------------- */}
       <section className="space-y-4 rounded-xl border border-border bg-surface p-5 text-sm leading-relaxed">

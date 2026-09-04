@@ -9,7 +9,7 @@ import type { CatalogSet } from "@/lib/catalog/types";
  * and keeps external I/O out of every request path.
  */
 
-export type PriceKind = "raw" | "psa9" | "psa10" | "sealed";
+export type PriceKind = "raw" | "psa9" | "psa10" | "cgc10" | "tag10" | "sealed";
 
 /** A price for one entity from one source at one moment. Integer cents. */
 export interface PriceSnapshotInput {

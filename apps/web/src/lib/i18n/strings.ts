@@ -50,7 +50,8 @@ export const STRINGS = {
       "Cards, rarities and prices come from Scrydex — real Japanese tiers, not a translation of the English ones — and prices are converted from the USD figures Scrydex quotes. Card and set names stay in Japanese; they are never machine translated. Only a few Japanese sets are ranked so far, because ranking one needs a pull-rate study for that set, and Japanese odds are far less documented than English ones. Japanese boxes also often carry published per-box guarantees (Terastal Festival ex guarantees one SAR per box), which are modelled per set rather than assumed era-wide. Sets without that research stay unranked instead of being given invented odds.",
     "nav.rankings": "Rankings",
     "nav.collection": "Collection",
-    "nav.methodology": "Methodology",
+    "nav.methodology": "How it works",
+    "nav.sets": "Sets",
     "disclaimer.banner":
       "Pull rates are community estimates, not official odds — every EV here is a projection, not a promise.",
     "rankings.title": "Sealed product rankings",
@@ -108,7 +109,8 @@ export const STRINGS = {
       "カード・レアリティ・価格は Scrydex から取得しています。英語版レアリティの翻訳ではなく、実際の日本語レアリティ（ダブルレア／アートレア／スーパーレア／スペシャルアートレア）です。価格は Scrydex が提示する米ドル建ての数値を換算したものです。カード名・セット名は機械翻訳せず日本語のまま表示します。現時点でランキング対象の日本語セットが少ないのは、ランキングに載せるにはそのセット固有の封入率データが必要で、日本語版の確率は英語版ほど公開されていないためです。また日本語のボックスには公表された「1BOXにSAR1枚」といった保証（テラスタルフェスex など）があることが多く、これは時代ごとの一律推定ではなくセット単位でモデル化しています。根拠のないセットには推測値を与えず、未ランキングのままにしています。",
     "nav.rankings": "ランキング",
     "nav.collection": "コレクション",
-    "nav.methodology": "算出方法",
+    "nav.methodology": "仕組み",
+    "nav.sets": "セット一覧",
     "disclaimer.banner":
       "封入率は公式の確率ではなくコミュニティの推定値です。期待値はあくまで予測であり、保証ではありません。",
     "rankings.title": "未開封商品ランキング",
@@ -165,7 +167,8 @@ export const STRINGS = {
       "卡牌、稀有度与价格均来自 Scrydex——采用真实的日文稀有度分级，而非英文分级的翻译；价格由 Scrydex 提供的美元数值换算而来。卡牌与系列名称保留日文原文，不做机器翻译。目前仅有少数日文系列进入排行榜，因为排名需要该系列自身的抽卡率研究，而日文版的概率公开程度远不如英文版。日文原盒通常还带有官方公布的每盒保底（例如「太晶祭 ex」保证每盒 1 张 SAR），我们按系列单独建模，而不套用整个世代的估算。缺乏研究依据的系列宁可不排名，也不会使用凭空推测的概率。",
     "nav.rankings": "排行榜",
     "nav.collection": "收藏",
-    "nav.methodology": "计算方法",
+    "nav.methodology": "运作原理",
+    "nav.sets": "系列一览",
     "disclaimer.banner":
       "抽卡率为社群估算值，并非官方公布的概率——所有期望值均为推算，不构成保证。",
     "rankings.title": "未拆封商品排行榜",
@@ -219,7 +222,8 @@ export const STRINGS = {
     "filter.cardLanguage": "Idioma de las cartas",
     "nav.rankings": "Clasificación",
     "nav.collection": "Colección",
-    "nav.methodology": "Metodología",
+    "nav.methodology": "Cómo funciona",
+    "nav.sets": "Colecciones",
     "disclaimer.banner":
       "Las probabilidades son estimaciones de la comunidad, no cifras oficiales: cada valor esperado es una proyección, no una promesa.",
     "rankings.title": "Clasificación de producto sellado",
@@ -275,7 +279,8 @@ export const STRINGS = {
     "filter.cardLanguage": "Langue des cartes",
     "nav.rankings": "Classement",
     "nav.collection": "Collection",
-    "nav.methodology": "Méthodologie",
+    "nav.methodology": "Fonctionnement",
+    "nav.sets": "Extensions",
     "disclaimer.banner":
       "Les taux de tirage sont des estimations de la communauté, pas des chiffres officiels — chaque valeur attendue est une projection, pas une promesse.",
     "rankings.title": "Classement des produits scellés",
@@ -331,7 +336,8 @@ export const STRINGS = {
     "filter.cardLanguage": "Kartensprache",
     "nav.rankings": "Rangliste",
     "nav.collection": "Sammlung",
-    "nav.methodology": "Methodik",
+    "nav.methodology": "So funktioniert es",
+    "nav.sets": "Sets",
     "disclaimer.banner":
       "Zieh-Wahrscheinlichkeiten sind Community-Schätzungen, keine offiziellen Angaben — jeder Erwartungswert ist eine Prognose, kein Versprechen.",
     "rankings.title": "Rangliste versiegelter Produkte",

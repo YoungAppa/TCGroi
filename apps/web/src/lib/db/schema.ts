@@ -42,7 +42,7 @@ export const pullRateConfidence = pgEnum("pull_rate_confidence", [
   "placeholder",
 ]);
 
-export const priceKind = pgEnum("price_kind", ["raw", "psa9", "psa10", "sealed"]);
+export const priceKind = pgEnum("price_kind", ["raw", "psa9", "psa10", "cgc10", "tag10", "sealed"]);
 
 export const jobStatus = pgEnum("job_status", ["running", "success", "failure"]);
 
