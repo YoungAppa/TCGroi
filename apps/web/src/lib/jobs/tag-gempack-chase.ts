@@ -42,17 +42,16 @@ export async function tagGemPackChase(db: ReturnType<typeof getDb>): Promise<voi
     update cards set rarity = 'unknown', display_only = false
     where rarity = 'cn_chase' and set_id in ${gemSetIds}
   `);
-  // EV chase tier: every ★★★ card EXCEPT the ultra-secret. Uniform-within-tier
-  // over the real pool — cheap ★★★ included, which is what the odd covers.
+  // EV chase tier: EVERY ★★★ card, ultra-secret included. The printed rate is
+  // the official aggregate for the whole ★★★ pool, and uniform-within-tier is
+  // the same disclosed approximation every EN/JP tier uses (Evolving Skies'
+  // \$2,200 Umbreon sits in its tier the same way). Excluding the ultra-secret
+  // was extra caution that made ZH inconsistent with the rest of the site and
+  // deliberately understated EV; the per-card odds for the big one still read
+  // as a ceiling, exactly like everywhere else.
   await db.execute(sql`
     update cards set rarity = 'cn_chase', display_only = false
-    where set_id in ${gemSetIds} and ${threeStar} and not ${dearerThanSecret}
-  `);
-  // Display-only ultra-secret: a ★★★ pulled far below the flat rate — shown in
-  // the gallery but kept out of EV so a uniform tier can't over-value it.
-  await db.execute(sql`
-    update cards set rarity = 'cn_chase', display_only = true
-    where set_id in ${gemSetIds} and ${threeStar} and ${dearerThanSecret}
+    where set_id in ${gemSetIds} and ${threeStar}
   `);
   // Also surface the valuable lower-star special-art holos (★★ / ★ worth ≥ $5)
   // as display-only. They aren't part of the disclosed ★★★ odd, so they stay OUT

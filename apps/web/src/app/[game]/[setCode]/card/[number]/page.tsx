@@ -3,6 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { CardDetail } from "@/components/CardDetail";
+import { PriceHistory } from "@/components/PriceHistory";
+import { getCardHistory } from "@/lib/data/cards";
 import { rarityLabel } from "@/lib/catalog/rarities";
 import { getCardContext } from "@/lib/data";
 import { median } from "@packroi/ev";
@@ -88,6 +90,9 @@ export default async function CardPage({ params }: { params: Promise<Params> }) 
   const { game, setCode, number } = await params;
   const ctx = await getCardContext(game, setCode, decodeURIComponent(number));
   if (!ctx) notFound();
+  // Daily raw-price snapshots have accumulated since the price cron began;
+  // the same sparkline the product pages use.
+  const history = await getCardHistory(ctx.card.cardId);
 
   const price = rawMedianCents(ctx.card);
   const psa10 = median(Object.values(ctx.card.psa10 ?? {}));
@@ -142,6 +147,8 @@ export default async function CardPage({ params }: { params: Promise<Params> }) 
       </nav>
 
       <CardDetail ctx={ctx} />
+
+      <PriceHistory data={history} />
 
       {/* ---- the indexable answer copy ----------------------------------- */}
       <section className="space-y-4 rounded-xl border border-border bg-surface p-5 text-sm leading-relaxed">
