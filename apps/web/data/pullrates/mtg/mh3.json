@@ -1,10 +1,10 @@
 {
   "game": "mtg",
   "setCode": "mh3",
-  "version": 2,
+  "version": 3,
   "sampleSizePacks": null,
   "sourceUrl": "https://magic.wizards.com/en/news/feature/collecting-modern-horizons-3",
-  "sourceNote": "v2 OFFICIAL: rates transcribed from WotC's 'Collecting Modern Horizons 3' article. Default rare .798 and mythic .130 in the R/M slot plus .067/.011 from the wildcard slot; retro-frame cards at 2.1% (R/M slot) + 4.2% (wildcard) as one pool; borderless Booster Fun at 5.1% + 0.4%. Deliberately unmodelled, all understating EV: the new-to-Modern slot's extra rares/mythics, the wildcard slot's Commander mythics (4.2%), DFC uncommons, and every foil. Mixed-rarity pools (retro, Booster Fun) use uniform-within-pool like every tier. Pool rule: special tiers contain ONLY prints that exist non-foil, priced non-foil; Collector-exclusive foil-only variants stay display-only.",
+  "sourceNote": "v2 OFFICIAL: rates transcribed from WotC's 'Collecting Modern Horizons 3' article. Default rare .798 and mythic .130 in the R/M slot plus .067/.011 from the wildcard slot; retro-frame cards at 2.1% (R/M slot) + 4.2% (wildcard) as one pool; borderless Booster Fun at 5.1% + 0.4%. Deliberately unmodelled, all understating EV: the new-to-Modern slot's extra rares/mythics, the wildcard slot's Commander mythics (4.2%), DFC uncommons, and every foil. Mixed-rarity pools (retro, Booster Fun) use uniform-within-pool like every tier. Pool rule: special tiers contain ONLY prints that exist non-foil, priced non-foil; Collector-exclusive foil-only variants stay display-only. vNext: the wildcard slot's 4.2% Commander mythic rate — previously skipped as understating — is now modelled: the 8 new m3c mythics (Ulalek, Disa, Omo…) at non-foil play prices.",
   "confidence": "official",
   "slots": [
     {
@@ -46,6 +46,11 @@
       "label": "Booster Fun borderless (5.1% + 0.4%)",
       "rarity": "booster_fun",
       "countPerPack": 0.055
+    },
+    {
+      "label": "Wildcard Commander mythics (4.2%, official)",
+      "rarity": "commander_fun",
+      "countPerPack": 0.042
     }
   ],
   "alternateEstimates": [],

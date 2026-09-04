@@ -1,10 +1,10 @@
 {
   "game": "mtg",
   "setCode": "mh3-collector",
-  "version": 1,
+  "version": 2,
   "sampleSizePacks": null,
   "sourceUrl": "https://mtg.fandom.com/wiki/Collector_Booster",
-  "sourceNote": "Magic Collector Booster (12-pack box, ~15 cards/pack). Unlike the Play Booster, a Collector Booster is all-foil and its rare/mythic slots pull the SPECIAL TREATMENTS \u2014 showcase, borderless, extended-art \u2014 which is where the value sits. This table's card pool is every rare/mythic PRINT of the set at its foil price (via Scryfall), treatments included; serialized (1/500) inserts and ultra-chases over $500 are excluded because they pull at far below the standard rate and would dominate the mean. Modelled as ~2 rares + ~0.7 mythic per pack: a Collector pack actually yields ~4 rare/mythic, but the flat foil pool over-weights the pricier treatment prints, so the per-pack count is set conservatively to compensate (and disclosed as such). Uniform-within-rarity, so a specific expensive borderless is overstated. Confidence LOW \u2014 a rough, indicative Collector EV calibrated against street box prices, not a precise per-slot model.",
+  "sourceNote": "Magic Collector Booster (12-pack box, ~15 cards/pack). Unlike the Play Booster, a Collector Booster is all-foil and its rare/mythic slots pull the SPECIAL TREATMENTS — showcase, borderless, extended-art — which is where the value sits. This table's card pool is every rare/mythic PRINT of the set at its foil price (via Scryfall), treatments included; serialized (1/500) inserts and ultra-chases over $500 are excluded because they pull at far below the standard rate and would dominate the mean. Modelled as ~2 rares + ~0.7 mythic per pack: a Collector pack actually yields ~4 rare/mythic, but the flat foil pool over-weights the pricier treatment prints, so the per-pack count is set conservatively to compensate (and disclosed as such). Uniform-within-rarity, so a specific expensive borderless is overstated. Confidence LOW — a rough, indicative Collector EV calibrated against street box prices, not a precise per-slot model. vNext: MH3 Collector Boosters also drop the set's 8 new Commander mythics — the article's Slot 7 gives their etched/borderless-profile/extended-art groups 3.3+6.1+3.5+5.3+3.0 = ~21.2% combined. Pool ingested at foil prices under its own tier, with the coarse rare aggregate reduced by the same 0.2 so totals are conserved.",
   "confidence": "low",
   "slots": [
     {
@@ -14,9 +14,14 @@
   ],
   "guaranteedSlots": [
     {
-      "label": "Rares",
+      "label": "Rares (Commander share carved out)",
       "rarity": "rare",
-      "countPerPack": 2
+      "countPerPack": 1.8
+    },
+    {
+      "label": "MH3 Commander cards (Slot 7 shares sum ~21.2%, official)",
+      "rarity": "commander_fun",
+      "countPerPack": 0.212
     }
   ],
   "alternateEstimates": [],
