@@ -165,6 +165,10 @@ export interface CardContext {
   related: { number: string; name: string; imageUrl: string | null; valueCents: number }[];
   /** The card's rarity tier stats in its home set, for the "how rare" copy. */
   tier: { rarity: string; perPackProbability: number; cardsInTier: number } | null;
+  /** For a card in an UNRANKED set: the set's sealed products with live prices
+   *  (no odds — none are published), so the page can still say where the card
+   *  comes from. Empty for ranked sets, whose `sources` carry the odds. */
+  unrankedProducts?: { name: string; type: string; imageUrl: string | null; priceCents: number | null; contentsNote: string | null }[];
   /** Products whose packs can contain this card, with the card's odds in each. */
   sources: {
     productName: string;
@@ -368,6 +372,23 @@ async function getCardContextFromDb(
     related,
     tier: null,
     sources: [],
+    unrankedProducts: await (async () => {
+      const { sealedProducts } = await import("@/lib/db");
+      const prods = await db
+        .select({ id: sealedProducts.id, name: sealedProducts.name, type: sealedProducts.type, imageUrl: sealedProducts.imageUrl, contentsNote: sealedProducts.contentsNote })
+        .from(sealedProducts)
+        .where(eq(sealedProducts.setId, setRow.id));
+      if (prods.length === 0) return [];
+      const pr = await db
+        .select({ pid: latestPrices.sealedProductId, cents: latestPrices.priceCents })
+        .from(latestPrices)
+        .where(and(inArray(latestPrices.sealedProductId, prods.map((p) => p.id)), eq(latestPrices.kind, "sealed")));
+      const best = new Map<string, number>();
+      for (const r of pr) if (r.pid) best.set(r.pid, Math.max(best.get(r.pid) ?? 0, r.cents));
+      return prods
+        .map((p) => ({ name: p.name, type: p.type, imageUrl: p.imageUrl, priceCents: best.get(p.id) ?? null, contentsNote: p.contentsNote }))
+        .sort((a, b) => (a.priceCents ?? Infinity) - (b.priceCents ?? Infinity));
+    })(),
   };
 }
 

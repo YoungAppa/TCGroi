@@ -111,6 +111,36 @@ export function CardDetail({ ctx, history = [] }: { ctx: CardContext; history?: 
                 usable pull rates for this set, and this site doesn&apos;t invent
                 odds. The card&apos;s price above is live regardless.
               </p>
+              {ctx.unrankedProducts && ctx.unrankedProducts.length > 0 && (
+                <>
+                  <p className="mt-3 text-foreground">
+                    It comes from these {ctx.setName} products (live prices, no odds):
+                  </p>
+                  <ul className="mt-2 grid gap-2 sm:grid-cols-2">
+                    {ctx.unrankedProducts.map((p) => (
+                      <li key={p.name} className="flex items-center gap-3 rounded-lg border border-border bg-surface-raised px-3 py-2">
+                        {p.imageUrl ? (
+                          <img src={p.imageUrl} alt="" loading="lazy" className="h-12 w-12 shrink-0 rounded object-contain" />
+                        ) : (
+                          <span className="h-12 w-12 shrink-0 rounded bg-surface" />
+                        )}
+                        <span className="min-w-0 flex-1">
+                          <span className="block truncate font-medium text-foreground">{p.name}</span>
+                          <span className="block text-xs">{p.type.replace(/_/g, " ")}</span>
+                        </span>
+                        <span className="tabular shrink-0 font-semibold text-foreground">
+                          {p.priceCents !== null ? money(p.priceCents) : "—"}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="mt-2 text-xs">
+                    <Link href={`/${ctx.gameSlug}/${encodeURIComponent(ctx.setCode)}`} className="underline hover:text-foreground">
+                      All {ctx.setName} cards and products →
+                    </Link>
+                  </p>
+                </>
+              )}
             </div>
           ) : (
           <div className="rounded-xl border border-border bg-surface p-4 sm:p-5">

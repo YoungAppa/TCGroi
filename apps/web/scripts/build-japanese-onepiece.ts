@@ -20,6 +20,7 @@
  *
  * Usage: tsx --env-file=.env.local scripts/build-japanese-onepiece.ts
  */
+import { readFileSync } from "node:fs";
 import { and, eq, sql } from "drizzle-orm";
 
 import {
@@ -63,6 +64,32 @@ interface PcProduct {
   "new-price"?: number;
 }
 
+/**
+ * The complete PriceCharting one-piece-cards CSV (download-custom), grouped by
+ * console. The search API caps results, which silently priced only ~55 of a
+ * 266-row Japanese console; the CSV has every row. Prices arrive as "$2.39".
+ */
+function loadPcCsv(path: string): Map<string, PcProduct[]> {
+  const out = new Map<string, PcProduct[]>();
+  const take = (st: { rest: string }) => {
+    let v: string;
+    if (st.rest.startsWith('"')) { const e = st.rest.indexOf('"', 1); v = st.rest.slice(1, e); st.rest = st.rest.slice(e + 2); }
+    else { const e = st.rest.indexOf(","); v = st.rest.slice(0, e); st.rest = st.rest.slice(e + 1); }
+    return v;
+  };
+  for (const line of readFileSync(path, "utf8").split("\n").slice(1)) {
+    const first = line.indexOf(",");
+    if (first < 0) continue;
+    const st = { rest: line.slice(first + 1) };
+    const consoleName = take(st); const product = take(st);
+    const dollars = Number(st.rest.split(",")[0]!.replace(/[$"]/g, ""));
+    const row: PcProduct = { "console-name": consoleName, "product-name": product, "loose-price": Number.isFinite(dollars) ? Math.round(dollars * 100) : 0 };
+    if (!out.has(consoleName)) out.set(consoleName, []);
+    out.get(consoleName)!.push(row);
+  }
+  return out;
+}
+
 async function pcSearch(token: string, query: string): Promise<PcProduct[]> {
   const res = await fetch(
     `https://www.pricecharting.com/api/products?t=${token}&q=${encodeURIComponent(query)}`,
@@ -79,11 +106,16 @@ async function main() {
     process.exit(1);
   }
 
+  const csvArg = process.argv.indexOf("--csv");
+  const csv = csvArg >= 0 && process.argv[csvArg + 1] ? loadPcCsv(process.argv[csvArg + 1]!) : null;
+  if (csv) console.log(`PriceCharting CSV: ${csv.size} consoles`);
+
   const db = getDb();
   const [game] = await db.select({ id: games.id }).from(games).where(eq(games.slug, "one-piece"));
   if (!game) throw new Error("one-piece game row missing — run db:seed");
 
-  // Every English One Piece set that can rank (has an active pull table).
+  // Every English One Piece set — main sets, extra/premium boosters, starter
+  // decks and promos. PriceCharting carries a Japanese console for most.
   const enSets = await db
     .select({
       id: sets.id,
@@ -93,7 +125,6 @@ async function main() {
       externalIds: sets.externalIds,
     })
     .from(sets)
-    .innerJoin(pullRateTables, and(eq(pullRateTables.setId, sets.id), eq(pullRateTables.isActive, true)))
     .where(and(eq(sets.gameId, game.id), eq(sets.language, "EN")));
 
   console.log(`${enSets.length} English One Piece sets to mirror\n`);
@@ -105,10 +136,28 @@ async function main() {
   const skipped: string[] = [];
 
   for (const en of enSets) {
-    // PriceCharting names the console after the set, in English.
-    const products = await pcSearch(token, `One Piece Japanese ${en.name}`);
-    const consoleRe = new RegExp(`^One Piece Japanese ${en.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, "i");
-    const rows = products.filter((p) => consoleRe.test(p["console-name"] ?? ""));
+    // PriceCharting names the console after the set, in English — with its own
+    // conventions: leading articles dropped ("Fist of Divine Speed"), extra
+    // boosters prefixed, premium boosters numbered, starter decks as
+    // "Starter Deck N: Name" (sometimes without the name), promos as "Promo".
+    const esc = (x: string) => x.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const bare = en.name.replace(/^(A|An|The)\s+/i, "");
+    const st = /^ST-?(\d+)$/i.exec(en.code);
+    const candidates: { query: string; re: RegExp }[] = [];
+    if (st) candidates.push({ query: `One Piece Japanese Starter Deck ${Number(st[1])}`, re: new RegExp(`^One Piece Japanese Starter Deck 0*${Number(st[1])}(:.*)?$`, "i") });
+    else if (/^EB/i.test(en.code)) candidates.push({ query: `One Piece Japanese Extra Booster ${bare}`, re: new RegExp(`^One Piece Japanese Extra Booster ${esc(bare)}$`, "i") });
+    else if (/^PRB-?0?1$/i.test(en.code)) candidates.push({ query: "One Piece Japanese Premium Booster", re: /^One Piece Japanese Premium Booster$/i });
+    else if (/^PRB-?0?2$/i.test(en.code)) candidates.push({ query: "One Piece Japanese Premium Booster 2", re: /^One Piece Japanese Premium Booster 2$/i });
+    else if (/^P$/i.test(en.code)) candidates.push({ query: "One Piece Japanese Promo", re: /^One Piece Japanese Promo$/i });
+    candidates.push({ query: `One Piece Japanese ${en.name}`, re: new RegExp(`^One Piece Japanese (A |An |The )?${esc(bare)}$`, "i") });
+    let rows: PcProduct[] = [];
+    for (const c of candidates) {
+      const products = csv
+        ? [...csv.entries()].filter(([name]) => c.re.test(name)).flatMap(([, r]) => r)
+        : await pcSearch(token, c.query);
+      rows = products.filter((p) => c.re.test(p["console-name"] ?? ""));
+      if (rows.length > 0) break;
+    }
     if (rows.length === 0) {
       skipped.push(`${en.code} (${en.name}) — no Japanese console on PriceCharting`);
       continue;

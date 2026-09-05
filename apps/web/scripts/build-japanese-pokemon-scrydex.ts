@@ -240,12 +240,12 @@ async function main() {
         variants?: { prices?: Record<string, unknown>[] }[];
       }[]) {
         const codeKey = String(c.rarity_code ?? c.rarity ?? "").toUpperCase().trim();
-        const rarity = JP_RARITY[codeKey];
-        // No guessing: a tier we can't name can't be priced into EV honestly.
-        if (!rarity) {
-          skippedRarity++;
-          continue;
-        }
+        // No guessing into EV: an unmapped code becomes "unknown", which no
+        // pull-rate tier matches, so the card exists (searchable, priced, on
+        // its set page) without ever being valued into a pack. Skipping it
+        // outright — the old behaviour — left whole pre-SV sets empty.
+        const rarity = JP_RARITY[codeKey] ?? "unknown";
+        if (!JP_RARITY[codeKey]) skippedRarity++;
         const number = String(c.number ?? c.id.split("-").pop() ?? "").trim();
         if (!number) continue;
         const img = c.images?.find((x) => x.type === "front") ?? c.images?.[0];
@@ -276,7 +276,9 @@ async function main() {
             target: [cards.setId, cards.number, cards.treatment],
             set: {
               name: sql`excluded.name`,
-              rarity: sql`excluded.rarity`,
+              // Never downgrade a known tier to "unknown": a blank code on a
+              // later fetch must not pull a card out of its EV tier.
+              rarity: sql`case when excluded.rarity = 'unknown' then ${cards.rarity} else excluded.rarity end`,
               imageUrl: sql`coalesce(excluded.image_url, ${cards.imageUrl})`,
               externalIds: sql`${cards.externalIds} || excluded.external_ids`,
               updatedAt: new Date(),
@@ -332,7 +334,7 @@ async function main() {
 
   console.log(
     `\nDone. ${setsDone} sets, ${cardsDone} cards, ${pricesDone} prices. ` +
-      `${skippedRarity} cards skipped for an unmapped rarity. ${failures.length} failures.`,
+      `${skippedRarity} cards stored as rarity "unknown" (unmapped code). ${failures.length} failures.`,
   );
   for (const f of failures) console.log(`  ${f.set}: ${f.error.slice(0, 120)}`);
   process.exit(0);
