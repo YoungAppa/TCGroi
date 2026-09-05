@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 
 import { CardDetail } from "@/components/CardDetail";
 import { getCardHistory } from "@/lib/data/cards";
+import { getSpeciesForCard } from "@/lib/data/species";
 import { gradingCost } from "@/lib/grading/fees";
 import { rarityLabel } from "@/lib/catalog/rarities";
 import { getCardContext } from "@/lib/data";
@@ -93,7 +94,7 @@ export default async function CardPage({ params }: { params: Promise<Params> }) 
   if (!ctx) notFound();
   // Daily raw-price snapshots have accumulated since the price cron began;
   // the same sparkline the product pages use.
-  const history = await getCardHistory(ctx.card.cardId);
+  const [history, speciesLinks] = await Promise.all([getCardHistory(ctx.card.cardId), getSpeciesForCard(ctx.card.cardId)]);
 
   const price = rawMedianCents(ctx.card);
   const psa10 = median(Object.values(ctx.card.psa10 ?? {}));
@@ -210,6 +211,19 @@ export default async function CardPage({ params }: { params: Promise<Params> }) 
       </nav>
 
       <CardDetail ctx={ctx} history={history} />
+      {speciesLinks.length > 0 && (
+        <p className="flex flex-wrap gap-2 text-sm">
+          {speciesLinks.map((sp) => (
+            <Link
+              key={sp.slug}
+              href={`/pokedex/${sp.slug}`}
+              className="rounded-full border border-border bg-surface px-3 py-1 text-muted hover:border-accent/50 hover:text-foreground"
+            >
+              Every {sp.nameEn} card <span className="tabular">({sp.cardCount.toLocaleString()})</span> →
+            </Link>
+          ))}
+        </p>
+      )}
 
       {/* ---- the indexable answer copy ----------------------------------- */}
       <section className="space-y-4 rounded-xl border border-border bg-surface p-5 text-sm leading-relaxed">

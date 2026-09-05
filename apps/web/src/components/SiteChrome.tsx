@@ -25,6 +25,9 @@ export function SiteNav() {
         <Link href="/" className={link}>
           {t("nav.rankings")}
         </Link>
+        <Link href="/pokedex" className={link}>
+          {t("nav.pokedex")}
+        </Link>
         <Link href="/sets" className={link}>
           {t("nav.sets")}
         </Link>

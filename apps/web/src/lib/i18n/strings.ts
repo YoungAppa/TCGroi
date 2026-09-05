@@ -52,6 +52,7 @@ export const STRINGS = {
     "nav.collection": "Collection",
     "nav.methodology": "How it works",
     "nav.sets": "Sets",
+    "nav.pokedex": "Pokédex",
     "disclaimer.banner":
       "Pull rates are community estimates, not official odds — every EV here is a projection, not a promise.",
     "rankings.title": "Sealed product rankings",
@@ -111,6 +112,7 @@ export const STRINGS = {
     "nav.collection": "コレクション",
     "nav.methodology": "仕組み",
     "nav.sets": "セット一覧",
+    "nav.pokedex": "ポケモン図鑑",
     "disclaimer.banner":
       "封入率は公式の確率ではなくコミュニティの推定値です。期待値はあくまで予測であり、保証ではありません。",
     "rankings.title": "未開封商品ランキング",
@@ -169,6 +171,7 @@ export const STRINGS = {
     "nav.collection": "收藏",
     "nav.methodology": "运作原理",
     "nav.sets": "系列一览",
+    "nav.pokedex": "宝可梦图鉴",
     "disclaimer.banner":
       "抽卡率为社群估算值，并非官方公布的概率——所有期望值均为推算，不构成保证。",
     "rankings.title": "未拆封商品排行榜",
@@ -224,6 +227,7 @@ export const STRINGS = {
     "nav.collection": "Colección",
     "nav.methodology": "Cómo funciona",
     "nav.sets": "Colecciones",
+    "nav.pokedex": "Pokédex",
     "disclaimer.banner":
       "Las probabilidades son estimaciones de la comunidad, no cifras oficiales: cada valor esperado es una proyección, no una promesa.",
     "rankings.title": "Clasificación de producto sellado",
@@ -281,6 +285,7 @@ export const STRINGS = {
     "nav.collection": "Collection",
     "nav.methodology": "Fonctionnement",
     "nav.sets": "Extensions",
+    "nav.pokedex": "Pokédex",
     "disclaimer.banner":
       "Les taux de tirage sont des estimations de la communauté, pas des chiffres officiels — chaque valeur attendue est une projection, pas une promesse.",
     "rankings.title": "Classement des produits scellés",
@@ -338,6 +343,7 @@ export const STRINGS = {
     "nav.collection": "Sammlung",
     "nav.methodology": "So funktioniert es",
     "nav.sets": "Sets",
+    "nav.pokedex": "Pokédex",
     "disclaimer.banner":
       "Zieh-Wahrscheinlichkeiten sind Community-Schätzungen, keine offiziellen Angaben — jeder Erwartungswert ist eine Prognose, kein Versprechen.",
     "rankings.title": "Rangliste versiegelter Produkte",

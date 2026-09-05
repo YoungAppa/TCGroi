@@ -8,6 +8,7 @@ import {
   jsonb,
   pgEnum,
   pgTable,
+  primaryKey,
   text,
   timestamp,
   uniqueIndex,
@@ -471,3 +472,34 @@ export const latestPricesRelations = relations(latestPrices, ({ one }) => ({
     references: [priceSources.id],
   }),
 }));
+
+/**
+ * The Pokédex layer: one row per species (national dex number), so every
+ * card of a Pokémon — any set, any language — can be listed on one page.
+ * Names come from PokéAPI's official localizations; the artwork URL is
+ * PokéAPI's hosted official art.
+ */
+export const pokemonSpecies = pgTable("pokemon_species", {
+  /** National Pokédex number. */
+  id: integer("id").primaryKey(),
+  slug: text("slug").notNull().unique(),
+  nameEn: text("name_en").notNull(),
+  nameJa: text("name_ja"),
+  nameZh: text("name_zh"),
+  generation: integer("generation"),
+  imageUrl: text("image_url"),
+});
+
+/**
+ * Card -> species, many-to-many: a tag-team card ("Pikachu & Zekrom-GX")
+ * belongs on both Pokémon's pages. Filled by scripts/build-species.ts from
+ * card names (English, or the official JP/ZH species names).
+ */
+export const cardSpecies = pgTable(
+  "card_species",
+  {
+    cardId: uuid("card_id").notNull().references(() => cards.id, { onDelete: "cascade" }),
+    speciesId: integer("species_id").notNull().references(() => pokemonSpecies.id, { onDelete: "cascade" }),
+  },
+  (t) => [primaryKey({ columns: [t.cardId, t.speciesId] }), index("card_species_species_idx").on(t.speciesId)],
+);

@@ -28,6 +28,7 @@ export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> 
     const urls = [
       { loc: BASE, freq: "daily", pri: "1" },
       { loc: `${BASE}/sets`, freq: "daily", pri: "0.7" },
+      { loc: `${BASE}/pokedex`, freq: "daily", pri: "0.7" },
       { loc: `${BASE}/methodology`, freq: "monthly", pri: "0.5" },
     ];
     const seenSet = new Set<string>();
@@ -41,6 +42,11 @@ export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> 
     }
     // Set pages for tracked-but-unranked sets (card-list fallbacks) too.
     const db = getDb();
+    // Pokédex species pages — every Pokémon that has at least one card.
+    const species = await db.execute<{ slug: string }>(sql`
+      select p.slug from pokemon_species p
+      where exists (select 1 from card_species cs where cs.species_id = p.id) order by p.id`);
+    for (const r of [...species]) urls.push({ loc: `${BASE}/pokedex/${r.slug}`, freq: "weekly", pri: "0.6" });
     const extra = await db.execute<{ slug: string; code: string }>(sql`
       select g.slug, s.code from sets s
       join games g on g.id = s.game_id

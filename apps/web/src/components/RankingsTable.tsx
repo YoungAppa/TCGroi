@@ -954,6 +954,9 @@ function CardSearchDropdown({ query, game }: { query: string; game: string }) {
   const [hits, setHits] = useState<
     { id: string; name: string; number: string; imageUrl: string | null; setCode: string; setName: string; game: string; priceCents: number | null }[]
   >([]);
+  const [species, setSpecies] = useState<
+    { id: number; slug: string; nameEn: string; nameJa: string | null; imageUrl: string | null; cardCount: number }[]
+  >([]);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -961,6 +964,7 @@ function CardSearchDropdown({ query, game }: { query: string; game: string }) {
     const q = query.trim();
     if (q.length < 3) {
       setHits([]);
+      setSpecies([]);
       return;
     }
     timer.current = setTimeout(async () => {
@@ -969,8 +973,9 @@ function CardSearchDropdown({ query, game }: { query: string; game: string }) {
           `/api/cards/search?q=${encodeURIComponent(q)}&game=${encodeURIComponent(game)}`,
         );
         if (!res.ok) return;
-        const data = (await res.json()) as { results?: typeof hits };
+        const data = (await res.json()) as { results?: typeof hits; species?: typeof species };
         setHits((data.results ?? []).slice(0, 6));
+        setSpecies((data.species ?? []).slice(0, 3));
       } catch {
         /* transient search failures just show no card hits */
       }
@@ -981,10 +986,37 @@ function CardSearchDropdown({ query, game }: { query: string; game: string }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query, game]);
 
-  if (hits.length === 0) return null;
+  if (hits.length === 0 && species.length === 0) return null;
   return (
-    <div className="absolute left-0 right-0 top-full z-30 mt-1 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-[0_16px_40px_rgba(0,0,0,.55)]">
-      <div className="px-3 pt-2 text-[10px] uppercase tracking-wide text-muted">Cards</div>
+    <div className="absolute left-0 right-0 top-full z-30 mt-1 min-w-[18rem] overflow-hidden rounded-xl border border-border bg-surface-raised shadow-[0_16px_40px_rgba(0,0,0,.55)]">
+      {species.length > 0 && (
+        <>
+          <div className="px-3 pt-2 text-[10px] uppercase tracking-wide text-muted">Pokémon</div>
+          {species.map((s) => (
+            <Link
+              key={s.id}
+              href={`/pokedex/${s.slug}`}
+              className="flex items-center gap-2.5 px-3 py-2 text-xs hover:bg-surface"
+            >
+              {s.imageUrl ? (
+                <img src={s.imageUrl} alt="" loading="lazy" className="h-10 w-10 shrink-0 object-contain" />
+              ) : (
+                <span className="h-10 w-10 shrink-0 rounded-full bg-surface" />
+              )}
+              <span className="min-w-0 flex-1">
+                <span className="block truncate">
+                  <span className="font-medium text-foreground">{s.nameEn}</span>
+                  {s.nameJa && <span className="ml-1.5 text-muted">{s.nameJa}</span>}
+                </span>
+                <span className="tabular block truncate text-[11px] text-muted">
+                  Every {s.nameEn} card · {s.cardCount.toLocaleString()} cards →
+                </span>
+              </span>
+            </Link>
+          ))}
+        </>
+      )}
+      {hits.length > 0 && <div className="px-3 pt-2 text-[10px] uppercase tracking-wide text-muted">Cards</div>}
       {hits.map((h) => (
         <Link
           key={h.id}
