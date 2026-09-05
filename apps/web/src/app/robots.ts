@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
+import { SITE_URL as BASE } from "@/lib/site";
 
-const BASE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://whatsthatroi.com";
+
 
 export default function robots(): MetadataRoute.Robots {
   return {

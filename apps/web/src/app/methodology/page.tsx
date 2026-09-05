@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/methodology" },
   title: "Methodology",
   description:
     "How WhatsThatROI computes EV and ROI: data sources, the math, confidence levels, and the assumptions that carry real error.",

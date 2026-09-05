@@ -10,6 +10,7 @@ import { rarityLabel } from "@/lib/catalog/rarities";
 import { getCardContext } from "@/lib/data";
 import { median } from "@packroi/ev";
 import { formatCents, formatProbability } from "@packroi/ev/format";
+import { SITE_URL as SITE } from "@/lib/site";
 
 // ISR like every data page. Card pages are NOT prerendered — the catalog holds
 // ~100k cards and prerendering them would swamp the build — so they render on
@@ -18,7 +19,7 @@ export const revalidate = 3600;
 
 type Params = { game: string; setCode: string; number: string };
 
-const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://whatsthatroi.com";
+
 
 function rawMedianCents(card: { raw: Record<string, number> }): number | null {
   return median(Object.values(card.raw));

@@ -1,5 +1,6 @@
 import { getDb } from "@/lib/db";
 import { sql } from "drizzle-orm";
+import { SITE_URL as BASE } from "@/lib/site";
 
 /**
  * Sitemap INDEX. The catalog outgrew a single sitemap (the protocol caps one
@@ -9,7 +10,7 @@ import { sql } from "drizzle-orm";
  */
 export const revalidate = 3600;
 
-const BASE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://whatsthatroi.com";
+
 export const CARDS_PER_SHARD = 40000;
 
 export async function cardShardCount(): Promise<number> {

@@ -36,12 +36,14 @@ export async function generateMetadata({
   const first = products[0];
   if (first) {
     return {
+      alternates: { canonical: `/${game}/${setCode}` },
       title: `${first.setName} (${setCode}) — sealed product EV & card prices`,
       description: `Every sealed product and card price for ${first.setName}. Community pull rates with confidence levels and citations.`,
     };
   }
   const fallback = await getUnrankedSetCards(game, setCode);
-  if (!fallback) return {};
+  if (!fallback) return {
+    alternates: { canonical: `/${game}/${setCode}` },};
   return {
     title: `${fallback.setName} (${setCode}) — card list & prices`,
     description: `Every ${fallback.setName} card with live market prices. No sealed product is ranked for this set — no source publishes usable pull rates.`,

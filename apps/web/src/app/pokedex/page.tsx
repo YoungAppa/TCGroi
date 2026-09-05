@@ -8,6 +8,7 @@ import { formatCents } from "@packroi/ev/format";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/pokedex" },
   title: "Pokédex — every Pokémon's cards, prices and pull odds",
   description:
     "Every Pokémon from Bulbasaur to Pecharunt with all of its cards in one place: English, Japanese and Chinese printings, live prices, and which packs pull them.",

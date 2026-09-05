@@ -1,9 +1,12 @@
+import type { Metadata } from "next";
 import { RankingsHero, type HeroCard } from "@/components/RankingsHero";
 import { RankingsTable } from "@/components/RankingsTable";
 import { getRankings } from "@/lib/data";
 import { computeProduct } from "@/lib/data/compute";
 import { buildRankingsRows } from "@/lib/data/rankings-rows";
 import { DEFAULT_FILTER_STATE } from "@packroi/ev/url-state";
+
+export const metadata: Metadata = { alternates: { canonical: "/" } };
 
 // ISR: rebuilt hourly from the DB the cron jobs write into. Never fetches
 // externally at request time.

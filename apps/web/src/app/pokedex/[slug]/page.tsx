@@ -5,11 +5,12 @@ import { notFound } from "next/navigation";
 import { rarityLabel } from "@/lib/catalog/rarities";
 import { getSpeciesPage, type SpeciesCard } from "@/lib/data/species";
 import { formatCents } from "@packroi/ev/format";
+import { SITE_URL as SITE } from "@/lib/site";
 
 // ISR like every data page; species pages render on first request.
 export const revalidate = 3600;
 
-const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://whatsthatroi.com";
+
 const LANG_LABEL: Record<SpeciesCard["language"], string> = { EN: "English", JP: "Japanese (日本語)", ZH: "Chinese (中文)" };
 const LANG_ORDER: SpeciesCard["language"][] = ["EN", "JP", "ZH"];
 

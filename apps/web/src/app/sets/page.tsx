@@ -7,6 +7,7 @@ import { eq, sql } from "drizzle-orm";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/sets" },
   title: "All sets — every ranked and tracked TCG set",
   description:
     "Every Pokémon (EN/JP/中文), One Piece and Magic set on WhatsThatROI: ranked sets with sealed-product EV, plus tracked sets with full card lists and live prices.",

@@ -8,6 +8,7 @@ import { MoneyProvider } from "@/lib/money/context";
 import { fetchFxRates } from "@/lib/money/rates";
 
 import "./globals.css";
+import { SITE_URL } from "@/lib/site";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
@@ -16,7 +17,7 @@ const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"]
 const sora = Sora({ variable: "--font-sora", subsets: ["latin"], weight: ["600", "700", "800"] });
 
 // Same fallback the robots/sitemap routes use; set NEXT_PUBLIC_SITE_URL at deploy.
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://whatsthatroi.com";
+
 
 const TITLE = "WhatsThatROI — TCG pack & box expected value";
 const DESCRIPTION =
@@ -87,6 +88,22 @@ export default async function RootLayout({
         <SiteBanner />
 
         <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6">{children}</main>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify([
+              { "@context": "https://schema.org", "@type": "Organization", name: "WhatsThatROI", url: SITE_URL },
+              {
+                "@context": "https://schema.org",
+                "@type": "WebSite",
+                name: "WhatsThatROI",
+                url: SITE_URL,
+                description: DESCRIPTION,
+                inLanguage: ["en", "ja", "zh", "es", "fr", "de"],
+              },
+            ]),
+          }}
+        />
 
         <SiteFooter />
         </MoneyProvider>

@@ -1,11 +1,12 @@
 import { getRankings } from "@/lib/data";
 import { getDb } from "@/lib/db";
 import { sql } from "drizzle-orm";
+import { SITE_URL as BASE } from "@/lib/site";
 
 /** Sitemap shards — see ../../sitemap.xml/route.ts for the index. */
 export const revalidate = 3600;
 
-const BASE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://whatsthatroi.com";
+
 const CARDS_PER_SHARD = 40000;
 
 function xml(urls: { loc: string; freq: string; pri: string }[]): Response {
