@@ -48,7 +48,11 @@ const BRACKET_TO_TREATMENT: Record<string, string> = {
   sp: "sp",
 };
 
-const OP_CODE = /\b([A-Z]{1,3}\d{2}-\d{3})\b/;
+// "OP01-001", "ST01-011", "EB01-001" and promo "P-078".
+const OP_CODE = /\b([A-Z]{1,3}\d{0,2}-\d{3})\b/;
+/** Inventory sets (starter decks, promos) store the bare number ("11"); main
+ *  sets store the full code. Both forms key the lookup. */
+const numericForm = (code: string) => String(Number(code.split("-").pop()));
 const BRACKET = /\[([^\]]+)\]/;
 
 /** Sealed product-name -> our sealed type. Same names as the English side. */
@@ -236,6 +240,8 @@ async function main() {
       .from(cards)
       .where(eq(cards.setId, jpSet.id));
     const byKey = new Map(jpCards.map((c) => [`${c.number}|${c.treatment}`, c.id]));
+    const lookup = (code: string, treatment: string) =>
+      byKey.get(`${code}|${treatment}`) ?? byKey.get(`${numericForm(code)}|${treatment}`);
 
     const priceRows: {
       cardId: string;
@@ -266,7 +272,7 @@ async function main() {
       const treatment = bracket === undefined ? "base" : BRACKET_TO_TREATMENT[bracket];
       if (!treatment) continue;
 
-      const cardId = byKey.get(`${code}|${treatment}`);
+      const cardId = lookup(code, treatment);
       if (!cardId) continue;
       priceRows.push({
         cardId,
