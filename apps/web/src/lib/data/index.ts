@@ -23,7 +23,7 @@ export interface MarketHistoryPoint {
  */
 export async function getMarketHistory(
   productId: string,
-  days = 120,
+  days = 3650,
 ): Promise<MarketHistoryPoint[]> {
   try {
     const db = getDb();

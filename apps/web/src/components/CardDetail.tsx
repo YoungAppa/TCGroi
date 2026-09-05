@@ -54,7 +54,11 @@ export function CardDetail({ ctx, history = [] }: { ctx: CardContext; history?: 
               <span className="tabular font-display text-2xl font-extrabold">{money(raw)}</span>
             </div>
           )}
-          <PriceHistory data={history} />
+          <PriceHistory
+            data={history}
+            title="Price history"
+            note="Daily median raw (ungraded) market price across the sources we track. Updates each time the price job runs."
+          />
         </div>
 
         <div className="space-y-4">
@@ -103,7 +107,7 @@ export function CardDetail({ ctx, history = [] }: { ctx: CardContext; history?: 
             <div className="rounded-xl border border-border bg-surface p-4 text-sm text-muted sm:p-5">
               <h2 className="text-lg font-semibold text-foreground">Where to pull it</h2>
               <p className="mt-2">
-                No {ctx.setName} sealed product is ranked yet — no source publishes
+                No {ctx.setName}{" "}sealed product is ranked yet — no source publishes
                 usable pull rates for this set, and this site doesn&apos;t invent
                 odds. The card&apos;s price above is live regardless.
               </p>

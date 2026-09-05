@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { PriceHistory } from "@/components/PriceHistory";
 import { ProductDetail } from "@/components/ProductDetail";
 import { getMarketHistory, getProduct, getRankings } from "@/lib/data";
 import { computeProduct } from "@/lib/data/compute";
@@ -89,9 +88,7 @@ export default async function ProductPage({ params }: { params: Promise<Params> 
         </h1>
       </div>
 
-      <ProductDetail payload={payload} availableSources={availableSources} />
-
-      <PriceHistory data={history} />
+      <ProductDetail payload={payload} availableSources={availableSources} history={history} />
     </div>
   );
 }

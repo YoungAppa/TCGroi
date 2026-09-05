@@ -1,5 +1,8 @@
 "use client";
 
+import type { MarketHistoryPoint } from "@/lib/data";
+import { PriceHistory } from "./PriceHistory";
+
 /* eslint-disable @next/next/no-img-element -- external card/set art domains
    are not configured for next/image yet; plain img is deliberate here. */
 
@@ -36,9 +39,11 @@ const BAR_COLORS = [
 export function ProductDetail({
   payload,
   availableSources,
+  history = [],
 }: {
   payload: ProductPayload;
   availableSources: { id: string; displayName: string }[];
+  history?: MarketHistoryPoint[];
 }) {
   const { money } = useMoney();
   const { state, setState, withFilter } = useFilterState();
@@ -133,14 +138,11 @@ export function ProductDetail({
           </div>
         )}
 
-      {/* ---- the split: EV once, the selected denominator(s) ---- */}
-      <div
-        className={`grid gap-3 ${
-          state.showRetail && state.showMarket
-            ? "lg:grid-cols-[1fr_1fr_1fr]"
-            : "lg:grid-cols-[1fr_1fr]"
-        }`}
-      >
+      {/* ---- the split: EV once, the selected denominator(s) — beside the
+          price history, so the verdict and its trend share one row and the
+          chase cards below land above the fold. ---- */}
+      <div className="grid gap-3 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
+      <div className="grid content-start gap-3 sm:grid-cols-2 lg:grid-cols-1">
         <div className="rounded-xl border border-border bg-surface p-4">
           <div className="text-xs uppercase tracking-wide text-muted">Expected value</div>
           <div className="tabular mt-1 text-2xl font-semibold">
@@ -201,6 +203,143 @@ export function ProductDetail({
           </div>
         )}
       </div>
+      <PriceHistory data={history} compact />
+      </div>
+
+      {/* ---- chase cards: what people came to see ---- */}
+      <section className="space-y-3">
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <h2 className="text-lg font-semibold">Chase cards</h2>
+          {ev.chase.length > 0 && (
+            <span className="text-xs text-muted">
+              {ev.chase.length} priced · biggest hits first
+            </span>
+          )}
+        </div>
+        {(() => {
+          // One gallery: modelled chases (with odds) and special-treatment
+          // printings (no published rate, so no odds and no EV contribution)
+          // interleaved by value. The former separate section made the
+          // treatments look like an afterthought; a single list with an
+          // honest "not in EV" chip reads better and hides nothing.
+          const mval = (raw: Record<string, number>) => {
+            const v = Object.values(raw).filter((x): x is number => typeof x === "number").sort((a, b) => a - b);
+            return v.length ? v[Math.floor((v.length - 1) / 2)]! : 0;
+          };
+          const merged = [
+            ...ev.chase.map((c) => ({ kind: "chase" as const, c, value: c.valueCents })),
+            ...(payload.displayCards ?? [])
+              .map((d) => ({ kind: "display" as const, d, value: mval(d.raw) }))
+              .filter((x) => x.value > 0 || (x.d.imageUrl && (payload.displayCards?.length ?? 0) <= 40)),
+          ].sort((a, b) => b.value - a.value).slice(0, 80);
+          if (merged.length === 0) return <p className="text-sm text-muted">No priced chase cards.</p>;
+          return (
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5">
+            {merged.map((entry) => {
+              if (entry.kind === "display") {
+                const d = entry.d;
+                return (
+                  <Link
+                    key={`disp-${d.cardId}`}
+                    href={`/${payload.gameSlug}/${payload.setCode}/card/${encodeURIComponent(d.number)}`}
+                    className="group flex flex-col overflow-hidden rounded-xl bg-surface ring-1 ring-white/5 transition hover:shadow-lg hover:shadow-black/30 hover:ring-accent/50"
+                  >
+                    <div className="relative aspect-[5/7] w-full overflow-hidden bg-surface-raised">
+                      {d.imageUrl ? (
+                        <img src={d.imageUrl} alt={d.name} loading="lazy" className="h-full w-full object-contain transition-transform duration-200 group-hover:scale-[1.04]" />
+                      ) : (
+                        <div className="flex h-full items-center justify-center text-xs text-muted">no image</div>
+                      )}
+                      {entry.value > 0 && (
+                        <span className="tabular absolute right-1.5 top-1.5 rounded-md bg-black/75 px-1.5 py-0.5 text-sm font-semibold text-emerald-300 shadow-sm backdrop-blur-sm">
+                          {money(entry.value)}
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex flex-1 flex-col gap-1 p-2.5">
+                      <div className="truncate text-sm font-medium" title={`${d.name} #${d.number}`}>
+                        {d.name} <span className="text-muted">#{d.number}</span>
+                      </div>
+                      <div className="text-xs text-muted">{rarityLabel(d.rarity)}</div>
+                      <div className="mt-auto pt-1.5">
+                        <span
+                          className="rounded bg-surface-raised px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted"
+                          title="No source publishes a pull rate for this printing, so it carries no odds and adds nothing to EV — the value shown is what the card sells for."
+                        >
+                          no published rate · not in EV
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+                );
+              }
+              const c = entry.c;
+              const img = cardById.get(c.cardId)?.imageUrl;
+              // A blended product's chase cards belong to its COMPONENT sets,
+              // so each link must carry the card's own set code.
+              const ownSet =
+                payload.componentPacks?.find((cp) =>
+                  cp.cards.some((cd) => cd.cardId === c.cardId),
+                )?.setCode ?? payload.setCode;
+              return (
+                <Link
+                  key={c.cardId}
+                  href={`/${payload.gameSlug}/${ownSet}/card/${encodeURIComponent(c.number)}`}
+                  className="group flex flex-col overflow-hidden rounded-xl bg-surface ring-1 ring-white/5 transition hover:shadow-lg hover:shadow-black/30 hover:ring-accent/50"
+                >
+                  <div className="relative aspect-[5/7] w-full overflow-hidden bg-surface-raised">
+                    {img ? (
+                      <img
+                        src={img}
+                        alt={c.name}
+                        loading="lazy"
+                        className="h-full w-full object-contain transition-transform duration-200 group-hover:scale-[1.04]"
+                      />
+                    ) : (
+                      <div className="flex h-full items-center justify-center text-xs text-muted">
+                        no image
+                      </div>
+                    )}
+                    <span className="tabular absolute right-1.5 top-1.5 rounded-md bg-black/75 px-1.5 py-0.5 text-sm font-semibold text-emerald-300 shadow-sm backdrop-blur-sm">
+                      {money(c.valueCents)}
+                    </span>
+                  </div>
+                  <div className="flex flex-1 flex-col gap-1 p-2.5">
+                    <div
+                      className="truncate text-sm font-medium"
+                      title={`${c.name} #${c.number}`}
+                    >
+                      {c.name} <span className="text-muted">#{c.number}</span>
+                    </div>
+                    <div className="text-xs text-muted">{rarityLabel(c.rarity)}</div>
+                    <div className="mt-auto flex items-center justify-between gap-1 pt-1.5 text-xs">
+                      <span className="tabular text-muted">{formatOneIn(c.oneInPacks)}</span>
+                      <span
+                        className="tabular rounded bg-surface-raised px-1.5 py-0.5 font-medium"
+                        title="Chance of pulling this exact card from a single pack"
+                      >
+                        {formatPerPackChance(c.perPackProbability)}
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+          );
+        })()}
+        <p className="text-xs text-muted">
+          Each tile: card value (top-right), then the odds of pulling{" "}
+          <em>that exact card</em> from a single pack — shown as &ldquo;1 in N
+          packs&rdquo; and as a percentage (the same number, two ways). Per-card
+          odds assume every card in a tier is equally likely — no public data
+          quantifies short prints. See{" "}
+          <Link href={withFilter("/methodology")} className="underline">
+            methodology
+          </Link>
+          .
+        </p>
+      </section>
 
       {/* ---- guaranteed promos sidecar ---- */}
       {promoRows.length > 0 && (
@@ -395,139 +534,6 @@ export function ProductDetail({
       )}
 
       {/* ---- chase gallery ---- */}
-      <section className="space-y-3">
-        <div className="flex flex-wrap items-baseline justify-between gap-2">
-          <h2 className="text-lg font-semibold">Chase cards</h2>
-          {ev.chase.length > 0 && (
-            <span className="text-xs text-muted">
-              {ev.chase.length} priced · biggest hits first
-            </span>
-          )}
-        </div>
-        {(() => {
-          // One gallery: modelled chases (with odds) and special-treatment
-          // printings (no published rate, so no odds and no EV contribution)
-          // interleaved by value. The former separate section made the
-          // treatments look like an afterthought; a single list with an
-          // honest "not in EV" chip reads better and hides nothing.
-          const mval = (raw: Record<string, number>) => {
-            const v = Object.values(raw).filter((x): x is number => typeof x === "number").sort((a, b) => a - b);
-            return v.length ? v[Math.floor((v.length - 1) / 2)]! : 0;
-          };
-          const merged = [
-            ...ev.chase.map((c) => ({ kind: "chase" as const, c, value: c.valueCents })),
-            ...(payload.displayCards ?? [])
-              .map((d) => ({ kind: "display" as const, d, value: mval(d.raw) }))
-              .filter((x) => x.value > 0 || (x.d.imageUrl && (payload.displayCards?.length ?? 0) <= 40)),
-          ].sort((a, b) => b.value - a.value).slice(0, 80);
-          if (merged.length === 0) return <p className="text-sm text-muted">No priced chase cards.</p>;
-          return (
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5">
-            {merged.map((entry) => {
-              if (entry.kind === "display") {
-                const d = entry.d;
-                return (
-                  <Link
-                    key={`disp-${d.cardId}`}
-                    href={`/${payload.gameSlug}/${payload.setCode}/card/${encodeURIComponent(d.number)}`}
-                    className="group flex flex-col overflow-hidden rounded-xl bg-surface ring-1 ring-white/5 transition hover:shadow-lg hover:shadow-black/30 hover:ring-accent/50"
-                  >
-                    <div className="relative aspect-[5/7] w-full overflow-hidden bg-surface-raised">
-                      {d.imageUrl ? (
-                        <img src={d.imageUrl} alt={d.name} loading="lazy" className="h-full w-full object-contain transition-transform duration-200 group-hover:scale-[1.04]" />
-                      ) : (
-                        <div className="flex h-full items-center justify-center text-xs text-muted">no image</div>
-                      )}
-                      {entry.value > 0 && (
-                        <span className="tabular absolute right-1.5 top-1.5 rounded-md bg-black/75 px-1.5 py-0.5 text-sm font-semibold text-emerald-300 shadow-sm backdrop-blur-sm">
-                          {money(entry.value)}
-                        </span>
-                      )}
-                    </div>
-                    <div className="flex flex-1 flex-col gap-1 p-2.5">
-                      <div className="truncate text-sm font-medium" title={`${d.name} #${d.number}`}>
-                        {d.name} <span className="text-muted">#{d.number}</span>
-                      </div>
-                      <div className="text-xs text-muted">{rarityLabel(d.rarity)}</div>
-                      <div className="mt-auto pt-1.5">
-                        <span
-                          className="rounded bg-surface-raised px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted"
-                          title="No source publishes a pull rate for this printing, so it carries no odds and adds nothing to EV — the value shown is what the card sells for."
-                        >
-                          no published rate · not in EV
-                        </span>
-                      </div>
-                    </div>
-                  </Link>
-                );
-              }
-              const c = entry.c;
-              const img = cardById.get(c.cardId)?.imageUrl;
-              // A blended product's chase cards belong to its COMPONENT sets,
-              // so each link must carry the card's own set code.
-              const ownSet =
-                payload.componentPacks?.find((cp) =>
-                  cp.cards.some((cd) => cd.cardId === c.cardId),
-                )?.setCode ?? payload.setCode;
-              return (
-                <Link
-                  key={c.cardId}
-                  href={`/${payload.gameSlug}/${ownSet}/card/${encodeURIComponent(c.number)}`}
-                  className="group flex flex-col overflow-hidden rounded-xl bg-surface ring-1 ring-white/5 transition hover:shadow-lg hover:shadow-black/30 hover:ring-accent/50"
-                >
-                  <div className="relative aspect-[5/7] w-full overflow-hidden bg-surface-raised">
-                    {img ? (
-                      <img
-                        src={img}
-                        alt={c.name}
-                        loading="lazy"
-                        className="h-full w-full object-contain transition-transform duration-200 group-hover:scale-[1.04]"
-                      />
-                    ) : (
-                      <div className="flex h-full items-center justify-center text-xs text-muted">
-                        no image
-                      </div>
-                    )}
-                    <span className="tabular absolute right-1.5 top-1.5 rounded-md bg-black/75 px-1.5 py-0.5 text-sm font-semibold text-emerald-300 shadow-sm backdrop-blur-sm">
-                      {money(c.valueCents)}
-                    </span>
-                  </div>
-                  <div className="flex flex-1 flex-col gap-1 p-2.5">
-                    <div
-                      className="truncate text-sm font-medium"
-                      title={`${c.name} #${c.number}`}
-                    >
-                      {c.name} <span className="text-muted">#{c.number}</span>
-                    </div>
-                    <div className="text-xs text-muted">{rarityLabel(c.rarity)}</div>
-                    <div className="mt-auto flex items-center justify-between gap-1 pt-1.5 text-xs">
-                      <span className="tabular text-muted">{formatOneIn(c.oneInPacks)}</span>
-                      <span
-                        className="tabular rounded bg-surface-raised px-1.5 py-0.5 font-medium"
-                        title="Chance of pulling this exact card from a single pack"
-                      >
-                        {formatPerPackChance(c.perPackProbability)}
-                      </span>
-                    </div>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-          );
-        })()}
-        <p className="text-xs text-muted">
-          Each tile: card value (top-right), then the odds of pulling{" "}
-          <em>that exact card</em> from a single pack — shown as &ldquo;1 in N
-          packs&rdquo; and as a percentage (the same number, two ways). Per-card
-          odds assume every card in a tier is equally likely — no public data
-          quantifies short prints. See{" "}
-          <Link href={withFilter("/methodology")} className="underline">
-            methodology
-          </Link>
-          .
-        </p>
-      </section>
 
 
       {/* ---- grading break-even ---- */}
